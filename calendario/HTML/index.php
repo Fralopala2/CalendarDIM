@@ -14,7 +14,7 @@
 	<link rel="stylesheet" type="text/css" href="../css/fullcalendar.min.css">
 	<!-- External dependencies removed for offline functionality -->
 	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="../css/home.css">
+    <link rel="stylesheet" type="text/css" href="../css/home.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" type="text/css" href="../css/emoji-support.css">
 </head>
 <body>
@@ -33,9 +33,9 @@ include('../PHP/config.php');
     </div>
     
     <!-- Collapsible Sidebar (Right side) -->
-    <div id="sidebar-container" class="sidebar-expanded">
-        <div id="sidebar-header">
-            <h3 id="selected-date" class="sidebar-title">Hoy</h3>
+    <div id="sidebar-container" class="sidebar-expanded" style="display: flex !important; width: 320px !important; background: white !important; border-left: 2px solid #ccc !important; flex-direction: column !important; transition: all 0.4s ease !important;">
+        <div id="sidebar-header" style="display: flex !important; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; padding: 20px !important; color: white !important; align-items: center !important; justify-content: center !important;">
+            <h3 id="selected-date" class="sidebar-title" style="margin: 0 !important; color: white !important; text-align: center !important;">Hoy</h3>
         </div>
         <div id="sidebar-content" class="sidebar-content">
             <div id="timeline-container" class="timeline-container">
@@ -67,42 +67,196 @@ include('../PHP/config.php');
 <script src='../locales/es.js'></script>
 <script type="text/javascript">
 $(document).ready(function() {
+  console.log('Document ready - checking sidebar...');
+  
+  // Check if sidebar exists
+  var $sidebar = $('#sidebar-container');
+  console.log('Sidebar element found:', $sidebar.length > 0);
+  console.log('Sidebar classes:', $sidebar.attr('class'));
+  console.log('Sidebar computed style display:', window.getComputedStyle($sidebar[0]).display);
+  console.log('Sidebar computed style width:', window.getComputedStyle($sidebar[0]).width);
 
   // Enhanced sidebar date display with better formatting
-  function updateSidebarDate(date) {
-    var formattedDate;
-    var today = moment();
+  function updateSidebarDate(date, formattedDate) {
+    var displayText;
     
-    if (date) {
+    if (formattedDate) {
+      // Use server-provided formatted date
+      displayText = formattedDate;
+    } else if (date) {
       var selectedMoment = moment(date);
+      var today = moment();
+      
       if (selectedMoment.isSame(today, 'day')) {
-        formattedDate = 'Hoy - ' + selectedMoment.format('DD/MM/YYYY');
+        displayText = 'Hoy - ' + selectedMoment.format('DD/MM/YYYY');
       } else if (selectedMoment.isSame(today.clone().add(1, 'day'), 'day')) {
-        formattedDate = 'Mañana - ' + selectedMoment.format('DD/MM/YYYY');
+        displayText = 'Mañana - ' + selectedMoment.format('DD/MM/YYYY');
       } else if (selectedMoment.isSame(today.clone().subtract(1, 'day'), 'day')) {
-        formattedDate = 'Ayer - ' + selectedMoment.format('DD/MM/YYYY');
+        displayText = 'Ayer - ' + selectedMoment.format('DD/MM/YYYY');
       } else {
-        formattedDate = selectedMoment.format('dddd, DD/MM/YYYY');
+        displayText = selectedMoment.format('dddd, DD/MM/YYYY');
       }
     } else {
-      formattedDate = 'Hoy - ' + today.format('DD/MM/YYYY');
+      var today = moment();
+      displayText = 'Hoy - ' + today.format('DD/MM/YYYY');
     }
     
-    $('#selected-date').text(formattedDate);
+    $('#selected-date').text(displayText);
   }
 
   // Function to load and display events in timeline
   function loadTimelineEvents(date) {
-    // Clear existing timeline content
-    $('.hour-content').empty();
+    // Show loading state
+    $('.hour-content').html('<div class="timeline-loading">Cargando...</div>');
     
-    // TODO: This will be implemented when we create the PHP endpoint
-    // For now, we'll add placeholder functionality
-    console.log('Loading events for date:', date ? date.format('YYYY-MM-DD') : 'today');
+    var dateString = date ? date.format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
+    
+    // Make AJAX request to get sidebar content
+    $.ajax({
+      url: '../PHP/getSidebarContent_simple.php',
+      method: 'GET',
+      data: { date: dateString },
+      dataType: 'json',
+      success: function(response) {
+        if (response.success) {
+          renderTimelineContent(response.timeline);
+          updateSidebarDate(null, response.formatted_date);
+        } else {
+          showTimelineError('Error al cargar eventos: ' + response.error);
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error('AJAX Error:', error);
+        showTimelineError('Error de conexión. Inténtalo de nuevo.');
+      }
+    });
   }
 
-  // Initialize sidebar with today's date
+  // Render timeline content from server response
+  function renderTimelineContent(timelineData) {
+    // Clear all hour content first
+    $('.hour-content').empty();
+    
+    timelineData.forEach(function(hourSlot) {
+      var $hourContent = $('.hour-slot[data-hour="' + hourSlot.hour + '"] .hour-content');
+      
+      // Add birthdays (only for hour 0)
+      if (hourSlot.hour === 0 && hourSlot.birthdays.length > 0) {
+        hourSlot.birthdays.forEach(function(birthday) {
+          var $birthdayElement = $('<div class="timeline-birthday">')
+            .text(birthday.display)
+            .attr('data-birthday-id', birthday.id);
+          $hourContent.append($birthdayElement);
+        });
+      }
+      
+      // Add events for this hour
+      hourSlot.events.forEach(function(event) {
+        var $eventElement = $('<div class="timeline-event">')
+          .attr('data-event-id', event.id)
+          .css('border-left-color', event.color);
+        
+        var $eventTime = $('<div class="event-time">').text(event.time);
+        var $eventTitle = $('<div class="event-title">').text(event.title);
+        
+        $eventElement.append($eventTime, $eventTitle);
+        
+        if (event.description) {
+          var $eventDescription = $('<div class="event-description">').text(event.description);
+          $eventElement.append($eventDescription);
+        }
+        
+        // Add click handler for event editing
+        $eventElement.click(function() {
+          // Get the current date from the sidebar
+          var currentDateText = $('#selected-date').text();
+          var datePart = currentDateText.split(' - ')[1] || currentDateText;
+          var currentDate = moment(datePart, 'DD/MM/YYYY');
+          
+          // Populate modal with event data
+          $('input[name=idEvento]').val(event.id);
+          $('input[name=evento]').val(event.title);
+          $('input[name=fecha_inicio]').val(currentDate.format('DD-MM-YYYY'));
+          $('input[name=fecha_fin]').val(currentDate.format('DD-MM-YYYY'));
+          
+          $("#modalUpdateEvento").modal();
+        });
+        
+        $hourContent.append($eventElement);
+      });
+    });
+  }
+
+  // Show timeline error message
+  function showTimelineError(message) {
+    $('.hour-content').html('<div class="timeline-error">' + message + '</div>');
+  }
+
+  // Initialize sidebar with today's date and load content
   updateSidebarDate();
+  loadTimelineEvents(); // Load today's events
+
+  // Simplified sidebar toggle functionality with inline styles
+  window.toggleSidebar = function() {
+    console.log('=== TOGGLE SIDEBAR FUNCTION CALLED ===');
+    
+    var $sidebar = $('#sidebar-container');
+    
+    if ($sidebar.length === 0) {
+      console.error('ERROR: Sidebar element not found!');
+      return false;
+    }
+    
+    console.log('Sidebar element found');
+    console.log('Current classes before toggle:', $sidebar.attr('class'));
+    
+    // Simple toggle logic with inline styles for maximum override
+    if ($sidebar.hasClass('sidebar-collapsed')) {
+      $sidebar.removeClass('sidebar-collapsed').addClass('sidebar-expanded');
+      // Force expanded styles
+      $sidebar.css({
+        'width': '320px',
+        'opacity': '1',
+        'border-left': '2px solid #ccc',
+        'min-width': '320px',
+        'max-width': '320px'
+      });
+      console.log('ACTION: Expanding sidebar');
+    } else {
+      $sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
+      // Force collapsed styles
+      $sidebar.css({
+        'width': '0px',
+        'opacity': '0',
+        'border': 'none',
+        'min-width': '0px',
+        'max-width': '0px'
+      });
+      console.log('ACTION: Collapsing sidebar');
+    }
+    
+    console.log('New classes after toggle:', $sidebar.attr('class'));
+    
+    // Force calendar resize
+    setTimeout(function() {
+      var $calendar = $('#calendar');
+      if ($calendar.length > 0) {
+        $calendar.fullCalendar('rerenderEvents');
+        console.log('Calendar rerendered after toggle');
+      }
+    }, 500);
+    
+    return true;
+  };
+
+  // Ensure sidebar is visible on page load
+  $(document).ready(function() {
+    var $sidebar = $('#sidebar-container');
+    if (!$sidebar.hasClass('sidebar-expanded') && !$sidebar.hasClass('sidebar-collapsed')) {
+      $sidebar.addClass('sidebar-expanded');
+    }
+    console.log('Sidebar initialized with class:', $sidebar.attr('class'));
+  });
 
   // Initialize FullCalendar with enhanced functionality
   $("#calendar").fullCalendar({
@@ -124,29 +278,21 @@ $(document).ready(function() {
     fixedWeekCount: false, // Show only 5 weeks instead of 6
     showNonCurrentDates: true, // Show dates from other months
 
-    // Custom button for sidebar toggle
+    // Custom button for sidebar toggle - Fixed approach
     customButtons: {
       sidebarToggle: {
-        text: 'Sidebar',
-        click: function() {
-          var $sidebar = $('#sidebar-container');
+        text: '☰',
+        click: function(event) {
+          console.log('FullCalendar button clicked - calling toggleSidebar');
+          event.preventDefault();
+          event.stopPropagation();
           
-          // Add smooth transition class if not present
-          if (!$sidebar.hasClass('transitioning')) {
-            $sidebar.addClass('transitioning');
-          }
-          
-          // Toggle sidebar state
-          if ($sidebar.hasClass('sidebar-collapsed')) {
-            $sidebar.removeClass('sidebar-collapsed');
+          // Call the working function directly
+          if (typeof window.toggleSidebar === 'function') {
+            window.toggleSidebar();
           } else {
-            $sidebar.addClass('sidebar-collapsed');
+            console.error('toggleSidebar function not available');
           }
-          
-          // Force calendar resize after sidebar animation completes
-          setTimeout(function() {
-            $('#calendar').fullCalendar('rerenderEvents');
-          }, 400);
         }
       }
     },
@@ -285,9 +431,55 @@ $(document).ready(function() {
     // Toggle sidebar with Ctrl+B
     if (e.ctrlKey && e.keyCode === 66) {
       e.preventDefault();
-      $('#sidebar-toggle').click();
+      window.toggleSidebar();
     }
   });
+  
+  // Ensure sidebar toggle button works after FullCalendar initialization
+  setTimeout(function() {
+    console.log('=== INITIALIZING SIDEBAR TOGGLE ===');
+    
+    // Test if sidebar exists
+    var $sidebar = $('#sidebar-container');
+    console.log('Sidebar exists:', $sidebar.length > 0);
+    console.log('Initial sidebar classes:', $sidebar.attr('class'));
+    
+    // Test if toggle function exists
+    console.log('toggleSidebar function exists:', typeof window.toggleSidebar === 'function');
+    
+    // Find and test the button
+    var $toggleBtn = $('.fc-sidebarToggle-button');
+    console.log('Toggle button found:', $toggleBtn.length > 0);
+    
+    if ($toggleBtn.length > 0) {
+      console.log('Adding direct click handler to toggle button');
+      
+      // Remove any existing handlers and add new one
+      $toggleBtn.off('click.sidebar').on('click.sidebar', function(e) {
+        console.log('=== DIRECT FULLCALENDAR BUTTON CLICK ===');
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        // Call the working function
+        window.toggleSidebar();
+        
+        return false;
+      });
+      
+      // Also try with mousedown event as backup
+      $toggleBtn.off('mousedown.sidebar').on('mousedown.sidebar', function(e) {
+        console.log('=== MOUSEDOWN ON FULLCALENDAR BUTTON ===');
+        e.preventDefault();
+        window.toggleSidebar();
+        return false;
+      });
+    }
+    
+    // Remove test button since the function works
+    $('#test-toggle').remove();
+    
+  }, 3000); // Wait 3 seconds for everything to load completely
 });
 </script>
 </body>
