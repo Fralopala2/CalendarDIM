@@ -24,19 +24,7 @@ input {
 
 
 
-#btnCerrar{
-  color: white;
-  padding: 3px;
-  background: #8888;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-#btnCerrar:hover{
-  cursor: pointer;
-  background-color: #333;
-}
+/* Removed btnCerrar styles - X icon functionality removed as per requirements 4.1 */
 
 .circu{
   padding: 25px;

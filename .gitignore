@@ -1,0 +1,154 @@
+# =============================================================================
+# .gitignore para Proyecto Calendario - Solo archivos esenciales para offline
+# =============================================================================
+
+# Excluir toda la carpeta .kiro (especificaciones y documentación de desarrollo)
+.kiro/
+
+# Excluir todos los tests y archivos de testing
+calendario/tests/
+*Test.php
+*test.php
+run_tests.bat
+*.test.*
+
+# Excluir archivos de documentación y desarrollo
+*.md
+README*
+CHANGELOG*
+TODO*
+NOTES*
+*.txt
+*.pdf
+
+# Excluir archivos de configuración de desarrollo
+.vscode/
+.idea/
+*.code-workspace
+.editorconfig
+
+# Excluir archivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*.temp
+*.log
+
+# Excluir archivos de backup y temporales
+*.bak
+*.backup
+*.old
+*.orig
+*~
+*.swp
+*.swo
+
+# Excluir archivos de base de datos (mantener solo el schema)
+*.sql
+!calendario/database/calendario_enhanced.sql
+
+# Excluir archivos de migración y utilidades de desarrollo
+calendario/database/migrate*.php
+calendario/database/test_*.php
+calendario/validate_*.php
+
+# Excluir archivos de Git
+.git/
+.gitattributes
+
+# Excluir archivos de Node.js (si los hubiera)
+node_modules/
+package*.json
+yarn.lock
+
+# Excluir archivos de Composer (si los hubiera)
+vendor/
+composer.json
+composer.lock
+
+# Excluir archivos de configuración específicos del entorno
+config.local.php
+.env
+.env.local
+.env.production
+
+# Excluir archivos de logs y cache
+logs/
+cache/
+*.cache
+
+# Excluir idiomas no necesarios de FullCalendar (mantener solo: inglés, español, francés, portugués, catalán)
+calendario/locales/af.js
+calendario/locales/ar*.js
+calendario/locales/az.js
+calendario/locales/bg.js
+calendario/locales/bn.js
+calendario/locales/bs.js
+calendario/locales/cs.js
+calendario/locales/cy.js
+calendario/locales/da.js
+calendario/locales/de*.js
+calendario/locales/el.js
+calendario/locales/en-au.js
+calendario/locales/en-gb.js
+calendario/locales/en-nz.js
+calendario/locales/eo.js
+calendario/locales/et.js
+calendario/locales/eu.js
+calendario/locales/fa.js
+calendario/locales/fi.js
+calendario/locales/gl.js
+calendario/locales/he.js
+calendario/locales/hi.js
+calendario/locales/hr.js
+calendario/locales/hu.js
+calendario/locales/hy-am.js
+calendario/locales/id.js
+calendario/locales/is.js
+calendario/locales/it.js
+calendario/locales/ja.js
+calendario/locales/ka.js
+calendario/locales/kk.js
+calendario/locales/ko.js
+calendario/locales/lb.js
+calendario/locales/lt.js
+calendario/locales/lv.js
+calendario/locales/mk.js
+calendario/locales/ms.js
+calendario/locales/nb.js
+calendario/locales/ne.js
+calendario/locales/nl.js
+calendario/locales/nn.js
+calendario/locales/pl.js
+calendario/locales/ro.js
+calendario/locales/ru.js
+calendario/locales/sk.js
+calendario/locales/sl.js
+calendario/locales/sq.js
+calendario/locales/sr*.js
+calendario/locales/sv.js
+calendario/locales/ta-in.js
+calendario/locales/th.js
+calendario/locales/tr.js
+calendario/locales/ug.js
+calendario/locales/uk.js
+calendario/locales/uz.js
+calendario/locales/vi.js
+calendario/locales/zh*.js
+
+# Mantener solo estos archivos esenciales (comentarios para referencia):
+# calendario/HTML/index.php          - Interfaz principal
+# calendario/PHP/*.php               - Lógica del servidor (excepto tests)
+# calendario/CSS/*.css               - Estilos locales
+# calendario/JS/*.js                 - JavaScript local
+# calendario/IMAGES/*                - Imágenes locales
+# calendario/locales/es.js           - Español
+# calendario/locales/es-us.js        - Español (US)
+# calendario/locales/fr.js           - Francés
+# calendario/locales/fr-ca.js        - Francés (Canadá)
+# calendario/locales/fr-ch.js        - Francés (Suiza)
+# calendario/locales/pt.js           - Portugués
+# calendario/locales/pt-br.js        - Portugués (Brasil)
+# calendario/locales/ca.js           - Catalán
+# calendario/database/calendario_enhanced.sql - Schema de base de datos
