@@ -1,6 +1,496 @@
+/* Banner Image Styles */
+.banner-container {
+  width: 100%;
+  text-align: center;
+  overflow: hidden;
+  max-height: 250px; /* Banner height for desktop */
+  background-color: #f8f9fa;
+}
+
+.banner-image {
+  width: 100%;
+  height: auto;
+  max-height: 250px; /* Maximum height for banner */
+  object-fit: cover; /* Crop image to fit container */
+  object-position: center; /* Center the image */
+}
+
+/* Main Container Layout with Flexbox */
+.main-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Calendar Container (Left side) */
+.calendar-container {
+  flex: 1;
+  padding: 0 30px 30px 30px; /* Remove top padding, keep others */
+  overflow: auto;
+  background-color: #ffffff;
+  position: relative;
+  max-width: calc(100vw - 40px); /* Maximum width with margins */
+}
+
+/* When sidebar is collapsed, limit calendar width */
+#sidebar-container.sidebar-collapsed ~ .calendar-container {
+  max-width: 1080px;
+  margin: 0 auto; /* Center the calendar */
+  padding: 0 40px 30px 40px; /* Remove top padding, add side margins */
+}
+
+/* Sidebar Styles (Right side) */
+#sidebar-container {
+  width: 320px;
+  background-color: #ffffff;
+  border-left: 2px solid #e9ecef;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  order: 2; /* Ensures sidebar appears on the right */
+}
+
+#sidebar-container.sidebar-collapsed {
+  width: 0;
+  margin-right: -320px;
+  box-shadow: none;
+}
+
+/* Sidebar Header with Improved Styling */
+#sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: 1px solid #dee2e6;
+  min-height: 70px;
+  color: white;
+}
+
+.sidebar-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Sidebar Content with Smooth Scrolling */
+.sidebar-content {
+  height: calc(100vh - 70px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.sidebar-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Enhanced Timeline Styles */
+.timeline-container {
+  padding: 0;
+  background-color: #fafbfc;
+}
+
+.hour-slot {
+  display: flex;
+  min-height: 70px;
+  border-bottom: 1px solid #e9ecef;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.hour-slot:hover {
+  background-color: #f8f9fa;
+}
+
+.hour-slot:nth-child(even) {
+  background-color: #ffffff;
+}
+
+.hour-label {
+  width: 70px;
+  padding: 12px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #495057;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-right: 2px solid #dee2e6;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-shrink: 0;
+  text-align: center;
+  position: relative;
+}
+
+.hour-label::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 20px;
+  background-color: #6c757d;
+  opacity: 0.3;
+}
+
+.hour-content {
+  flex: 1;
+  padding: 12px;
+  position: relative;
+  min-height: 46px;
+}
+
+/* Enhanced Event Items in Timeline */
+.timeline-event {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  padding: 8px 12px;
+  margin: 3px 0;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-left: 4px solid #0056b3;
+}
+
+.timeline-event:hover {
+  transform: translateX(-2px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+}
+
+.timeline-event .event-time {
+  font-weight: 600;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.timeline-event .event-title {
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.timeline-event .event-description {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-top: 2px;
+  font-style: italic;
+}
+
+/* Enhanced Birthday Items */
+.timeline-birthday {
+  background: linear-gradient(135deg, #fd7e14 0%, #e55a00 100%);
+  color: white;
+  padding: 8px 12px;
+  margin: 3px 0;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  box-shadow: 0 2px 4px rgba(253, 126, 20, 0.3);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-left: 4px solid #e55a00;
+}
+
+.timeline-birthday:hover {
+  transform: translateX(-2px);
+  box-shadow: 0 4px 8px rgba(253, 126, 20, 0.4);
+}
+
+.timeline-birthday::before {
+  content: "🎂 ";
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+/* Empty State for Timeline */
+.hour-content:empty::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #dee2e6 50%, transparent 100%);
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+/* Responsive Design with Enhanced Breakpoints */
+@media (max-width: 1200px) {
+  #sidebar-container {
+    width: 280px;
+  }
+  
+  #sidebar-container.sidebar-collapsed {
+    margin-right: -280px;
+  }
+  
+  .calendar-container {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  #sidebar-container {
+    width: 260px;
+  }
+  
+  #sidebar-container.sidebar-collapsed {
+    margin-right: -260px;
+  }
+  
+  .hour-label {
+    width: 60px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .banner-container {
+    max-height: 180px; /* Proportional banner on tablet */
+  }
+  
+  .banner-image {
+    max-height: 180px;
+  }
+  
+  .main-container {
+    flex-direction: column;
+  }
+  
+  #sidebar-container {
+    width: 100%;
+    height: 250px;
+    border-left: none;
+    border-top: 2px solid #e9ecef;
+    order: 2;
+  }
+  
+  #sidebar-container.sidebar-collapsed {
+    height: 0;
+    margin-bottom: -250px;
+    margin-right: 0;
+  }
+  
+  .calendar-container {
+    order: 1;
+  }
+  
+  #sidebar-header {
+    min-height: 60px;
+    padding: 15px;
+  }
+  
+  .sidebar-content {
+    height: calc(250px - 60px);
+  }
+  
+  .timeline-container {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 10px 0;
+  }
+  
+  .hour-slot {
+    flex-direction: column;
+    min-width: 120px;
+    min-height: auto;
+    border-right: 1px solid #e9ecef;
+    border-bottom: none;
+  }
+  
+  .hour-label {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #dee2e6;
+    padding: 8px;
+  }
+  
+  .hour-content {
+    padding: 8px;
+    min-height: 80px;
+  }
+  
+  .calendar-container {
+    padding: 0 15px 15px 15px; /* Remove top padding in mobile */
+  }
+}
+
+@media (max-width: 576px) {
+  .banner-container {
+    max-height: 140px; /* Smaller on mobile */
+  }
+  
+  .banner-image {
+    max-height: 140px;
+  }
+  
+  #sidebar-container {
+    height: 200px;
+  }
+  
+  #sidebar-container.sidebar-collapsed {
+    margin-bottom: -200px;
+  }
+  
+  .sidebar-content {
+    height: calc(200px - 60px);
+  }
+  
+  .sidebar-title {
+    font-size: 16px;
+  }
+  
+  .calendar-container {
+    padding: 0 10px 10px 10px; /* Remove top padding in small mobile */
+  }
+  
+  .timeline-event,
+  .timeline-birthday {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
+/* Animation for smooth transitions */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.timeline-event,
+.timeline-birthday {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Focus and accessibility improvements */
+.timeline-event:focus,
+.timeline-birthday:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* Selected day highlighting */
+.fc-day.selected-day {
+  background-color: rgba(0, 123, 255, 0.1) !important;
+  border: 2px solid #007bff !important;
+}
+
+/* Dragging state for events */
+.fc-event.dragging {
+  opacity: 0.7;
+  transform: scale(1.05);
+  z-index: 1000;
+}
+
+/* Loading state for timeline */
+.timeline-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.timeline-loading::before {
+  content: "⏳ ";
+  margin-right: 8px;
+}
+
+/* Enhanced calendar styles */
 #calendar {
-  max-width: 900px;
+  max-width: 100%;
   margin: 0 auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* FullCalendar customizations */
+.fc-toolbar {
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.fc-toolbar h2 {
+  color: white;
+  font-weight: 600;
+}
+
+.fc-button {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+  margin-left: 8px !important; /* Add separation between buttons */
+}
+
+.fc-button:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+.fc-button:focus {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5) !important;
+}
+
+.fc-today {
+  background-color: rgba(0, 123, 255, 0.1) !important;
+}
+
+.fc-day-number {
+  font-weight: 600;
+}
+
+/* Transition classes */
+.transitioning {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Print styles */
+@media print {
+  .main-container {
+    display: block;
+  }
+  
+  #sidebar-container {
+    display: none;
+  }
+  
+  .calendar-container {
+    padding: 0;
+  }
 }
 
 #title{
