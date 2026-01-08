@@ -244,11 +244,37 @@
   opacity: 0.8;
   margin-top: 2px;
   font-style: italic;
+  max-height: none;
+  overflow: visible;
+  word-wrap: break-word;
+}
+
+/* Eventos clickeables en sidebar */
+.clickable-sidebar-event {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clickable-sidebar-event:hover {
+  transform: translateX(-3px);
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.5);
+  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+}
+
+/* Cumpleaños clickeables en sidebar */
+.clickable-sidebar-birthday {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clickable-sidebar-birthday:hover {
+  transform: translateX(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+  filter: brightness(0.8);
 }
 
 /* Enhanced Birthday Items */
 .timeline-birthday {
-  background: linear-gradient(135deg, #fd7e14 0%, #e55a00 100%);
   color: white;
   padding: 8px 12px;
   margin: 3px 0;
@@ -258,18 +284,14 @@
   box-shadow: 0 2px 4px rgba(253, 126, 20, 0.3);
   transition: all 0.2s ease;
   cursor: pointer;
-  border-left: 4px solid #e55a00;
+  border-left: 4px solid;
+  /* Background y border-left-color se establecen dinámicamente via JavaScript */
 }
 
 .timeline-birthday:hover {
   transform: translateX(-2px);
-  box-shadow: 0 4px 8px rgba(253, 126, 20, 0.4);
-}
-
-.timeline-birthday::before {
-  content: "🎂 ";
-  font-size: 14px;
-  margin-right: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  filter: brightness(0.9);
 }
 
 /* Empty State for Timeline */

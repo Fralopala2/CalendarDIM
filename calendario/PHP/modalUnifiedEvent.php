@@ -59,7 +59,7 @@
                     <div class="form-group">
                         <label for="fecha_inicio" class="col-sm-12 control-label">Fecha Inicio</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="fecha_inicio" id="fecha_inicio" 
+                            <input type="date" class="form-control" name="fecha_inicio" id="fecha_inicio" 
                                    placeholder="Fecha Inicio" required>
                         </div>
                     </div>
@@ -67,7 +67,7 @@
                     <div class="form-group">
                         <label for="fecha_fin" class="col-sm-12 control-label">Fecha Final</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="fecha_fin" id="fecha_fin" 
+                            <input type="date" class="form-control" name="fecha_fin" id="fecha_fin" 
                                    placeholder="Fecha Final" required>
                         </div>
                     </div>
@@ -87,6 +87,29 @@
                         <label for="birthday_date" class="col-sm-12 control-label">Fecha de Cumpleaños</label>
                         <div class="col-sm-10">
                             <input type="date" class="form-control" name="birthday_date" id="birthday_date">
+                        </div>
+                    </div>
+                    
+                    <!-- Birthday Color Selection -->
+                    <div class="form-group">
+                        <label class="col-sm-12 control-label">Color del Cumpleaños</label>
+                        <div class="col-md-12">
+                            <div id="birthday-color-palette" class="color-palette">
+                                <input type="radio" name="birthday_color" id="birthday_color_1" value="#FF69B4" checked>
+                                <label for="birthday_color_1" class="color-option" style="background-color: #FF69B4;" title="Rosa"></label>
+
+                                <input type="radio" name="birthday_color" id="birthday_color_2" value="#9C27B0">
+                                <label for="birthday_color_2" class="color-option" style="background-color: #9C27B0;" title="Púrpura"></label>
+
+                                <input type="radio" name="birthday_color" id="birthday_color_3" value="#E91E63">
+                                <label for="birthday_color_3" class="color-option" style="background-color: #E91E63;" title="Rosa intenso"></label>
+
+                                <input type="radio" name="birthday_color" id="birthday_color_4" value="#673AB7">
+                                <label for="birthday_color_4" class="color-option" style="background-color: #673AB7;" title="Púrpura profundo"></label>
+
+                                <input type="radio" name="birthday_color" id="birthday_color_5" value="#3F51B5">
+                                <label for="birthday_color_5" class="color-option" style="background-color: #3F51B5;" title="Índigo"></label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -165,11 +188,8 @@ window.initializeUnifiedModal = function() {
     
     // Function to open modal in create mode
     window.openUnifiedModalForCreate = function() {
-        console.log('Opening modal for CREATE mode');
-        
         // Check if modal exists
         if ($('#unifiedEventModal').length === 0) {
-            console.error('ERROR: unifiedEventModal not found in DOM!');
             alert('Error: Modal no encontrado. Verifica que modalUnifiedEvent.php esté incluido.');
             return;
         }
@@ -196,14 +216,12 @@ window.initializeUnifiedModal = function() {
         $('#save-btn').text('Guardar').prop('disabled', false);
         $('#delete-btn').prop('disabled', true);
         
-        console.log('About to show modal...');
         // Show modal
         $('#unifiedEventModal').modal('show');
     };
     
     // Function to open modal in edit mode
     window.openUnifiedModalForEdit = function(eventData) {
-        console.log('Opening modal for EDIT mode', eventData);
         window.unifiedModalMode = 'edit';
         
         // Populate form fields with event data
@@ -211,8 +229,24 @@ window.initializeUnifiedModal = function() {
         $('#evento').val(eventData.title);
         $('#hora_inicio').val(eventData.time || '');
         $('#descripcion').val(eventData.description || '');
-        $('#fecha_inicio').val(eventData.start_date);
-        $('#fecha_fin').val(eventData.end_date);
+        
+        // Convert DD-MM-YYYY to YYYY-MM-DD for date inputs
+        if (eventData.start_date) {
+            var startParts = eventData.start_date.split('-');
+            if (startParts.length === 3) {
+                // startParts[0] = DD, startParts[1] = MM, startParts[2] = YYYY
+                var convertedStartDate = startParts[2] + '-' + startParts[1] + '-' + startParts[0];
+                $('#fecha_inicio').val(convertedStartDate);
+            }
+        }
+        if (eventData.end_date) {
+            var endParts = eventData.end_date.split('-');
+            if (endParts.length === 3) {
+                // endParts[0] = DD, endParts[1] = MM, endParts[2] = YYYY
+                var convertedEndDate = endParts[2] + '-' + endParts[1] + '-' + endParts[0];
+                $('#fecha_fin').val(convertedEndDate);
+            }
+        }
         
         // Set to event mode
         $('input[name="event_type"][value="event"]').prop('checked', true).trigger('change');
@@ -232,7 +266,6 @@ window.initializeUnifiedModal = function() {
     
     // Function to open modal in birthday edit mode
     window.openUnifiedModalForBirthdayEdit = function(birthdayData) {
-        console.log('Opening modal for BIRTHDAY EDIT mode', birthdayData);
         window.unifiedModalMode = 'edit';
         
         // Clear all form fields first
@@ -259,6 +292,14 @@ window.initializeUnifiedModal = function() {
             String(birthdayData.day).padStart(2, '0');
         $('#birthday_date').val(birthdayDateFormatted);
         
+        // Set birthday color if available
+        if (birthdayData.color) {
+            $('input[name="birthday_color"][value="' + birthdayData.color + '"]').prop('checked', true);
+        } else {
+            // Default to first birthday color
+            $('input[name="birthday_color"]:first').prop('checked', true);
+        }
+        
         // Update button states for edit mode
         $('#save-btn').text('Actualizar').prop('disabled', false);
         $('#delete-btn').prop('disabled', false);
@@ -272,7 +313,7 @@ window.initializeUnifiedModal = function() {
         if ($(this).val() === 'birthday') {
             $('#event-fields').hide();
             $('#birthday-fields').show();
-            $('#color-selection-group').hide(); // Hide color selection for birthdays
+            $('#color-selection-group').hide(); // Hide event color selection
             
             // Clear event field requirements
             $('#evento').removeAttr('required');
@@ -285,7 +326,7 @@ window.initializeUnifiedModal = function() {
         } else {
             $('#event-fields').show();
             $('#birthday-fields').hide();
-            $('#color-selection-group').show(); // Show color selection for events
+            $('#color-selection-group').show(); // Show event color selection
             
             // Add event field requirements
             $('#evento').attr('required', true);
@@ -303,22 +344,23 @@ window.initializeUnifiedModal = function() {
         e.preventDefault();
         
         var eventType = $('input[name="event_type"]:checked').val();
+        
+        // No need to convert dates - HTML5 date inputs already provide YYYY-MM-DD format
+        // which is what our backend expects after parsing
+        
         var formData = $(this).serialize();
         
         // Determine the target PHP file based on event type and mode
         var targetUrl;
         if (eventType === 'birthday') {
-            targetUrl = '../PHP/processBirthday.php';
+            targetUrl = 'PHP/processBirthday.php';
         } else {
             if (window.unifiedModalMode === 'edit') {
-                targetUrl = '../PHP/UpdateEvento.php';
+                targetUrl = 'PHP/UpdateEvento.php';
             } else {
-                targetUrl = '../PHP/nuevoEvento.php';
+                targetUrl = 'PHP/nuevoEvento.php';
             }
         }
-        
-        console.log('Submitting to:', targetUrl);
-        console.log('Form data:', formData);
         
         // Submit form via AJAX
         $.ajax({
@@ -326,14 +368,33 @@ window.initializeUnifiedModal = function() {
             method: 'POST',
             data: formData,
             success: function(response) {
-                console.log('Success response:', response);
                 // Close modal and refresh calendar
                 $('#unifiedEventModal').modal('hide');
                 location.reload(); // Refresh page to show changes
             },
             error: function(xhr, status, error) {
-                console.error('AJAX Error:', xhr.responseText);
-                alert('Error al procesar la solicitud: ' + error + '\nRespuesta: ' + xhr.responseText);
+                var errorMessage = 'Error al procesar la solicitud: ' + error;
+                
+                // Try to parse JSON error response for more details
+                try {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.error) {
+                        errorMessage = 'Error: ' + response.error;
+                        if (response.details && Object.keys(response.details).length > 0) {
+                            errorMessage += '\nDetalles:\n';
+                            for (var field in response.details) {
+                                errorMessage += '- ' + field + ': ' + response.details[field] + '\n';
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // If not JSON, use the raw response
+                    if (xhr.responseText) {
+                        errorMessage += '\nRespuesta: ' + xhr.responseText;
+                    }
+                }
+                
+                alert(errorMessage);
             }
         });
     });
@@ -355,20 +416,18 @@ window.initializeUnifiedModal = function() {
             
             // Determine delete URL based on event type
             var deleteUrl = eventType === 'birthday' ? 
-                '../PHP/deleteBirthday.php' : 
-                '../PHP/deleteEvento.php';
+                'PHP/deleteBirthday.php' : 
+                'PHP/deleteEvento.php';
             
             $.ajax({
                 url: deleteUrl,
                 method: 'POST',
                 data: { id: eventId },
                 success: function(response) {
-                    console.log('Delete success:', response);
                     $('#unifiedEventModal').modal('hide');
                     location.reload(); // Refresh page to show changes
                 },
                 error: function(xhr, status, error) {
-                    console.error('Delete error:', xhr.responseText);
                     alert('Error al eliminar: ' + error);
                 }
             });

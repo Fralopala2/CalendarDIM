@@ -1,18 +1,18 @@
 <?php
-include('../PHP/config.php');
+include('PHP/config.php');
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
 	<title>Calendario - Versión Final</title>
-	<link rel="stylesheet" type="text/css" href="../css/fullcalendar.min.css">
-	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="../css/home.css">
+	<link rel="stylesheet" type="text/css" href="css/fullcalendar.min.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/home.css">
 </head>
 <body>
 <div class="banner-container">
-    <img src="../IMAGES/ImagenAgenda.svg" alt="Calendar Banner" class="banner-image">
+    <img src="IMAGES/ImagenAgenda.svg" alt="Calendar Banner" class="banner-image">
 </div>
 
 <div class="main-container">
@@ -39,13 +39,13 @@ include('../PHP/config.php');
     </div>
 </div>
 
-<script src="../js/jquery-3.0.0.min.js"></script>
-<script src="../js/bootstrap.min.js"></script>
-<script src="../js/moment.min.js"></script>
-<script src="../js/fullcalendar.min.js"></script>
-<script src="../locales/es.js"></script>
+<script src="js/jquery-3.0.0.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/moment.min.js"></script>
+<script src="js/fullcalendar.min.js"></script>
+<script src="locales/es.js"></script>
 
-<?php include('../PHP/modalUnifiedEvent.php'); ?>
+<?php include('PHP/modalUnifiedEvent.php'); ?>
 
 <script>
 $(document).ready(function() {
@@ -95,7 +95,7 @@ $(document).ready(function() {
                 
                 // Obtener eventos del dia via AJAX
                 $.ajax({
-                    url: '../PHP/getEventsForDay.php',
+                    url: 'PHP/getEventsForDay.php',
                     method: 'GET',
                     data: { date: selectedDate },
                     dataType: 'json',
@@ -135,7 +135,7 @@ $(document).ready(function() {
                                 
                                 // Obtener detalles completos del evento
                                 $.ajax({
-                                    url: '../PHP/getEventDetails.php',
+                                    url: 'PHP/getEventDetails.php',
                                     method: 'GET',
                                     data: { id: eventId },
                                     dataType: 'json',
@@ -283,7 +283,7 @@ $(document).ready(function() {
                 var eventId = event._id.replace('event_', '');
                 
                 $.ajax({
-                    url: '../PHP/getEventDetails.php',
+                    url: 'PHP/getEventDetails.php',
                     method: 'GET',
                     data: { id: eventId },
                     dataType: 'json',
@@ -315,7 +315,7 @@ $(document).ready(function() {
             var end = event.end ? event.end.format('DD-MM-YYYY') : event.start.format('DD-MM-YYYY');
             
             $.ajax({
-                url: '../PHP/drag_drop_evento.php',
+                url: 'PHP/drag_drop_evento.php',
                 data: 'start=' + start + '&end=' + end + '&idEvento=' + idEvento,
                 type: "POST",
                 success: function (response) {

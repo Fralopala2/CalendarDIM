@@ -15,6 +15,7 @@ if (!isset($_POST['birthday_name']) || !isset($_POST['birthday_date'])) {
 
 $birthday_name = trim($_POST['birthday_name']);
 $birthday_date = $_POST['birthday_date'];
+$birthday_color = isset($_POST['birthday_color']) ? $_POST['birthday_color'] : '#FF69B4';
 
 // Validate birthday name
 if (empty($birthday_name)) {
@@ -45,14 +46,14 @@ try {
     
     if ($birthday_id) {
         // Update existing birthday
-        $sql = "UPDATE cumpleañoscalendar SET nombre = ?, dia_nacimiento = ?, mes_nacimiento = ? WHERE id = ?";
+        $sql = "UPDATE cumpleañoscalendar SET nombre = ?, dia_nacimiento = ?, mes_nacimiento = ?, color_cumpleanos = ? WHERE id = ?";
         $stmt = mysqli_prepare($con, $sql);
         
         if (!$stmt) {
             throw new Exception("Database prepare failed: " . mysqli_error($con));
         }
         
-        mysqli_stmt_bind_param($stmt, "siii", $birthday_name, $dia_nacimiento, $mes_nacimiento, $birthday_id);
+        mysqli_stmt_bind_param($stmt, "siisi", $birthday_name, $dia_nacimiento, $mes_nacimiento, $birthday_color, $birthday_id);
         
         if (!mysqli_stmt_execute($stmt)) {
             throw new Exception("Database execute failed: " . mysqli_stmt_error($stmt));
@@ -64,14 +65,14 @@ try {
         
     } else {
         // Create new birthday
-        $sql = "INSERT INTO cumpleañoscalendar (nombre, dia_nacimiento, mes_nacimiento) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO cumpleañoscalendar (nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos) VALUES (?, ?, ?, ?)";
         $stmt = mysqli_prepare($con, $sql);
         
         if (!$stmt) {
             throw new Exception("Database prepare failed: " . mysqli_error($con));
         }
         
-        mysqli_stmt_bind_param($stmt, "sii", $birthday_name, $dia_nacimiento, $mes_nacimiento);
+        mysqli_stmt_bind_param($stmt, "siis", $birthday_name, $dia_nacimiento, $mes_nacimiento, $birthday_color);
         
         if (!mysqli_stmt_execute($stmt)) {
             throw new Exception("Database execute failed: " . mysqli_stmt_error($stmt));

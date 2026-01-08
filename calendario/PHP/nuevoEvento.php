@@ -31,12 +31,16 @@ $eventData = [
 $result = $eventManager->saveEvent($eventData);
 
 if ($result['success']) {
-    // Success - redirect to main page
-    header("Location:index.php?e=1");
+    // Success - return JSON response for AJAX
+    echo json_encode(['success' => true, 'message' => 'Evento creado correctamente']);
 } else {
-    // Error - redirect with error parameter
-    error_log("Event creation failed: " . $result['error']);
-    header("Location:index.php?error=1");
+    // Error - return JSON error for AJAX with details
+    http_response_code(400);
+    $response = ['success' => false, 'error' => $result['error']];
+    if (isset($result['details']) && !empty($result['details'])) {
+        $response['details'] = $result['details'];
+    }
+    echo json_encode($response);
 }
 
 exit;

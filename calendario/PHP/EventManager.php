@@ -33,12 +33,11 @@ class EventManager {
             
             // Prepare data
             $evento = ucwords(trim($data['evento']));
-            $fecha_inicio = date('Y-m-d', strtotime($data['fecha_inicio']));
+            $fecha_inicio = $this->parseDate($data['fecha_inicio']);
             
             // Handle end date - add 1 day as per original logic
-            $f_fin = $data['fecha_fin'];
-            $seteando_f_final = date('Y-m-d', strtotime($f_fin));
-            $fecha_fin1 = strtotime($seteando_f_final . "+ 1 days");
+            $fecha_fin_parsed = $this->parseDate($data['fecha_fin']);
+            $fecha_fin1 = strtotime($fecha_fin_parsed . "+ 1 days");
             $fecha_fin = date('Y-m-d', $fecha_fin1);
             
             $color_evento = $data['color_evento'];
@@ -329,20 +328,26 @@ class EventManager {
             $errors['evento'] = 'Event title must be 250 characters or less';
         }
         
-        // Start date validation
+        // Start date validation with DD-MM-YYYY format support
         if (empty($data['fecha_inicio'])) {
             $errors['fecha_inicio'] = 'Start date is required';
-        } elseif (!strtotime($data['fecha_inicio'])) {
-            $errors['fecha_inicio'] = 'Invalid start date format';
+        } else {
+            $parsedStartDate = $this->parseDate($data['fecha_inicio']);
+            if (!$parsedStartDate) {
+                $errors['fecha_inicio'] = 'Invalid start date format';
+            }
         }
         
-        // End date validation
+        // End date validation with DD-MM-YYYY format support
         if (empty($data['fecha_fin'])) {
             $errors['fecha_fin'] = 'End date is required';
-        } elseif (!strtotime($data['fecha_fin'])) {
-            $errors['fecha_fin'] = 'Invalid end date format';
-        } elseif (strtotime($data['fecha_inicio']) > strtotime($data['fecha_fin'])) {
-            $errors['fecha_fin'] = 'End date must be after start date';
+        } else {
+            $parsedEndDate = $this->parseDate($data['fecha_fin']);
+            if (!$parsedEndDate) {
+                $errors['fecha_fin'] = 'Invalid end date format';
+            } elseif (isset($parsedStartDate) && $parsedStartDate && strtotime($parsedStartDate) > strtotime($parsedEndDate)) {
+                $errors['fecha_fin'] = 'End date must be after start date';
+            }
         }
         
         // Color validation
@@ -363,6 +368,39 @@ class EventManager {
         }
         
         return $errors;
+    }
+    
+    /**
+     * Parse date from DD-MM-YYYY or YYYY-MM-DD format to YYYY-MM-DD
+     */
+    private function parseDate($dateString) {
+        if (empty($dateString)) {
+            return false;
+        }
+        
+        // Check if it's already YYYY-MM-DD format (from HTML5 date inputs)
+        if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $dateString, $matches)) {
+            $year = $matches[1];
+            $month = str_pad($matches[2], 2, '0', STR_PAD_LEFT);
+            $day = str_pad($matches[3], 2, '0', STR_PAD_LEFT);
+            return $year . '-' . $month . '-' . $day;
+        }
+        
+        // Check if it's DD-MM-YYYY format (legacy)
+        if (preg_match('/^(\d{1,2})-(\d{1,2})-(\d{4})$/', $dateString, $matches)) {
+            $day = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
+            $month = str_pad($matches[2], 2, '0', STR_PAD_LEFT);
+            $year = $matches[3];
+            return $year . '-' . $month . '-' . $day;
+        }
+        
+        // Try to parse with strtotime as fallback
+        $timestamp = strtotime($dateString);
+        if ($timestamp !== false) {
+            return date('Y-m-d', $timestamp);
+        }
+        
+        return false;
     }
 }
 ?>
