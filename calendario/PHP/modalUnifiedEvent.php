@@ -96,6 +96,7 @@
                     <label class="col-sm-12 control-label">Color del Evento</label>
                     <div class="col-md-12">
                         <div id="color-palette" class="color-palette">
+                            <!-- Primera fila de colores -->
                             <input type="radio" name="color_evento" id="color_1" value="#FF5722" checked>
                             <label for="color_1" class="color-option" style="background-color: #FF5722;" title="Naranja"></label>
 
@@ -111,6 +112,7 @@
                             <input type="radio" name="color_evento" id="color_5" value="#2196F3">
                             <label for="color_5" class="color-option" style="background-color: #2196F3;" title="Azul"></label>
 
+                            <!-- Segunda fila de colores -->
                             <input type="radio" name="color_evento" id="color_6" value="#9c27b0">
                             <label for="color_6" class="color-option" style="background-color: #9c27b0;" title="Morado"></label>
 
@@ -126,11 +128,21 @@
                             <input type="radio" name="color_evento" id="color_10" value="#FF9800">
                             <label for="color_10" class="color-option" style="background-color: #FF9800;" title="Naranja oscuro"></label>
 
+                            <!-- Tercera fila de colores -->
                             <input type="radio" name="color_evento" id="color_11" value="#4CAF50">
                             <label for="color_11" class="color-option" style="background-color: #4CAF50;" title="Verde"></label>
 
                             <input type="radio" name="color_evento" id="color_12" value="#F44336">
                             <label for="color_12" class="color-option" style="background-color: #F44336;" title="Rojo"></label>
+
+                            <input type="radio" name="color_evento" id="color_13" value="#673AB7">
+                            <label for="color_13" class="color-option" style="background-color: #673AB7;" title="Púrpura profundo"></label>
+
+                            <input type="radio" name="color_evento" id="color_14" value="#3F51B5">
+                            <label for="color_14" class="color-option" style="background-color: #3F51B5;" title="Índigo"></label>
+
+                            <input type="radio" name="color_evento" id="color_15" value="#37474F">
+                            <label for="color_15" class="color-option" style="background-color: #37474F;" title="Gris oscuro"></label>
                         </div>
                     </div>
                 </div>
@@ -376,14 +388,16 @@ window.initializeUnifiedModal = function() {
 
 /* Paleta de colores mejorada */
 .color-palette {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    justify-items: center;
+    padding: 15px;
     background-color: #f8f9fa;
     border-radius: 8px;
     border: 1px solid #dee2e6;
+    max-width: 280px;
+    margin: 0 auto;
 }
 
 .color-palette input[type="radio"] {
@@ -391,25 +405,26 @@ window.initializeUnifiedModal = function() {
 }
 
 .color-option {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     cursor: pointer;
     border: 3px solid transparent;
     transition: all 0.2s ease;
     display: inline-block;
     position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .color-option:hover {
     transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .color-palette input[type="radio"]:checked + .color-option {
     border-color: #333;
     transform: scale(1.15);
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #333;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #333, 0 4px 12px rgba(0,0,0,0.3);
 }
 
 /* Responsive design para el modal */
@@ -420,12 +435,15 @@ window.initializeUnifiedModal = function() {
     }
     
     .color-palette {
-        gap: 6px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        padding: 12px;
+        max-width: 240px;
     }
     
     .color-option {
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
     }
     
     .modal-header .modal-title {
@@ -443,14 +461,16 @@ window.initializeUnifiedModal = function() {
 }
 
 @media (max-width: 480px) {
-    .color-option {
-        width: 24px;
-        height: 24px;
+    .color-palette {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding: 10px;
+        max-width: 180px;
     }
     
-    .color-palette {
-        gap: 4px;
-        padding: 8px;
+    .color-option {
+        width: 28px;
+        height: 28px;
     }
     
     .modal-footer {

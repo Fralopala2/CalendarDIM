@@ -191,8 +191,8 @@ $(document).ready(function() {
             start_date: currentDate.format('DD-MM-YYYY'),
             end_date: currentDate.format('DD-MM-YYYY'),
             color: event.color,
-            time: event.time,
-            description: event.description
+            time: event.time || '',
+            description: event.description || ''
           };
           
           // Use the new unified modal function for edit mode
@@ -368,14 +368,26 @@ $(document).ready(function() {
     events: [
       <?php
        // Load regular events
-       while($dataEvento = mysqli_fetch_array($resulEventos)){ ?>
+       while($dataEvento = mysqli_fetch_array($resulEventos)){ 
+         // Format title to include time if available
+         $eventTitle = $dataEvento['evento'];
+         if (!empty($dataEvento['hora_inicio'])) {
+           $timeFormatted = date('H:i', strtotime($dataEvento['hora_inicio']));
+           $eventTitle = $timeFormatted . ' - ' . $eventTitle;
+         }
+       ?>
           {
           _id: 'event_<?php echo $dataEvento['id']; ?>',
-          title: '<?php echo addslashes($dataEvento['evento']); ?>',
+          title: '<?php echo addslashes($eventTitle); ?>',
           start: '<?php echo $dataEvento['fecha_inicio']; ?>',
           end:   '<?php echo $dataEvento['fecha_fin']; ?>',
           color: '<?php echo $dataEvento['color_evento']; ?>',
-          type: 'event'
+          type: 'event',
+          extendedProps: {
+            originalTitle: '<?php echo addslashes($dataEvento['evento']); ?>',
+            time: '<?php echo $dataEvento['hora_inicio'] ? date('H:i', strtotime($dataEvento['hora_inicio'])) : ''; ?>',
+            description: '<?php echo addslashes($dataEvento['descripcion'] ?? ''); ?>'
+          }
           },
         <?php } ?>
         
@@ -478,20 +490,41 @@ $(document).ready(function() {
         return false; // Prevent further event handling
       }
       
-      // Handle regular event click
+      // Handle regular event click - get full event data from server
       var eventId = event._id.replace('event_', ''); // Remove 'event_' prefix
-      var eventData = {
-        id: eventId,
-        title: event.title,
-        start_date: event.start.format('DD-MM-YYYY'),
-        end_date: event.end ? event.end.format('DD-MM-YYYY') : event.start.format('DD-MM-YYYY'),
-        color: event.color
-      };
       
-      console.log('Opening edit modal for event:', eventData);
-      
-      // Use the new unified modal function for edit mode
-      window.openUnifiedModalForEdit(eventData);
+      // Make AJAX request to get complete event data
+      $.ajax({
+        url: '../PHP/getEventDetails.php',
+        method: 'GET',
+        data: { id: eventId },
+        dataType: 'json',
+        success: function(response) {
+          if (response.success && response.event) {
+            var eventData = {
+              id: response.event.id,
+              title: response.event.evento,
+              start_date: moment(response.event.fecha_inicio).format('DD-MM-YYYY'),
+              end_date: moment(response.event.fecha_fin).subtract(1, 'day').format('DD-MM-YYYY'), // Subtract 1 day to match original logic
+              color: response.event.color_evento,
+              time: response.event.hora_inicio ? response.event.hora_inicio.substring(0, 5) : '', // Convert HH:MM:SS to HH:MM
+              description: response.event.descripcion || ''
+            };
+            
+            console.log('Opening edit modal with complete event data:', eventData);
+            
+            // Use the new unified modal function for edit mode
+            window.openUnifiedModalForEdit(eventData);
+          } else {
+            console.error('Failed to load event details:', response.error);
+            alert('Error al cargar los detalles del evento');
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('AJAX Error loading event details:', error);
+          alert('Error de conexión al cargar el evento');
+        }
+      });
 
       // Update sidebar to show the event's date
       updateSidebarDate(event.start);
