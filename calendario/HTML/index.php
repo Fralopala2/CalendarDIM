@@ -54,10 +54,6 @@ include('../PHP/config.php');
         </div>
     </div>
 </div>
-<?php  
-  include('../PHP/modalNuevoEvento.php');
-  include('../PHP/modalUpdateEvento.php');
-?>
 
 <script src ="../js/jquery-3.0.0.min.js"> </script>
 <script src="../js/popper.min.js"></script>
@@ -65,6 +61,11 @@ include('../PHP/config.php');
 <script type="text/javascript" src="../js/moment.min.js"></script>	
 <script type="text/javascript" src="../js/fullcalendar.min.js"></script>
 <script src='../locales/es.js'></script>
+
+<?php  
+  include('../PHP/modalUnifiedEvent.php');
+?>
+
 <script type="text/javascript">
 $(document).ready(function() {
   console.log('Document ready - checking sidebar...');
@@ -75,6 +76,15 @@ $(document).ready(function() {
   console.log('Sidebar classes:', $sidebar.attr('class'));
   console.log('Sidebar computed style display:', window.getComputedStyle($sidebar[0]).display);
   console.log('Sidebar computed style width:', window.getComputedStyle($sidebar[0]).width);
+
+  // DEFINE MODAL FUNCTIONS FIRST - BEFORE FULLCALENDAR INITIALIZATION
+  // Initialize the unified modal
+  if (typeof window.initializeUnifiedModal === 'function') {
+    window.initializeUnifiedModal();
+    console.log('Unified modal initialized');
+  } else {
+    console.error('initializeUnifiedModal function not found');
+  }
 
   // Enhanced sidebar date display with better formatting
   function updateSidebarDate(date, formattedDate) {
@@ -113,7 +123,7 @@ $(document).ready(function() {
     
     // Make AJAX request to get sidebar content
     $.ajax({
-      url: '../PHP/getSidebarContent_simple.php',
+      url: '../PHP/getSidebarContent.php',
       method: 'GET',
       data: { date: dateString },
       dataType: 'json',
@@ -127,6 +137,7 @@ $(document).ready(function() {
       },
       error: function(xhr, status, error) {
         console.error('AJAX Error:', error);
+        console.error('Response:', xhr.responseText);
         showTimelineError('Error de conexión. Inténtalo de nuevo.');
       }
     });
@@ -173,13 +184,19 @@ $(document).ready(function() {
           var datePart = currentDateText.split(' - ')[1] || currentDateText;
           var currentDate = moment(datePart, 'DD/MM/YYYY');
           
-          // Populate modal with event data
-          $('input[name=idEvento]').val(event.id);
-          $('input[name=evento]').val(event.title);
-          $('input[name=fecha_inicio]').val(currentDate.format('DD-MM-YYYY'));
-          $('input[name=fecha_fin]').val(currentDate.format('DD-MM-YYYY'));
+          // Prepare event data for edit mode
+          var eventData = {
+            id: event.id,
+            title: event.title,
+            start_date: currentDate.format('DD-MM-YYYY'),
+            end_date: currentDate.format('DD-MM-YYYY'),
+            color: event.color,
+            time: event.time,
+            description: event.description
+          };
           
-          $("#modalUpdateEvento").modal();
+          // Use the new unified modal function for edit mode
+          window.openUnifiedModalForEdit(eventData);
         });
         
         $hourContent.append($eventElement);
@@ -272,7 +289,8 @@ $(document).ready(function() {
     editable: true,
     eventLimit: true, 
     selectable: true,
-    selectHelper: false,
+    selectHelper: false, // Disable select helper to avoid conflicts
+    unselectAuto: true, // Auto-unselect when clicking elsewhere
     height: 'auto', // Better responsive behavior
     contentHeight: 'auto',
     fixedWeekCount: false, // Show only 5 weeks instead of 6
@@ -297,23 +315,34 @@ $(document).ready(function() {
       }
     },
 
-    // Enhanced select functionality
-    select: function(start, end){
-      $("#exampleModal").modal();
-      $("input[name=fecha_inicio]").val(start.format('DD-MM-YYYY'));
-       
-      var valorFechaFin = end.format("DD-MM-YYYY");
-      var F_final = moment(valorFechaFin, "DD-MM-YYYY").subtract(1, 'days').format('DD-MM-YYYY');
-      $('input[name=fecha_fin').val(F_final);
+    // Enhanced select functionality - only for empty areas
+    select: function(start, end, jsEvent, view){
+      console.log('Select triggered - creating new event');
+      
+      // Use the new unified modal function for create mode
+      window.openUnifiedModalForCreate();
+      
+      // Set the dates after modal opens
+      setTimeout(function() {
+        $("#fecha_inicio").val(start.format('DD-MM-YYYY'));
+         
+        var valorFechaFin = end.format("DD-MM-YYYY");
+        var F_final = moment(valorFechaFin, "DD-MM-YYYY").subtract(1, 'days').format('DD-MM-YYYY');
+        $('#fecha_fin').val(F_final);
+        
+        console.log('Dates set - start:', start.format('DD-MM-YYYY'), 'end:', F_final);
+      }, 100);
       
       // Update sidebar for selected date with animation
       updateSidebarDate(start);
       loadTimelineEvents(start);
     },
 
-    // Enhanced day click handler for sidebar update
+    // Enhanced day click handler for sidebar update (but not modal opening)
     dayClick: function(date, jsEvent, view) {
-      // Add visual feedback to clicked day
+      console.log('Day click - updating sidebar only');
+      
+      // Only update sidebar, don't open modal (modal is handled by select)
       $('.fc-day').removeClass('selected-day');
       $(jsEvent.target).closest('.fc-day').addClass('selected-day');
       
@@ -338,22 +367,51 @@ $(document).ready(function() {
       
     events: [
       <?php
+       // Load regular events
        while($dataEvento = mysqli_fetch_array($resulEventos)){ ?>
           {
-          _id: '<?php echo $dataEvento['id']; ?>',
-          title: '<?php echo $dataEvento['evento']; ?>',
+          _id: 'event_<?php echo $dataEvento['id']; ?>',
+          title: '<?php echo addslashes($dataEvento['evento']); ?>',
           start: '<?php echo $dataEvento['fecha_inicio']; ?>',
           end:   '<?php echo $dataEvento['fecha_fin']; ?>',
-          color: '<?php echo $dataEvento['color_evento']; ?>'
+          color: '<?php echo $dataEvento['color_evento']; ?>',
+          type: 'event'
+          },
+        <?php } ?>
+        
+        <?php
+        // Load birthdays for current year
+        while($dataBirthday = mysqli_fetch_array($resulBirthdays)){ 
+          $birthdayDate = $currentYear . '-' . sprintf('%02d', $dataBirthday['mes_nacimiento']) . '-' . sprintf('%02d', $dataBirthday['dia_nacimiento']);
+        ?>
+          {
+          _id: 'birthday_<?php echo $dataBirthday['id']; ?>',
+          title: '🎂 <?php echo addslashes($dataBirthday['nombre']); ?>',
+          start: '<?php echo $birthdayDate; ?>',
+          end: '<?php echo $birthdayDate; ?>',
+          color: '#FF69B4',
+          type: 'birthday',
+          allDay: true
           },
         <?php } ?>
     ],
 
-    // Event rendering with enhanced display
+    // Event rendering with enhanced display and click handling
     eventRender: function(event, element) {
-      // X icon functionality removed - deletion will be handled in modal
-      // Add enhanced tooltip or click behavior here if needed
-      element.attr('title', event.title);
+      // Enhanced tooltip and click behavior
+      if (event.type === 'birthday') {
+        element.attr('title', 'Cumpleaños: ' + event.title.replace('🎂 ', ''));
+        element.css('cursor', 'pointer');
+      } else {
+        element.attr('title', 'Evento: ' + event.title + ' (Haz clic para editar)');
+        element.css('cursor', 'pointer');
+      }
+      
+      // Add a class to make events more clickable
+      element.addClass('clickable-event');
+      
+      // Ensure event has proper z-index to be clickable
+      element.css('z-index', '999');
     },
 
     // Enhanced drag and drop with better feedback
@@ -385,19 +443,61 @@ $(document).ready(function() {
       });
     },
 
-    // Enhanced event click with sidebar integration
-    eventClick: function(event){
-      var idEvento = event._id;
-      $('input[name=idEvento').val(idEvento);
-      $('input[name=evento').val(event.title);
-      $('input[name=fecha_inicio').val(event.start.format('DD-MM-YYYY'));
-      $('input[name=fecha_fin').val(event.end.format("DD-MM-YYYY"));
+    // Enhanced event click with sidebar integration - PRIORITY OVER SELECT
+    eventClick: function(event, jsEvent, view){
+      console.log('Event clicked:', event);
+      
+      // Prevent event bubbling to avoid triggering select
+      jsEvent.stopPropagation();
+      jsEvent.preventDefault();
+      
+      // Check if it's a birthday or regular event
+      if (event.type === 'birthday') {
+        // Handle birthday click - open modal for editing
+        var birthdayId = event._id.replace('birthday_', ''); // Remove 'birthday_' prefix
+        var birthdayName = event.title.replace('🎂 ', ''); // Remove cake emoji
+        
+        // Extract day and month from the event date
+        var birthdayDate = moment(event.start);
+        var day = birthdayDate.date();
+        var month = birthdayDate.month() + 1; // moment months are 0-based
+        
+        var birthdayData = {
+          id: birthdayId,
+          name: birthdayName,
+          day: day,
+          month: month,
+          date: birthdayDate.format('YYYY-MM-DD')
+        };
+        
+        console.log('Opening edit modal for birthday:', birthdayData);
+        
+        // Use the new unified modal function for birthday edit mode
+        window.openUnifiedModalForBirthdayEdit(birthdayData);
+        
+        return false; // Prevent further event handling
+      }
+      
+      // Handle regular event click
+      var eventId = event._id.replace('event_', ''); // Remove 'event_' prefix
+      var eventData = {
+        id: eventId,
+        title: event.title,
+        start_date: event.start.format('DD-MM-YYYY'),
+        end_date: event.end ? event.end.format('DD-MM-YYYY') : event.start.format('DD-MM-YYYY'),
+        color: event.color
+      };
+      
+      console.log('Opening edit modal for event:', eventData);
+      
+      // Use the new unified modal function for edit mode
+      window.openUnifiedModalForEdit(eventData);
 
       // Update sidebar to show the event's date
       updateSidebarDate(event.start);
       loadTimelineEvents(event.start);
-
-      $("#modalUpdateEvento").modal();
+      
+      return false; // Prevent further event handling
     }
   });
 
@@ -482,5 +582,45 @@ $(document).ready(function() {
   }, 3000); // Wait 3 seconds for everything to load completely
 });
 </script>
+
+<style>
+/* Estilos adicionales para mejorar la interacción con eventos */
+.clickable-event {
+  cursor: pointer !important;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.clickable-event:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+  z-index: 1000 !important;
+}
+
+.fc-event {
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  font-weight: 500;
+}
+
+.fc-event:hover {
+  opacity: 0.9;
+}
+
+/* Mejorar la selección de días */
+.selected-day {
+  background-color: rgba(0, 123, 255, 0.1) !important;
+}
+
+/* Asegurar que los eventos sean clickeables en móvil */
+@media (max-width: 768px) {
+  .fc-event {
+    min-height: 20px;
+    padding: 2px 4px;
+  }
+  
+  .clickable-event {
+    touch-action: manipulation;
+  }
+}
+</style>
 </body>
 </html>

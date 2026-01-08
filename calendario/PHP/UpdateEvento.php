@@ -19,7 +19,7 @@ $eventManager = new EventManager($con);
 
 // Collect form data including ID for update operation
 $eventData = [
-    'id' => $_POST['idEvento'], // ID indicates this is an update
+    'id' => $_POST['event_id'], // ID indicates this is an update (changed from idEvento to event_id)
     'evento' => $_REQUEST['evento'],
     'fecha_inicio' => $_REQUEST['fecha_inicio'],
     'fecha_fin' => $_REQUEST['fecha_fin'],

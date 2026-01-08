@@ -57,15 +57,29 @@ try {
         
         // Add events for this hour
         foreach ($events as $event) {
-            $eventHour = (int)explode(':', $event['hora_inicio'])[0];
-            if ($eventHour === $hour) {
-                $hourSlot['events'][] = [
-                    'id' => $event['id'],
-                    'title' => $event['evento'],
-                    'time' => substr($event['hora_inicio'], 0, 5), // HH:MM format
-                    'description' => $event['descripcion'] ?? '',
-                    'color' => $event['color_evento'] ?? '#007bff'
-                ];
+            $hora_inicio = $event['hora_inicio'] ?? '00:00:00';
+            if ($hora_inicio) {
+                $eventHour = (int)explode(':', $hora_inicio)[0];
+                if ($eventHour === $hour) {
+                    $hourSlot['events'][] = [
+                        'id' => $event['id'],
+                        'title' => $event['evento'],
+                        'time' => substr($hora_inicio, 0, 5), // HH:MM format
+                        'description' => $event['descripcion'] ?? '',
+                        'color' => $event['color_evento'] ?? '#007bff'
+                    ];
+                }
+            } else {
+                // If no time specified, show at hour 0
+                if ($hour === 0) {
+                    $hourSlot['events'][] = [
+                        'id' => $event['id'],
+                        'title' => $event['evento'],
+                        'time' => '00:00',
+                        'description' => $event['descripcion'] ?? '',
+                        'color' => $event['color_evento'] ?? '#007bff'
+                    ];
+                }
             }
         }
         
