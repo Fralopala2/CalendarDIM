@@ -5,10 +5,19 @@ include('PHP/config.php');
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Expires" content="0">
 	<title>Calendario - Versión Final</title>
 	<link rel="stylesheet" type="text/css" href="css/fullcalendar.min.css">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/home.css">
+    <!-- CSS para Desktop (pantallas grandes) -->
+    <link rel="stylesheet" type="text/css" href="css/home.css?v=<?php echo time(); ?>" media="(min-width: 1025px)">
+    <!-- CSS para Tablets (pantallas medianas) -->
+    <link rel="stylesheet" type="text/css" href="css/home-tablet.css?v=<?php echo time(); ?>" media="(min-width: 769px) and (max-width: 1024px)">
+    <!-- CSS para Móvil (pantallas pequeñas) -->
+    <link rel="stylesheet" type="text/css" href="css/home-mobile.css?v=<?php echo time(); ?>" media="(max-width: 768px)">>
 </head>
 <body>
 <div class="banner-container">
@@ -23,6 +32,7 @@ include('PHP/config.php');
     <div id="sidebar-container" class="sidebar-expanded">
         <div id="sidebar-header">
             <h3 id="selected-date" class="sidebar-title">Hoy</h3>
+            <span class="sidebar-toggle-indicator">▼</span>
         </div>
         <div id="sidebar-content" class="sidebar-content">
             <div id="timeline-container" class="timeline-container">
@@ -49,10 +59,24 @@ include('PHP/config.php');
 
 <script>
 $(document).ready(function() {
-    // Initialize modal
+    // Debug: Verificar que estamos en móvil
+    var isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    console.log('Dispositivo móvil detectado:', isMobileDevice);
+    console.log('Ancho de ventana:', window.innerWidth);
+    
+    // Initialize modal con verificación
     if (typeof window.initializeUnifiedModal === 'function') {
         window.initializeUnifiedModal();
+        console.log('Modal inicializado correctamente');
+    } else {
+        console.error('Función initializeUnifiedModal no encontrada');
     }
+    
+    // Verificar que las funciones del modal existen después de la inicialización
+    setTimeout(function() {
+        console.log('openUnifiedModalForCreate existe:', typeof window.openUnifiedModalForCreate === 'function');
+        console.log('openUnifiedModalForEdit existe:', typeof window.openUnifiedModalForEdit === 'function');
+    }, 500);
     
     $("#calendar").fullCalendar({
         header: {
@@ -107,14 +131,15 @@ $(document).ready(function() {
                                 if (event.type === 'birthday') {
                                     // Cumpleaños van en la hora 00:00 con color personalizado
                                     var birthdayColor = event.color_evento || '#FF69B4';
-                                    eventHtml = '<div class="timeline-birthday clickable-sidebar-birthday" data-birthday-id="' + event.id + '" style="background: linear-gradient(135deg, ' + birthdayColor + ' 0%, ' + birthdayColor + 'CC 100%); border-left-color: ' + birthdayColor + ';">' +
+                                    eventHtml = '<div class="timeline-birthday clickable-sidebar-birthday" data-birthday-id="' + event.id + '" style="background: linear-gradient(135deg, ' + birthdayColor + ' 0%, ' + birthdayColor + 'CC 100%); border-left: 4px solid ' + birthdayColor + ';">' +
                                               '<div class="event-title">' + event.evento + '</div>' +
                                               '</div>';
                                     $('.hour-slot[data-hour="0"] .hour-content').append(eventHtml);
                                 } else if (event.hora_inicio) {
-                                    // Eventos regulares
+                                    // Eventos regulares con color personalizado
                                     var hour = parseInt(event.hora_inicio.split(':')[0]);
-                                    eventHtml = '<div class="timeline-event clickable-sidebar-event" data-event-id="' + event.id + '">' +
+                                    var eventColor = event.color_evento || '#007bff';
+                                    eventHtml = '<div class="timeline-event clickable-sidebar-event" data-event-id="' + event.id + '" style="background: linear-gradient(135deg, ' + eventColor + ' 0%, ' + eventColor + 'CC 100%); border-left: 4px solid ' + eventColor + ';">' +
                                               '<div class="event-time">' + event.hora_inicio.substring(0,5) + '</div>' +
                                               '<div class="event-title">' + event.evento + '</div>';
                                     
@@ -199,19 +224,28 @@ $(document).ready(function() {
         },
         
         select: function(start, end, jsEvent, view){
+            // Mejorar detección para móvil - incluir eventos touch
+            var target = jsEvent.target || jsEvent.srcElement;
+            
             // Solo crear evento si NO es click en numero de dia
-            if (jsEvent.target.classList.contains('fc-day-number') || 
-                jsEvent.target.classList.contains('fc-day-top')) {
+            if (target && (target.classList.contains('fc-day-number') || 
+                target.classList.contains('fc-day-top'))) {
                 return false; // No crear evento si es click en numero
             }
             
-            window.openUnifiedModalForCreate();
-            setTimeout(function() {
-                // Convert to YYYY-MM-DD format for date inputs
-                $("#fecha_inicio").val(start.format('YYYY-MM-DD'));
-                var endDate = moment(end).subtract(1, 'days');
-                $('#fecha_fin').val(endDate.format('YYYY-MM-DD'));
-            }, 100);
+            // Verificar que la función existe antes de llamarla
+            if (typeof window.openUnifiedModalForCreate === 'function') {
+                window.openUnifiedModalForCreate();
+                setTimeout(function() {
+                    // Convert to YYYY-MM-DD format for date inputs
+                    $("#fecha_inicio").val(start.format('YYYY-MM-DD'));
+                    var endDate = moment(end).subtract(1, 'days');
+                    $('#fecha_fin').val(endDate.format('YYYY-MM-DD'));
+                }, 100);
+            } else {
+                console.error('openUnifiedModalForCreate function not found');
+                alert('Error: No se pudo abrir el modal. Recarga la página.');
+            }
         },
         
         events: [
@@ -239,7 +273,7 @@ $(document).ready(function() {
             }
             
             $currentYear = date('Y');
-            $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos FROM cumpleañoscalendar";
+            $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos FROM cumpleanos";
             $result = mysqli_query($con, $sql);
             
             if ($result) {
@@ -330,10 +364,10 @@ $(document).ready(function() {
         }
     });
     
-    // Funcion para alternar sidebar
+    // Funcion para alternar sidebar mejorada para móvil
     window.toggleSidebar = function() {
         var sidebar = $('#sidebar-container');
-        var calendar = $('.calendar-container');
+        var isMobile = window.innerWidth <= 768;
         
         if (sidebar.hasClass('sidebar-expanded')) {
             sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
@@ -341,6 +375,134 @@ $(document).ready(function() {
             sidebar.removeClass('sidebar-collapsed').addClass('sidebar-expanded');
         }
     };
+    
+    // Hacer clickeable el header del sidebar en móvil
+    $('#sidebar-header').on('click', function() {
+        if (window.innerWidth <= 768) {
+            window.toggleSidebar();
+        }
+    });
+    
+    // Inicializar estado del sidebar según el tamaño de pantalla
+    $(window).on('resize', function() {
+        var sidebar = $('#sidebar-container');
+        var isMobile = window.innerWidth <= 768;
+        
+        if (isMobile) {
+            // En móvil, empezar colapsado
+            if (!sidebar.hasClass('sidebar-collapsed')) {
+                sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
+            }
+        } else {
+            // En desktop, empezar expandido
+            if (!sidebar.hasClass('sidebar-expanded')) {
+                sidebar.removeClass('sidebar-collapsed').addClass('sidebar-expanded');
+            }
+        }
+    });
+    
+    // Ejecutar al cargar la página
+    $(window).trigger('resize');
+    
+    // Mejorar soporte para móvil y tablet - eventos touch más robustos
+    var isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    var isTabletDevice = /iPad/i.test(navigator.userAgent) || (window.innerWidth > 768 && window.innerWidth <= 1024);
+    var isTouchDevice = isMobileDevice || isTabletDevice;
+    
+    if (isTouchDevice) {
+        // Variables para controlar touch events
+        var touchStartTime = 0;
+        var touchMoved = false;
+        
+        // Añadir eventos touch específicos para móvil
+        $('#calendar').on('touchstart', '.fc-day:not(.fc-other-month)', function(e) {
+            touchStartTime = Date.now();
+            touchMoved = false;
+        });
+        
+        $('#calendar').on('touchmove', '.fc-day:not(.fc-other-month)', function(e) {
+            touchMoved = true;
+        });
+        
+        $('#calendar').on('touchend', '.fc-day:not(.fc-other-month)', function(e) {
+            e.preventDefault();
+            
+            // Solo procesar si fue un tap rápido (no scroll)
+            var touchDuration = Date.now() - touchStartTime;
+            if (touchMoved || touchDuration > 500) {
+                return;
+            }
+            
+            var target = e.originalEvent.target || e.target;
+            
+            // Solo si no es click en número de día o eventos existentes
+            if (!$(target).hasClass('fc-day-number') && 
+                !$(target).hasClass('fc-day-top') && 
+                !$(target).closest('.fc-event').length) {
+                
+                var dateStr = $(this).data('date');
+                if (dateStr) {
+                    // Verificar que la función existe
+                    if (typeof window.openUnifiedModalForCreate === 'function') {
+                        console.log('Abriendo modal para fecha:', dateStr);
+                        window.openUnifiedModalForCreate();
+                        setTimeout(function() {
+                            $("#fecha_inicio").val(dateStr);
+                            $('#fecha_fin').val(dateStr);
+                        }, 200);
+                    } else {
+                        console.error('Función openUnifiedModalForCreate no encontrada');
+                        alert('Error: No se pudo abrir el modal. Recarga la página.');
+                    }
+                }
+            }
+        });
+        
+        // Fallback para dispositivos que no detectan touch correctamente
+        $('#calendar').on('click', '.fc-day:not(.fc-other-month)', function(e) {
+            // Solo ejecutar si no hubo evento touch reciente
+            if (Date.now() - touchStartTime > 1000) {
+                var target = e.target || e.srcElement;
+                
+                if (!$(target).hasClass('fc-day-number') && 
+                    !$(target).hasClass('fc-day-top') && 
+                    !$(target).closest('.fc-event').length) {
+                    
+                    var dateStr = $(this).data('date');
+                    if (dateStr && typeof window.openUnifiedModalForCreate === 'function') {
+                        console.log('Abriendo modal via click fallback para fecha:', dateStr);
+                        window.openUnifiedModalForCreate();
+                        setTimeout(function() {
+                            $("#fecha_inicio").val(dateStr);
+                            $('#fecha_fin').val(dateStr);
+                        }, 200);
+                    }
+                }
+            }
+        });
+    }
+    
+    // Fallback adicional para tablets que no se detectan como touch
+    if (window.innerWidth > 768 && window.innerWidth <= 1024) {
+        $('#calendar').on('click', '.fc-day:not(.fc-other-month)', function(e) {
+            var target = e.target || e.srcElement;
+            
+            if (!$(target).hasClass('fc-day-number') && 
+                !$(target).hasClass('fc-day-top') && 
+                !$(target).closest('.fc-event').length) {
+                
+                var dateStr = $(this).data('date');
+                if (dateStr && typeof window.openUnifiedModalForCreate === 'function') {
+                    console.log('Abriendo modal para tablet en fecha:', dateStr);
+                    window.openUnifiedModalForCreate();
+                    setTimeout(function() {
+                        $("#fecha_inicio").val(dateStr);
+                        $('#fecha_fin').val(dateStr);
+                    }, 200);
+                }
+            }
+        });
+    }
     
 });
 </script>

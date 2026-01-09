@@ -58,7 +58,7 @@ class BirthdayManager {
      */
     private function createBirthday($nombre, $dia_nacimiento, $mes_nacimiento) {
         $stmt = $this->connection->prepare("
-            INSERT INTO cumpleañoscalendar (
+            INSERT INTO cumpleanos (
                 nombre, 
                 dia_nacimiento, 
                 mes_nacimiento
@@ -98,7 +98,7 @@ class BirthdayManager {
      */
     private function updateBirthday($id, $nombre, $dia_nacimiento, $mes_nacimiento) {
         $stmt = $this->connection->prepare("
-            UPDATE cumpleañoscalendar 
+            UPDATE cumpleanos 
             SET nombre = ?, 
                 dia_nacimiento = ?, 
                 mes_nacimiento = ?
@@ -142,7 +142,7 @@ class BirthdayManager {
         
         $stmt = $this->connection->prepare("
             SELECT id, nombre, dia_nacimiento, mes_nacimiento, created_at 
-            FROM cumpleañoscalendar 
+            FROM cumpleanos 
             WHERE dia_nacimiento = ? AND mes_nacimiento = ?
             ORDER BY nombre ASC
         ");
@@ -171,7 +171,7 @@ class BirthdayManager {
     public function getBirthdaysForMonth($year, $month) {
         $stmt = $this->connection->prepare("
             SELECT id, nombre, dia_nacimiento, mes_nacimiento, created_at 
-            FROM cumpleañoscalendar 
+            FROM cumpleanos 
             WHERE mes_nacimiento = ?
             ORDER BY dia_nacimiento ASC, nombre ASC
         ");
@@ -202,7 +202,7 @@ class BirthdayManager {
     public function getAllBirthdays() {
         $stmt = $this->connection->prepare("
             SELECT id, nombre, dia_nacimiento, mes_nacimiento, created_at 
-            FROM cumpleañoscalendar 
+            FROM cumpleanos 
             ORDER BY mes_nacimiento ASC, dia_nacimiento ASC, nombre ASC
         ");
         
@@ -263,7 +263,7 @@ class BirthdayManager {
      * Delete birthday by ID
      */
     public function deleteBirthday($id) {
-        $stmt = $this->connection->prepare("DELETE FROM cumpleañoscalendar WHERE id = ?");
+        $stmt = $this->connection->prepare("DELETE FROM cumpleanos WHERE id = ?");
         
         if (!$stmt) {
             return [
@@ -307,7 +307,7 @@ class BirthdayManager {
     public function getBirthdayById($id) {
         $stmt = $this->connection->prepare("
             SELECT id, nombre, dia_nacimiento, mes_nacimiento, created_at 
-            FROM cumpleañoscalendar 
+            FROM cumpleanos 
             WHERE id = ?
         ");
         
@@ -329,7 +329,7 @@ class BirthdayManager {
      * Check if a birthday exists for a specific person and date
      */
     public function birthdayExists($nombre, $dia_nacimiento, $mes_nacimiento, $excludeId = null) {
-        $sql = "SELECT id FROM cumpleañoscalendar WHERE nombre = ? AND dia_nacimiento = ? AND mes_nacimiento = ?";
+        $sql = "SELECT id FROM cumpleanos WHERE nombre = ? AND dia_nacimiento = ? AND mes_nacimiento = ?";
         $params = [$nombre, $dia_nacimiento, $mes_nacimiento];
         $types = "sii";
         

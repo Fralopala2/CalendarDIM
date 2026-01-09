@@ -17,7 +17,7 @@ $id = intval($_REQUEST['id']);
 
 try {
     // Delete birthday from database
-    $sqlDeleteBirthday = "DELETE FROM cumpleañoscalendar WHERE id = ?";
+    $sqlDeleteBirthday = "DELETE FROM cumpleanos WHERE id = ?";
     $stmt = mysqli_prepare($con, $sqlDeleteBirthday);
     
     if (!$stmt) {

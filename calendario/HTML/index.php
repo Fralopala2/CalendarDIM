@@ -5,6 +5,7 @@ include('../PHP/config.php');
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<title>Calendario - Versión Final</title>
 	<link rel="stylesheet" type="text/css" href="../css/fullcalendar.min.css">
 	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
@@ -53,6 +54,34 @@ $(document).ready(function() {
     if (typeof window.initializeUnifiedModal === 'function') {
         window.initializeUnifiedModal();
     }
+    
+    // Function to check screen size and auto-collapse sidebar
+    function checkScreenSizeAndCollapseSidebar() {
+        var sidebar = $('#sidebar-container');
+        var screenWidth = $(window).width();
+        
+        // Auto-collapse sidebar on screens smaller than 768px (tablet breakpoint)
+        if (screenWidth < 768) {
+            if (!sidebar.hasClass('sidebar-collapsed')) {
+                sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
+            }
+        } else {
+            // Auto-expand sidebar on larger screens if it was auto-collapsed
+            if (sidebar.hasClass('sidebar-collapsed')) {
+                sidebar.removeClass('sidebar-collapsed').addClass('sidebar-expanded');
+            }
+        }
+    }
+    
+    // Check on page load
+    checkScreenSizeAndCollapseSidebar();
+    
+    // Check on window resize with debouncing
+    var resizeTimer;
+    $(window).resize(function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(checkScreenSizeAndCollapseSidebar, 250);
+    });
     
     $("#calendar").fullCalendar({
         header: {

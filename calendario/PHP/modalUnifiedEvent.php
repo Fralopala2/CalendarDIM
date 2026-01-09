@@ -150,22 +150,6 @@
 
                             <input type="radio" name="color_evento" id="color_10" value="#FF9800">
                             <label for="color_10" class="color-option" style="background-color: #FF9800;" title="Naranja oscuro"></label>
-
-                            <!-- Tercera fila de colores -->
-                            <input type="radio" name="color_evento" id="color_11" value="#4CAF50">
-                            <label for="color_11" class="color-option" style="background-color: #4CAF50;" title="Verde"></label>
-
-                            <input type="radio" name="color_evento" id="color_12" value="#F44336">
-                            <label for="color_12" class="color-option" style="background-color: #F44336;" title="Rojo"></label>
-
-                            <input type="radio" name="color_evento" id="color_13" value="#673AB7">
-                            <label for="color_13" class="color-option" style="background-color: #673AB7;" title="Púrpura profundo"></label>
-
-                            <input type="radio" name="color_evento" id="color_14" value="#3F51B5">
-                            <label for="color_14" class="color-option" style="background-color: #3F51B5;" title="Índigo"></label>
-
-                            <input type="radio" name="color_evento" id="color_15" value="#37474F">
-                            <label for="color_15" class="color-option" style="background-color: #37474F;" title="Gris oscuro"></label>
                         </div>
                     </div>
                 </div>
@@ -183,17 +167,23 @@
 <script>
 // Modal functions - will be called from index.php
 window.initializeUnifiedModal = function() {
+    console.log('Inicializando modal unificado...');
+    
     // Global variable to track modal mode
     window.unifiedModalMode = 'create';
     
     // Function to open modal in create mode
     window.openUnifiedModalForCreate = function() {
+        console.log('Intentando abrir modal para crear evento...');
+        
         // Check if modal exists
         if ($('#unifiedEventModal').length === 0) {
+            console.error('Modal no encontrado en el DOM');
             alert('Error: Modal no encontrado. Verifica que modalUnifiedEvent.php esté incluido.');
             return;
         }
         
+        console.log('Modal encontrado, configurando para crear...');
         window.unifiedModalMode = 'create';
         
         // Clear all form fields
@@ -216,8 +206,26 @@ window.initializeUnifiedModal = function() {
         $('#save-btn').text('Guardar').prop('disabled', false);
         $('#delete-btn').prop('disabled', true);
         
-        // Show modal
-        $('#unifiedEventModal').modal('show');
+        // Show modal with mobile-specific handling
+        try {
+            $('#unifiedEventModal').modal({
+                backdrop: 'static',
+                keyboard: true,
+                focus: true,
+                show: true
+            });
+            console.log('Modal mostrado correctamente');
+        } catch (error) {
+            console.error('Error al mostrar modal:', error);
+            // Fallback para móvil - mostrar modal manualmente
+            $('#unifiedEventModal').addClass('show').css('display', 'block');
+            $('body').addClass('modal-open');
+            
+            // Crear backdrop manualmente si no existe
+            if ($('.modal-backdrop').length === 0) {
+                $('<div class="modal-backdrop fade show"></div>').appendTo('body');
+            }
+        }
     };
     
     // Function to open modal in edit mode
@@ -433,11 +441,94 @@ window.initializeUnifiedModal = function() {
             });
         }
     });
+    
+    // Manejar cierre manual del modal (fallback para móvil)
+    $('.modal .close, .modal [data-dismiss="modal"]').click(function() {
+        try {
+            $('#unifiedEventModal').modal('hide');
+        } catch (error) {
+            // Fallback manual
+            $('#unifiedEventModal').removeClass('show').css('display', 'none');
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
+        }
+    });
+    
+    // Cerrar modal al hacer click en el backdrop
+    $('#unifiedEventModal').click(function(e) {
+        if (e.target === this) {
+            try {
+                $(this).modal('hide');
+            } catch (error) {
+                // Fallback manual
+                $(this).removeClass('show').css('display', 'none');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        }
+    });
 };
 </script>
 
 <style>
 /* Estilos para el modal unificado */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  outline: 0;
+  display: none;
+}
+
+.modal.show {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9998;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-dialog {
+  position: relative;
+  width: auto;
+  max-width: 600px;
+  min-width: 500px;
+  margin: 0 auto;
+  pointer-events: none;
+}
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 90vh;
+  pointer-events: auto;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  outline: 0;
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 70vh;
+}
+
 .modal-header .modal-title {
     font-weight: 600;
     font-size: 1.25rem;
@@ -445,13 +536,42 @@ window.initializeUnifiedModal = function() {
     text-align: center;
 }
 
+.modal-header .close {
+    color: white;
+    opacity: 0.8;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: none;
+}
+
+.modal-header .close:hover {
+    color: white;
+    opacity: 1;
+}
+
 /* Paleta de colores mejorada */
 .color-palette {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
+    grid-template-rows: repeat(2, 1fr);
+    gap: 8px;
     justify-items: center;
-    padding: 15px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+/* Paleta específica para cumpleaños - solo 5 colores en 1 fila */
+#birthday-color-palette {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: 1fr;
+    gap: 8px;
+    justify-items: center;
+    padding: 12px;
     background-color: #f8f9fa;
     border-radius: 8px;
     border: 1px solid #dee2e6;
@@ -464,8 +584,8 @@ window.initializeUnifiedModal = function() {
 }
 
 .color-option {
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     cursor: pointer;
     border: 3px solid transparent;
@@ -488,16 +608,41 @@ window.initializeUnifiedModal = function() {
 
 /* Responsive design para el modal */
 @media (max-width: 768px) {
+    .modal {
+        align-items: flex-start;
+        padding-top: 10px;
+    }
+    
     .modal-dialog {
-        margin: 10px;
-        max-width: calc(100% - 20px);
+        margin: 10px !important;
+        max-width: calc(100% - 20px) !important;
+        width: calc(100% - 20px) !important;
+        min-width: auto !important;
+    }
+    
+    .modal-content {
+        max-height: calc(100vh - 40px) !important;
+    }
+    
+    .modal-body {
+        padding: 20px !important;
+        max-height: calc(100vh - 200px) !important;
     }
     
     .color-palette {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(2, 1fr);
         gap: 10px;
         padding: 12px;
-        max-width: 240px;
+        max-width: 260px;
+    }
+    
+    #birthday-color-palette {
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: 1fr;
+        gap: 10px;
+        padding: 12px;
+        max-width: 260px;
     }
     
     .color-option {
@@ -514,32 +659,41 @@ window.initializeUnifiedModal = function() {
     }
     
     .col-sm-10 {
-        padding-left: 15px;
-        padding-right: 15px;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    .modal-footer {
+        flex-direction: column !important;
+        gap: 10px;
+    }
+    
+    .modal-footer .btn {
+        width: 100% !important;
+        margin: 0 !important;
     }
 }
 
 @media (max-width: 480px) {
     .color-palette {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(2, 1fr);
         gap: 8px;
         padding: 10px;
-        max-width: 180px;
+        max-width: 220px;
+    }
+    
+    #birthday-color-palette {
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: 1fr;
+        gap: 8px;
+        padding: 10px;
+        max-width: 220px;
     }
     
     .color-option {
         width: 28px;
         height: 28px;
-    }
-    
-    .modal-footer {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .modal-footer .btn {
-        width: 100%;
-        margin: 0;
     }
 }
 
@@ -553,6 +707,16 @@ window.initializeUnifiedModal = function() {
 .form-control:focus {
     border-color: #80bdff;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-group {
+    margin-bottom: 0.8rem;
+}
+
+.col-sm-10 {
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 /* Estilos para los radio buttons de tipo de evento */

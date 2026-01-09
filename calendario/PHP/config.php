@@ -8,7 +8,7 @@
  */
 
 $usuario  = "root";
-$password = "root";
+$password = "";
 $servidor = "localhost";
 $basededatos = "calendario";
 
@@ -34,7 +34,7 @@ if ($resulEventos) {
 // Requirement 2.3: Load birthdays for calendar month display
 // Requirement 2.4: Display birthdays with name and cake emoji
 $currentYear = date('Y');
-$SqlBirthdays = ("SELECT id, nombre, dia_nacimiento, mes_nacimiento FROM cumpleañoscalendar ORDER BY mes_nacimiento ASC, dia_nacimiento ASC");
+$SqlBirthdays = ("SELECT id, nombre, dia_nacimiento, mes_nacimiento FROM cumpleanos ORDER BY mes_nacimiento ASC, dia_nacimiento ASC");
 $resulBirthdays = mysqli_query($con, $SqlBirthdays);
 
 // Create a copy of the birthday result for multiple iterations
