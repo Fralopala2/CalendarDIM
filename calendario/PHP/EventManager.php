@@ -1,12 +1,4 @@
 <?php
-/**
- * EventManager Class
- * 
- * Handles CRUD operations for calendar events with enhanced functionality
- * including time support, descriptions, and unified save/update logic.
- * 
- * Requirements: 3.4, 3.6, 4.4
- */
 
 class EventManager {
     private $connection;
@@ -15,13 +7,8 @@ class EventManager {
         $this->connection = $connection;
     }
     
-    /**
-     * Save event - creates new or updates existing based on ID presence
-     * Requirement 3.4: Check if event exists and either update or create accordingly
-     */
     public function saveEvent($data) {
         try {
-            // Validate input data
             $validationErrors = $this->validateEventData($data);
             if (!empty($validationErrors)) {
                 return [
@@ -31,11 +18,9 @@ class EventManager {
                 ];
             }
             
-            // Prepare data
             $evento = ucwords(trim($data['evento']));
             $fecha_inicio = $this->parseDate($data['fecha_inicio']);
             
-            // Handle end date - add 1 day as per original logic
             $fecha_fin_parsed = $this->parseDate($data['fecha_fin']);
             $fecha_fin1 = strtotime($fecha_fin_parsed . "+ 1 days");
             $fecha_fin = date('Y-m-d', $fecha_fin1);
@@ -44,7 +29,6 @@ class EventManager {
             $hora_inicio = isset($data['hora_inicio']) ? $data['hora_inicio'] : null;
             $descripcion = isset($data['descripcion']) ? trim($data['descripcion']) : null;
             
-            // Check if this is an update (ID provided) or new event
             if (isset($data['id']) && !empty($data['id'])) {
                 return $this->updateEvent($data['id'], $evento, $fecha_inicio, $fecha_fin, $color_evento, $hora_inicio, $descripcion);
             } else {
@@ -61,9 +45,6 @@ class EventManager {
         }
     }
     
-    /**
-     * Create new event
-     */
     private function createEvent($evento, $fecha_inicio, $fecha_fin, $color_evento, $hora_inicio, $descripcion) {
         $stmt = $this->connection->prepare("
             INSERT INTO eventoscalendar (
@@ -104,9 +85,6 @@ class EventManager {
         }
     }
     
-    /**
-     * Update existing event
-     */
     private function updateEvent($id, $evento, $fecha_inicio, $fecha_fin, $color_evento, $hora_inicio, $descripcion) {
         $stmt = $this->connection->prepare("
             UPDATE eventoscalendar 
@@ -146,9 +124,6 @@ class EventManager {
         }
     }
     
-    /**
-     * Get events for a specific date
-     */
     public function getEventsForDate($date) {
         $stmt = $this->connection->prepare("
             SELECT id, evento, fecha_inicio, fecha_fin, color_evento, hora_inicio, descripcion 
@@ -174,10 +149,6 @@ class EventManager {
         return $events;
     }
     
-    /**
-     * Get events for a specific month
-     * Requirement 3.6: Include new fields in event queries
-     */
     public function getEventsForMonth($year, $month) {
         $startDate = sprintf('%04d-%02d-01', $year, $month);
         $endDate = date('Y-m-d', strtotime($startDate . ' +1 month'));
@@ -207,10 +178,6 @@ class EventManager {
         return $events;
     }
     
-    /**
-     * Get all events (for FullCalendar display)
-     * Requirement 4.4: Show both time and title in calendar display
-     */
     public function getAllEvents() {
         $stmt = $this->connection->prepare("
             SELECT id, evento, fecha_inicio, fecha_fin, color_evento, hora_inicio, descripcion 
@@ -227,7 +194,6 @@ class EventManager {
         
         $events = [];
         while ($row = $result->fetch_assoc()) {
-            // Format for FullCalendar - include time in title if available
             $title = $row['evento'];
             if (!empty($row['hora_inicio'])) {
                 $title = date('H:i', strtotime($row['hora_inicio'])) . ' - ' . $title;
@@ -241,7 +207,7 @@ class EventManager {
                 'color' => $row['color_evento'],
                 'hora_inicio' => $row['hora_inicio'],
                 'descripcion' => $row['descripcion'],
-                'evento' => $row['evento'] // Original title without time
+                'evento' => $row['evento']
             ];
         }
         
@@ -249,9 +215,6 @@ class EventManager {
         return $events;
     }
     
-    /**
-     * Delete event by ID
-     */
     public function deleteEvent($id) {
         $stmt = $this->connection->prepare("DELETE FROM eventoscalendar WHERE id = ?");
         
@@ -291,9 +254,6 @@ class EventManager {
         }
     }
     
-    /**
-     * Get single event by ID
-     */
     public function getEventById($id) {
         $stmt = $this->connection->prepare("
             SELECT id, evento, fecha_inicio, fecha_fin, color_evento, hora_inicio, descripcion 
@@ -315,20 +275,15 @@ class EventManager {
         return $event;
     }
     
-    /**
-     * Validate event data
-     */
     private function validateEventData($data) {
         $errors = [];
         
-        // Event title validation
         if (empty($data['evento']) || trim($data['evento']) === '') {
             $errors['evento'] = 'Event title is required';
         } elseif (strlen(trim($data['evento'])) > 250) {
             $errors['evento'] = 'Event title must be 250 characters or less';
         }
         
-        // Start date validation with DD-MM-YYYY format support
         if (empty($data['fecha_inicio'])) {
             $errors['fecha_inicio'] = 'Start date is required';
         } else {
@@ -338,7 +293,6 @@ class EventManager {
             }
         }
         
-        // End date validation with DD-MM-YYYY format support
         if (empty($data['fecha_fin'])) {
             $errors['fecha_fin'] = 'End date is required';
         } else {
@@ -350,19 +304,16 @@ class EventManager {
             }
         }
         
-        // Color validation
         if (empty($data['color_evento'])) {
             $errors['color_evento'] = 'Event color is required';
         }
         
-        // Time validation (optional)
         if (!empty($data['hora_inicio'])) {
             if (!preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/', $data['hora_inicio'])) {
                 $errors['hora_inicio'] = 'Invalid time format (use HH:MM)';
             }
         }
         
-        // Description validation (optional, but limit length)
         if (!empty($data['descripcion']) && strlen($data['descripcion']) > 1000) {
             $errors['descripcion'] = 'Description must be 1000 characters or less';
         }
@@ -370,15 +321,11 @@ class EventManager {
         return $errors;
     }
     
-    /**
-     * Parse date from DD-MM-YYYY or YYYY-MM-DD format to YYYY-MM-DD
-     */
     private function parseDate($dateString) {
         if (empty($dateString)) {
             return false;
         }
         
-        // Check if it's already YYYY-MM-DD format (from HTML5 date inputs)
         if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $dateString, $matches)) {
             $year = $matches[1];
             $month = str_pad($matches[2], 2, '0', STR_PAD_LEFT);
@@ -386,7 +333,6 @@ class EventManager {
             return $year . '-' . $month . '-' . $day;
         }
         
-        // Check if it's DD-MM-YYYY format (legacy)
         if (preg_match('/^(\d{1,2})-(\d{1,2})-(\d{4})$/', $dateString, $matches)) {
             $day = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
             $month = str_pad($matches[2], 2, '0', STR_PAD_LEFT);
@@ -394,7 +340,6 @@ class EventManager {
             return $year . '-' . $month . '-' . $day;
         }
         
-        // Try to parse with strtotime as fallback
         $timestamp = strtotime($dateString);
         if ($timestamp !== false) {
             return date('Y-m-d', $timestamp);

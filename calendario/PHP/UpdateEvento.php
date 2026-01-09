@@ -1,12 +1,4 @@
 <?php
-/**
- * Enhanced Event Update Handler
- * 
- * Handles updating existing events with time and description support
- * Uses EventManager class for unified save/update logic
- * 
- * Requirements: 3.4, 3.6, 4.4
- */
 
 date_default_timezone_set("Europe/Madrid");
 setlocale(LC_ALL,"es_ES");

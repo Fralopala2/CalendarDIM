@@ -1,8 +1,5 @@
 <?php
-/**
- * Unified Event Modal - Single modal for creating and editing events and birthdays
- * Requirements: 3.1, 3.5, 4.5, 4.6, 2.1
- */
+
 ?>
 
 <div class="modal" id="unifiedEventModal" tabindex="-1" role="dialog">
@@ -174,7 +171,7 @@ window.initializeUnifiedModal = function() {
     // Function to open modal in create mode
     window.openUnifiedModalForCreate = function() {
         
-        // Check if modal exists
+         modal exists
         if ($('#unifiedEventModal').length === 0) {
             console.error('Modal no encontrado en el DOM');
             alert('Error: Modal no encontrado. Verifica que modalUnifiedEvent.php esté incluido.');
@@ -300,7 +297,7 @@ window.initializeUnifiedModal = function() {
         if (birthdayData.color) {
             $('input[name="birthday_color"][value="' + birthdayData.color + '"]').prop('checked', true);
         } else {
-            // Default to first birthday color
+             to first birthday color
             $('input[name="birthday_color"]:first').prop('checked', true);
         }
         

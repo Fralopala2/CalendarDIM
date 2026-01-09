@@ -1,12 +1,4 @@
 <?php
-/**
- * BirthdayManager Class
- * 
- * Handles CRUD operations for birthday management with yearly recurrence
- * functionality. Stores only day and month for automatic yearly display.
- * 
- * Requirements: 2.2, 2.3, 2.5
- */
 
 class BirthdayManager {
     private $connection;
@@ -15,13 +7,8 @@ class BirthdayManager {
         $this->connection = $connection;
     }
     
-    /**
-     * Save birthday - creates new or updates existing based on ID presence
-     * Requirement 2.2: Store person's name, day, and month in cumpleanos table
-     */
     public function saveBirthday($data) {
         try {
-            // Validate input data
             $validationErrors = $this->validateBirthdayData($data);
             if (!empty($validationErrors)) {
                 return [
@@ -31,12 +18,10 @@ class BirthdayManager {
                 ];
             }
             
-            // Prepare data
             $nombre = ucwords(trim($data['nombre']));
             $dia_nacimiento = (int)$data['dia_nacimiento'];
             $mes_nacimiento = (int)$data['mes_nacimiento'];
             
-            // Check if this is an update (ID provided) or new birthday
             if (isset($data['id']) && !empty($data['id'])) {
                 return $this->updateBirthday($data['id'], $nombre, $dia_nacimiento, $mes_nacimiento);
             } else {
@@ -53,9 +38,6 @@ class BirthdayManager {
         }
     }
     
-    /**
-     * Create new birthday
-     */
     private function createBirthday($nombre, $dia_nacimiento, $mes_nacimiento) {
         $stmt = $this->connection->prepare("
             INSERT INTO cumpleanos (
@@ -93,9 +75,6 @@ class BirthdayManager {
         }
     }
     
-    /**
-     * Update existing birthday
-     */
     private function updateBirthday($id, $nombre, $dia_nacimiento, $mes_nacimiento) {
         $stmt = $this->connection->prepare("
             UPDATE cumpleanos 
@@ -132,9 +111,6 @@ class BirthdayManager {
         }
     }
     
-    /**
-     * Get birthdays for a specific date
-     */
     public function getBirthdaysForDate($date) {
         $dateObj = new DateTime($date);
         $day = (int)$dateObj->format('j');
@@ -164,10 +140,6 @@ class BirthdayManager {
         return $birthdays;
     }
     
-    /**
-     * Get birthdays for a specific month
-     * Requirement 2.3: Query for birthdays in that month and display them
-     */
     public function getBirthdaysForMonth($year, $month) {
         $stmt = $this->connection->prepare("
             SELECT id, nombre, dia_nacimiento, mes_nacimiento, created_at 
@@ -186,7 +158,6 @@ class BirthdayManager {
         
         $birthdays = [];
         while ($row = $result->fetch_assoc()) {
-            // Add the year for display purposes (yearly recurrence)
             $row['display_date'] = sprintf('%04d-%02d-%02d', $year, $row['mes_nacimiento'], $row['dia_nacimiento']);
             $birthdays[] = $row;
         }
@@ -194,11 +165,7 @@ class BirthdayManager {
         $stmt->close();
         return $birthdays;
     }
-    
-    /**
-     * Get all birthdays for yearly recurrence display
-     * Requirement 2.5: Handle recurring yearly birthdays automatically
-     */
+
     public function getAllBirthdays() {
         $stmt = $this->connection->prepare("
             SELECT id, nombre, dia_nacimiento, mes_nacimiento, created_at 
@@ -221,11 +188,7 @@ class BirthdayManager {
         $stmt->close();
         return $birthdays;
     }
-    
-    /**
-     * Get birthdays formatted for FullCalendar display
-     * Requirement 2.5: Yearly recurrence for current year
-     */
+
     public function getBirthdaysForCalendar($year = null) {
         if ($year === null) {
             $year = date('Y');
@@ -235,17 +198,17 @@ class BirthdayManager {
         $calendarBirthdays = [];
         
         foreach ($allBirthdays as $birthday) {
-            // Create birthday event for the specified year
+             for the specified year
             $birthdayDate = sprintf('%04d-%02d-%02d', $year, $birthday['mes_nacimiento'], $birthday['dia_nacimiento']);
             
-            // Validate the date (handle leap year issues)
+             (handle leap year issues)
             if (checkdate($birthday['mes_nacimiento'], $birthday['dia_nacimiento'], $year)) {
                 $calendarBirthdays[] = [
                     'id' => 'birthday_' . $birthday['id'],
                     'title' => '🎂 ' . $birthday['nombre'],
                     'start' => $birthdayDate,
                     'end' => $birthdayDate,
-                    'color' => '#FFD700', // Gold color for birthdays
+                    'color' => '#FFD700', 
                     'allDay' => true,
                     'type' => 'birthday',
                     'birthday_id' => $birthday['id'],
@@ -258,10 +221,7 @@ class BirthdayManager {
         
         return $calendarBirthdays;
     }
-    
-    /**
-     * Delete birthday by ID
-     */
+
     public function deleteBirthday($id) {
         $stmt = $this->connection->prepare("DELETE FROM cumpleanos WHERE id = ?");
         
@@ -300,10 +260,7 @@ class BirthdayManager {
             ];
         }
     }
-    
-    /**
-     * Get single birthday by ID
-     */
+
     public function getBirthdayById($id) {
         $stmt = $this->connection->prepare("
             SELECT id, nombre, dia_nacimiento, mes_nacimiento, created_at 
@@ -324,10 +281,7 @@ class BirthdayManager {
         
         return $birthday;
     }
-    
-    /**
-     * Check if a birthday exists for a specific person and date
-     */
+
     public function birthdayExists($nombre, $dia_nacimiento, $mes_nacimiento, $excludeId = null) {
         $sql = "SELECT id FROM cumpleanos WHERE nombre = ? AND dia_nacimiento = ? AND mes_nacimiento = ?";
         $params = [$nombre, $dia_nacimiento, $mes_nacimiento];
@@ -354,28 +308,22 @@ class BirthdayManager {
         
         return $exists;
     }
-    
-    /**
-     * Validate birthday data
-     */
+
     private function validateBirthdayData($data) {
         $errors = [];
-        
-        // Name validation
+
         if (empty($data['nombre']) || trim($data['nombre']) === '') {
             $errors['nombre'] = 'Person name is required';
         } elseif (strlen(trim($data['nombre'])) > 100) {
             $errors['nombre'] = 'Person name must be 100 characters or less';
         }
-        
-        // Day validation
+
         if (!isset($data['dia_nacimiento']) || $data['dia_nacimiento'] === '') {
             $errors['dia_nacimiento'] = 'Birth day is required';
         } elseif (!is_numeric($data['dia_nacimiento']) || $data['dia_nacimiento'] < 1 || $data['dia_nacimiento'] > 31) {
             $errors['dia_nacimiento'] = 'Birth day must be between 1 and 31';
         }
-        
-        // Month validation
+
         if (!isset($data['mes_nacimiento']) || $data['mes_nacimiento'] === '') {
             $errors['mes_nacimiento'] = 'Birth month is required';
         } elseif (!is_numeric($data['mes_nacimiento']) || $data['mes_nacimiento'] < 1 || $data['mes_nacimiento'] > 12) {
@@ -387,7 +335,7 @@ class BirthdayManager {
             $day = (int)$data['dia_nacimiento'];
             $month = (int)$data['mes_nacimiento'];
             
-            // Check if the date is valid (use a non-leap year for validation)
+             the date is valid (use a non-leap year for validation)
             if (!checkdate($month, $day, 2023)) {
                 $errors['dia_nacimiento'] = 'Invalid day/month combination';
             }

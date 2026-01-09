@@ -12,11 +12,8 @@ include('PHP/config.php');
 	<title>Calendario - Versión Final</title>
 	<link rel="stylesheet" type="text/css" href="css/fullcalendar.min.css">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-    <!-- CSS para Desktop (pantallas grandes) -->
     <link rel="stylesheet" type="text/css" href="css/home.css?v=<?php echo time(); ?>" media="(min-width: 1025px)">
-    <!-- CSS para Tablets (pantallas medianas) -->
     <link rel="stylesheet" type="text/css" href="css/home-tablet.css?v=<?php echo time(); ?>" media="(min-width: 769px) and (max-width: 1024px)">
-    <!-- CSS para Móvil (pantallas pequeñas) -->
     <link rel="stylesheet" type="text/css" href="css/home-mobile.css?v=<?php echo time(); ?>" media="(max-width: 768px)">
 </head>
 <body>
@@ -59,17 +56,13 @@ include('PHP/config.php');
 
 <script>
 $(document).ready(function() {
-    // Check screen size and auto-collapse sidebar
     var isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
     
-    // Initialize modal
     if (typeof window.initializeUnifiedModal === 'function') {
         window.initializeUnifiedModal();
     }
     
-    // Verify modal functions are available after initialization
     setTimeout(function() {
-        // Modal functions should be available now
     }, 500);
     
     $("#calendar").fullCalendar({
@@ -98,20 +91,13 @@ $(document).ready(function() {
         showNonCurrentDates: false,
         
         dayClick: function(date, jsEvent, view) {
-            // Solo actualizar sidebar si es click directo en numero de dia
             if (jsEvent.target.classList.contains('fc-day-number') || 
                 jsEvent.target.classList.contains('fc-day-top')) {
                 
-                // Actualizar sidebar con el dia seleccionado
                 $('#selected-date').text(date.format('DD/MM/YYYY'));
-                
-                // Limpiar timeline
                 $('.hour-content').empty();
-                
-                // Buscar eventos para este dia y mostrarlos en timeline
                 var selectedDate = date.format('YYYY-MM-DD');
                 
-                // Obtener eventos del dia via AJAX
                 $.ajax({
                     url: 'PHP/getEventsForDay.php',
                     method: 'GET',
@@ -123,21 +109,18 @@ $(document).ready(function() {
                                 var eventHtml = '';
                                 
                                 if (event.type === 'birthday') {
-                                    // Cumpleaños van en la hora 00:00 con color personalizado
                                     var birthdayColor = event.color_evento || '#FF69B4';
                                     eventHtml = '<div class="timeline-birthday clickable-sidebar-birthday" data-birthday-id="' + event.id + '" style="background: linear-gradient(135deg, ' + birthdayColor + ' 0%, ' + birthdayColor + 'CC 100%); border-left: 4px solid ' + birthdayColor + ';">' +
                                               '<div class="event-title">' + event.evento + '</div>' +
                                               '</div>';
                                     $('.hour-slot[data-hour="0"] .hour-content').append(eventHtml);
                                 } else if (event.hora_inicio) {
-                                    // Eventos regulares con color personalizado
                                     var hour = parseInt(event.hora_inicio.split(':')[0]);
                                     var eventColor = event.color_evento || '#007bff';
                                     eventHtml = '<div class="timeline-event clickable-sidebar-event" data-event-id="' + event.id + '" style="background: linear-gradient(135deg, ' + eventColor + ' 0%, ' + eventColor + 'CC 100%); border-left: 4px solid ' + eventColor + ';">' +
                                               '<div class="event-time">' + event.hora_inicio.substring(0,5) + '</div>' +
                                               '<div class="event-title">' + event.evento + '</div>';
                                     
-                                    // Agregar descripcion si existe
                                     if (event.descripcion && event.descripcion.trim() !== '') {
                                         eventHtml += '<div class="event-description">' + event.descripcion + '</div>';
                                     }
@@ -147,12 +130,10 @@ $(document).ready(function() {
                                 }
                             });
                             
-                            // Hacer clickeables los eventos de la sidebar
                             $('.clickable-sidebar-event').off('click').on('click', function(e) {
                                 e.stopPropagation();
                                 var eventId = $(this).data('event-id');
                                 
-                                // Obtener detalles completos del evento
                                 $.ajax({
                                     url: 'PHP/getEventDetails.php',
                                     method: 'GET',
@@ -179,15 +160,13 @@ $(document).ready(function() {
                                 });
                             });
                             
-                            // Hacer clickeables los cumpleaños de la sidebar
                             $('.clickable-sidebar-birthday').off('click').on('click', function(e) {
                                 e.stopPropagation();
                                 var birthdayId = $(this).data('birthday-id');
                                 var birthdayName = $(this).find('.event-title').text().replace('🎂 ', '');
                                 var selectedDateMoment = moment($('#selected-date').text(), 'DD/MM/YYYY');
                                 
-                                // Buscar el color del cumpleaños en los datos cargados
-                                var birthdayColor = '#FF69B4'; // Default
+                                var birthdayColor = '#FF69B4';
                                 events.forEach(function(evt) {
                                     if (evt.type === 'birthday' && evt.id == birthdayId) {
                                         birthdayColor = evt.color_evento;
@@ -208,30 +187,24 @@ $(document).ready(function() {
                         }
                     },
                     error: function() {
-                        // Error loading events for day
                     }
                 });
                 
-                // Prevenir que se active el select
                 return false;
             }
         },
         
         select: function(start, end, jsEvent, view){
-            // Mejorar detección para móvil - incluir eventos touch
             var target = jsEvent.target || jsEvent.srcElement;
             
-            // Solo crear evento si NO es click en numero de dia
             if (target && (target.classList.contains('fc-day-number') || 
                 target.classList.contains('fc-day-top'))) {
-                return false; // No crear evento si es click en numero
+                return false;
             }
             
-            // Verificar que la función existe antes de llamarla
             if (typeof window.openUnifiedModalForCreate === 'function') {
                 window.openUnifiedModalForCreate();
                 setTimeout(function() {
-                    // Convert to YYYY-MM-DD format for date inputs
                     $("#fecha_inicio").val(start.format('YYYY-MM-DD'));
                     var endDate = moment(end).subtract(1, 'days');
                     $('#fecha_fin').val(endDate.format('YYYY-MM-DD'));
@@ -336,7 +309,6 @@ $(document).ready(function() {
             return false;
         },
         
-        // Drag and drop functionality
         eventDrop: function (event, delta) {
             var idEvento = event._id.replace('event_', '');
             var start = event.start.format('DD-MM-YYYY');
@@ -347,10 +319,8 @@ $(document).ready(function() {
                 data: 'start=' + start + '&end=' + end + '&idEvento=' + idEvento,
                 type: "POST",
                 success: function (response) {
-                    // Event moved successfully
                 },
                 error: function() {
-                    // Revert the event if there was an error
                     $('#calendar').fullCalendar('refetchEvents');
                     alert('Error al mover el evento');
                 }
@@ -358,7 +328,6 @@ $(document).ready(function() {
         }
     });
     
-    // Funcion para alternar sidebar mejorada para móvil y tablet
     window.toggleSidebar = function() {
         var sidebar = $('#sidebar-container');
         var indicator = $('.sidebar-toggle-indicator');
@@ -367,43 +336,38 @@ $(document).ready(function() {
         if (sidebar.hasClass('sidebar-expanded')) {
             sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
             if (indicator.length) {
-                indicator.text('▶'); // Cambiar flecha para indicar que se puede expandir
+                indicator.text('▶');
             }
         } else {
             sidebar.removeClass('sidebar-collapsed').addClass('sidebar-expanded');
             if (indicator.length) {
-                indicator.text('▼'); // Cambiar flecha para indicar que se puede colapsar
+                indicator.text('▼');
             }
         }
     };
     
-    // Hacer clickeable el header del sidebar en móvil y tablet
     $('#sidebar-header').on('click', function() {
-        if (window.innerWidth <= 1024) { // Incluir tablets
+        if (window.innerWidth <= 1024) {
             window.toggleSidebar();
         }
     });
     
-    // Inicializar estado del sidebar según el tamaño de pantalla
     $(window).on('resize', function() {
         var sidebar = $('#sidebar-container');
         var indicator = $('.sidebar-toggle-indicator');
         var screenWidth = window.innerWidth;
         
         if (screenWidth <= 768) {
-            // En móvil, empezar colapsado
             if (!sidebar.hasClass('sidebar-collapsed')) {
                 sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
                 if (indicator.length) indicator.text('▶');
             }
         } else if (screenWidth > 768 && screenWidth <= 1024) {
-            // En tablet, empezar colapsado
             if (!sidebar.hasClass('sidebar-collapsed')) {
                 sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
                 if (indicator.length) indicator.text('▶');
             }
         } else {
-            // En desktop, empezar expandido
             if (!sidebar.hasClass('sidebar-expanded')) {
                 sidebar.removeClass('sidebar-collapsed').addClass('sidebar-expanded');
                 if (indicator.length) indicator.text('▼');
@@ -411,37 +375,30 @@ $(document).ready(function() {
         }
     });
     
-    // Inicializar estado al cargar la página
     $(document).ready(function() {
         var sidebar = $('#sidebar-container');
         var indicator = $('.sidebar-toggle-indicator');
         var screenWidth = window.innerWidth;
         
         if (screenWidth <= 1024) {
-            // En móvil y tablet, empezar colapsado
             sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
             if (indicator.length) indicator.text('▶');
         } else {
-            // En desktop, empezar expandido
             sidebar.removeClass('sidebar-collapsed').addClass('sidebar-expanded');
             if (indicator.length) indicator.text('▼');
         }
     });
     
-    // Ejecutar al cargar la página
     $(window).trigger('resize');
     
-    // Mejorar soporte para móvil y tablet - eventos touch más robustos
     var isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
     var isTabletDevice = /iPad/i.test(navigator.userAgent) || (window.innerWidth > 768 && window.innerWidth <= 1024);
     var isTouchDevice = isMobileDevice || isTabletDevice;
     
     if (isTouchDevice) {
-        // Variables para controlar touch events
         var touchStartTime = 0;
         var touchMoved = false;
         
-        // Añadir eventos touch específicos para móvil
         $('#calendar').on('touchstart', '.fc-day:not(.fc-other-month)', function(e) {
             touchStartTime = Date.now();
             touchMoved = false;
@@ -454,7 +411,6 @@ $(document).ready(function() {
         $('#calendar').on('touchend', '.fc-day:not(.fc-other-month)', function(e) {
             e.preventDefault();
             
-            // Solo procesar si fue un tap rápido (no scroll)
             var touchDuration = Date.now() - touchStartTime;
             if (touchMoved || touchDuration > 500) {
                 return;
@@ -462,14 +418,12 @@ $(document).ready(function() {
             
             var target = e.originalEvent.target || e.target;
             
-            // Solo si no es click en número de día o eventos existentes
             if (!$(target).hasClass('fc-day-number') && 
                 !$(target).hasClass('fc-day-top') && 
                 !$(target).closest('.fc-event').length) {
                 
                 var dateStr = $(this).data('date');
                 if (dateStr) {
-                    // Open modal for event creation
                     if (typeof window.openUnifiedModalForCreate === 'function') {
                         window.openUnifiedModalForCreate();
                         setTimeout(function() {
@@ -484,9 +438,7 @@ $(document).ready(function() {
             }
         });
         
-        // Fallback para dispositivos que no detectan touch correctamente
         $('#calendar').on('click', '.fc-day:not(.fc-other-month)', function(e) {
-            // Solo ejecutar si no hubo evento touch reciente
             if (Date.now() - touchStartTime > 1000) {
                 var target = e.target || e.srcElement;
                 
@@ -507,7 +459,6 @@ $(document).ready(function() {
         });
     }
     
-    // Fallback adicional para tablets que no se detectan como touch
     if (window.innerWidth > 768 && window.innerWidth <= 1024) {
         $('#calendar').on('click', '.fc-day:not(.fc-other-month)', function(e) {
             var target = e.target || e.srcElement;

@@ -1,8 +1,4 @@
 <?php
-/**
- * Process Birthday - Handle birthday creation and updates
- * Requirements: 2.1, 2.2
- */
 
 include('config.php');
 
@@ -36,7 +32,7 @@ $dia_nacimiento = $date_parts['day'];
 $mes_nacimiento = $date_parts['month'];
 
 try {
-    // Check if this is an update (if birthday_id or event_id is provided)
+     (if birthday_id or event_id is provided)
     $birthday_id = null;
     if (isset($_POST['birthday_id']) && !empty($_POST['birthday_id'])) {
         $birthday_id = intval($_POST['birthday_id']);
@@ -45,7 +41,7 @@ try {
     }
     
     if ($birthday_id) {
-        // Update existing birthday
+         birthday
         $sql = "UPDATE cumpleanos SET nombre = ?, dia_nacimiento = ?, mes_nacimiento = ?, color_cumpleanos = ? WHERE id = ?";
         $stmt = mysqli_prepare($con, $sql);
         
@@ -64,7 +60,7 @@ try {
         echo json_encode(['success' => true, 'message' => 'Birthday updated successfully', 'id' => $birthday_id]);
         
     } else {
-        // Create new birthday
+         birthday
         $sql = "INSERT INTO cumpleanos (nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos) VALUES (?, ?, ?, ?)";
         $stmt = mysqli_prepare($con, $sql);
         

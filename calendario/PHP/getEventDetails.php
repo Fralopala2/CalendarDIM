@@ -1,10 +1,4 @@
 <?php
-/**
- * Get Event Details Endpoint
- * 
- * Returns complete event details for editing modal
- * Ensures all fields including time and description are available
- */
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');

@@ -1,8 +1,4 @@
 <?php
-/**
- * Delete Birthday - Handle birthday deletion
- * Requirements: 2.1
- */
 
 require_once('config.php');
 
@@ -16,7 +12,7 @@ if (!isset($_REQUEST['id']) || empty($_REQUEST['id'])) {
 $id = intval($_REQUEST['id']);
 
 try {
-    // Delete birthday from database
+     birthday from database
     $sqlDeleteBirthday = "DELETE FROM cumpleanos WHERE id = ?";
     $stmt = mysqli_prepare($con, $sqlDeleteBirthday);
     

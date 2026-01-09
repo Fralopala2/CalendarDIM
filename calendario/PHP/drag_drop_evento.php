@@ -10,7 +10,6 @@ $fecha_inicio     = date('Y-m-d', strtotime($start));
 $end              = $_REQUEST['end']; 
 $fecha_fin        = date('Y-m-d', strtotime($end));  
 
-
 $UpdateProd = ("UPDATE eventoscalendar 
     SET 
         fecha_inicio ='$fecha_inicio',

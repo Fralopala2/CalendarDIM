@@ -1,10 +1,4 @@
 <?php
-/**
- * PHP Endpoint for Sidebar Content
- * Serves sidebar timeline content via AJAX for selected dates
- * 
- * Requirements: 1.2, 1.3, 1.4, 1.7, 1.8, 1.9
- */
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -31,10 +25,10 @@ if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $selectedDate)) {
 }
 
 try {
-    // Get events for the selected date
+     for the selected date
     $events = $eventManager->getEventsForDate($selectedDate);
     
-    // Get birthdays for the selected date
+     for the selected date
     $birthdays = $birthdayManager->getBirthdaysForDate($selectedDate);
     
     // Organize events chronologically
@@ -120,9 +114,6 @@ try {
     ]);
 }
 
-/**
- * Format date for display in sidebar header
- */
 function formatDateForDisplay($date) {
     $dateObj = new DateTime($date);
     $today = new DateTime();

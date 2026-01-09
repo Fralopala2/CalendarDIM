@@ -1,11 +1,4 @@
 <?php
-/**
- * Database Configuration and Event Loading
- * 
- * Enhanced to include new fields (hora_inicio, descripcion) in event queries
- * and birthday loading for calendar display
- * Requirements: 3.6, 4.4, 2.3, 2.4
- */
 
 $usuario  = "root";
 $password = "";

@@ -1,12 +1,4 @@
 <?php
-/**
- * Enhanced Event Creation Handler
- * 
- * Handles creation of new events with time and description support
- * Uses EventManager class for unified CRUD operations
- * 
- * Requirements: 3.4, 3.6, 4.4
- */
 
 date_default_timezone_set("Europe/Madrid");
 setlocale(LC_ALL,"es_ES");
