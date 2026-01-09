@@ -17,7 +17,7 @@ class BirthdayManager {
     
     /**
      * Save birthday - creates new or updates existing based on ID presence
-     * Requirement 2.2: Store person's name, day, and month in cumpleañoscalendar table
+     * Requirement 2.2: Store person's name, day, and month in cumpleanos table
      */
     public function saveBirthday($data) {
         try {

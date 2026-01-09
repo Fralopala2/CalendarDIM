@@ -17,7 +17,7 @@ include('PHP/config.php');
     <!-- CSS para Tablets (pantallas medianas) -->
     <link rel="stylesheet" type="text/css" href="css/home-tablet.css?v=<?php echo time(); ?>" media="(min-width: 769px) and (max-width: 1024px)">
     <!-- CSS para Móvil (pantallas pequeñas) -->
-    <link rel="stylesheet" type="text/css" href="css/home-mobile.css?v=<?php echo time(); ?>" media="(max-width: 768px)">>
+    <link rel="stylesheet" type="text/css" href="css/home-mobile.css?v=<?php echo time(); ?>" media="(max-width: 768px)">
 </head>
 <body>
 <div class="banner-container">
@@ -364,21 +364,28 @@ $(document).ready(function() {
         }
     });
     
-    // Funcion para alternar sidebar mejorada para móvil
+    // Funcion para alternar sidebar mejorada para móvil y tablet
     window.toggleSidebar = function() {
         var sidebar = $('#sidebar-container');
-        var isMobile = window.innerWidth <= 768;
+        var indicator = $('.sidebar-toggle-indicator');
+        var isMobileOrTablet = window.innerWidth <= 1024;
         
         if (sidebar.hasClass('sidebar-expanded')) {
             sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
+            if (indicator.length) {
+                indicator.text('▶'); // Cambiar flecha para indicar que se puede expandir
+            }
         } else {
             sidebar.removeClass('sidebar-collapsed').addClass('sidebar-expanded');
+            if (indicator.length) {
+                indicator.text('▼'); // Cambiar flecha para indicar que se puede colapsar
+            }
         }
     };
     
-    // Hacer clickeable el header del sidebar en móvil
+    // Hacer clickeable el header del sidebar en móvil y tablet
     $('#sidebar-header').on('click', function() {
-        if (window.innerWidth <= 768) {
+        if (window.innerWidth <= 1024) { // Incluir tablets
             window.toggleSidebar();
         }
     });
@@ -386,18 +393,44 @@ $(document).ready(function() {
     // Inicializar estado del sidebar según el tamaño de pantalla
     $(window).on('resize', function() {
         var sidebar = $('#sidebar-container');
-        var isMobile = window.innerWidth <= 768;
+        var indicator = $('.sidebar-toggle-indicator');
+        var screenWidth = window.innerWidth;
         
-        if (isMobile) {
+        if (screenWidth <= 768) {
             // En móvil, empezar colapsado
             if (!sidebar.hasClass('sidebar-collapsed')) {
                 sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
+                if (indicator.length) indicator.text('▶');
+            }
+        } else if (screenWidth > 768 && screenWidth <= 1024) {
+            // En tablet, empezar colapsado
+            if (!sidebar.hasClass('sidebar-collapsed')) {
+                sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
+                if (indicator.length) indicator.text('▶');
             }
         } else {
             // En desktop, empezar expandido
             if (!sidebar.hasClass('sidebar-expanded')) {
                 sidebar.removeClass('sidebar-collapsed').addClass('sidebar-expanded');
+                if (indicator.length) indicator.text('▼');
             }
+        }
+    });
+    
+    // Inicializar estado al cargar la página
+    $(document).ready(function() {
+        var sidebar = $('#sidebar-container');
+        var indicator = $('.sidebar-toggle-indicator');
+        var screenWidth = window.innerWidth;
+        
+        if (screenWidth <= 1024) {
+            // En móvil y tablet, empezar colapsado
+            sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
+            if (indicator.length) indicator.text('▶');
+        } else {
+            // En desktop, empezar expandido
+            sidebar.removeClass('sidebar-collapsed').addClass('sidebar-expanded');
+            if (indicator.length) indicator.text('▼');
         }
     });
     

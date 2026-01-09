@@ -659,8 +659,9 @@ window.initializeUnifiedModal = function() {
     }
     
     .col-sm-10 {
-        padding-left: 15px !important;
-        padding-right: 15px !important;
+        width: 96% !important; /* Mismo ancho en móviles */
+        padding-left: 15px !important; /* Mantener margen izquierdo */
+        padding-right: 5px !important; /* Reducir margen derecho */
     }
     
     .modal-footer {
@@ -702,6 +703,7 @@ window.initializeUnifiedModal = function() {
     border-radius: 6px;
     border: 1px solid #ced4da;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    width: calc(100% + 60px); /* Extender 40px más hacia la derecha */
 }
 
 .form-control:focus {
@@ -714,17 +716,19 @@ window.initializeUnifiedModal = function() {
 }
 
 .col-sm-10 {
-    width: 100%;
-    padding-left: 15px;
-    padding-right: 15px;
+    width: 96%; /* Aumentar más el ancho hacia la derecha */
+    padding-left: 15px; /* Mantener margen izquierdo original */
+    padding-right: 5px; /* Reducir margen derecho para más espacio */
 }
 
 /* Estilos para los radio buttons de tipo de evento */
 #event-type-selector {
     display: flex;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 6px;
+    margin: 20px 0;
     justify-content: center;
-    gap: 20px;
-    margin: 10px 0;
 }
 
 #event-type-selector input[type="radio"] {
@@ -732,24 +736,26 @@ window.initializeUnifiedModal = function() {
 }
 
 #event-type-selector label {
+    flex: 1;
+    text-align: center;
+    padding: 12px 24px;
+    border-radius: 6px;
     cursor: pointer;
-    padding: 8px 16px;
-    border: 2px solid #dee2e6;
-    border-radius: 20px;
-    transition: all 0.2s ease;
-    background-color: #fff;
-    font-weight: 500;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 14px;
+    margin: 0 4px;
 }
 
 #event-type-selector input[type="radio"]:checked + label {
-    background-color: #007bff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    border-color: #007bff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 #event-type-selector label:hover {
-    border-color: #007bff;
-    background-color: #f8f9fa;
+    background: rgba(102, 126, 234, 0.1);
 }
 
 /* Animaciones suaves */
@@ -765,6 +771,8 @@ window.initializeUnifiedModal = function() {
 .modal-header {
     border-bottom: 1px solid #dee2e6;
     border-radius: 10px 10px 0 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
 }
 
 .modal-footer {

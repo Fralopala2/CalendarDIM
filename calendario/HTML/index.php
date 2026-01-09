@@ -10,6 +10,7 @@ include('../PHP/config.php');
 	<link rel="stylesheet" type="text/css" href="../css/fullcalendar.min.css">
 	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../css/home.css">
+    <link rel="stylesheet" type="text/css" href="../css/home-tablet.css" media="screen and (min-width: 768px) and (max-width: 1024px)">
 </head>
 <body>
 <div class="banner-container">
@@ -24,6 +25,7 @@ include('../PHP/config.php');
     <div id="sidebar-container" class="sidebar-expanded">
         <div id="sidebar-header">
             <h3 id="selected-date" class="sidebar-title">Hoy</h3>
+            <span class="sidebar-toggle-indicator">▼</span>
         </div>
         <div id="sidebar-content" class="sidebar-content">
             <div id="timeline-container" class="timeline-container">
@@ -60,13 +62,18 @@ $(document).ready(function() {
         var sidebar = $('#sidebar-container');
         var screenWidth = $(window).width();
         
-        // Auto-collapse sidebar on screens smaller than 768px (tablet breakpoint)
+        // Auto-collapse sidebar on screens smaller than 768px (mobile breakpoint)
         if (screenWidth < 768) {
             if (!sidebar.hasClass('sidebar-collapsed')) {
                 sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
             }
+        } else if (screenWidth >= 768 && screenWidth <= 1024) {
+            // Tablet range - ensure sidebar starts collapsed
+            if (!sidebar.hasClass('sidebar-collapsed')) {
+                sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
+            }
         } else {
-            // Auto-expand sidebar on larger screens if it was auto-collapsed
+            // Desktop - auto-expand sidebar on larger screens
             if (sidebar.hasClass('sidebar-collapsed')) {
                 sidebar.removeClass('sidebar-collapsed').addClass('sidebar-expanded');
             }
@@ -268,7 +275,7 @@ $(document).ready(function() {
             }
             
             $currentYear = date('Y');
-            $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos FROM cumpleañoscalendar";
+            $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos FROM cumpleanos";
             $result = mysqli_query($con, $sql);
             
             if ($result) {
@@ -362,14 +369,38 @@ $(document).ready(function() {
     // Funcion para alternar sidebar
     window.toggleSidebar = function() {
         var sidebar = $('#sidebar-container');
-        var calendar = $('.calendar-container');
+        var indicator = $('.sidebar-toggle-indicator');
         
         if (sidebar.hasClass('sidebar-expanded')) {
             sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
+            indicator.text('▶'); // Cambiar flecha para indicar que se puede expandir
         } else {
             sidebar.removeClass('sidebar-collapsed').addClass('sidebar-expanded');
+            indicator.text('▼'); // Cambiar flecha para indicar que se puede colapsar
         }
     };
+    
+    // Hacer clickeable el header del sidebar para tablets y móviles
+    $('#sidebar-header').on('click', function(e) {
+        var screenWidth = $(window).width();
+        
+        // Solo permitir click en header en tablets y móviles
+        if (screenWidth <= 1024) {
+            e.preventDefault();
+            window.toggleSidebar();
+        }
+    });
+    
+    // Prevenir que el click en el título o indicador propague al header
+    $('#selected-date, .sidebar-toggle-indicator').on('click', function(e) {
+        e.stopPropagation();
+        var screenWidth = $(window).width();
+        
+        // Solo permitir toggle en tablets y móviles
+        if (screenWidth <= 1024) {
+            window.toggleSidebar();
+        }
+    });
     
 });
 </script>

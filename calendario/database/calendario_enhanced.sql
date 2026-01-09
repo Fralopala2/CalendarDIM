@@ -36,10 +36,10 @@ CREATE TABLE `eventoscalendar` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cumpleañoscalendar`
+-- Table structure for table `cumpleanos`
 --
 
-CREATE TABLE `cumpleañoscalendar` (
+CREATE TABLE `cumpleanos` (
   `id` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL COMMENT 'Name of the person',
   `dia_nacimiento` int(2) NOT NULL COMMENT 'Birth day (1-31)',
@@ -73,9 +73,9 @@ ALTER TABLE `eventoscalendar`
   ADD KEY `idx_fecha_fin` (`fecha_fin`);
 
 --
--- Indexes for table `cumpleañoscalendar`
+-- Indexes for table `cumpleanos`
 --
-ALTER TABLE `cumpleañoscalendar`
+ALTER TABLE `cumpleanos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_birth_date` (`dia_nacimiento`,`mes_nacimiento`);
 
@@ -97,9 +97,9 @@ ALTER TABLE `eventoscalendar`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `cumpleañoscalendar`
+-- AUTO_INCREMENT for table `cumpleanos`
 --
-ALTER TABLE `cumpleañoscalendar`
+ALTER TABLE `cumpleanos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
