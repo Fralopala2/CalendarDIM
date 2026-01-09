@@ -164,17 +164,27 @@
 <script>
 // Modal functions - will be called from index.php
 window.initializeUnifiedModal = function() {
+    console.log('Inicializando modal unificado...');
+    
+    // Verificar que el modal existe en el DOM
+    if ($('#unifiedEventModal').length === 0) {
+        console.error('Modal no encontrado en el DOM');
+        return false;
+    }
+    
+    console.log('Modal encontrado, configurando funciones...');
     
     // Global variable to track modal mode
     window.unifiedModalMode = 'create';
     
     // Function to open modal in create mode
     window.openUnifiedModalForCreate = function() {
+        console.log('Intentando abrir modal para crear evento...');
         
-         modal exists
+        // Verificar que el modal existe
         if ($('#unifiedEventModal').length === 0) {
             console.error('Modal no encontrado en el DOM');
-            alert('Error: Modal no encontrado. Verifica que modalUnifiedEvent.php esté incluido.');
+            alert('Error: Modal no encontrado. Recarga la página.');
             return;
         }
         
@@ -200,7 +210,8 @@ window.initializeUnifiedModal = function() {
         $('#save-btn').text('Guardar').prop('disabled', false);
         $('#delete-btn').prop('disabled', true);
         
-        // Show modal with mobile-specific handling
+        // Show modal with better error handling
+        console.log('Mostrando modal...');
         try {
             $('#unifiedEventModal').modal({
                 backdrop: 'static',
@@ -208,9 +219,10 @@ window.initializeUnifiedModal = function() {
                 focus: true,
                 show: true
             });
+            console.log('Modal mostrado correctamente');
         } catch (error) {
-            // Error showing modal
-            // Fallback para móvil - mostrar modal manualmente
+            console.error('Error mostrando modal:', error);
+            // Fallback manual para mostrar modal
             $('#unifiedEventModal').addClass('show').css('display', 'block');
             $('body').addClass('modal-open');
             
@@ -218,6 +230,7 @@ window.initializeUnifiedModal = function() {
             if ($('.modal-backdrop').length === 0) {
                 $('<div class="modal-backdrop fade show"></div>').appendTo('body');
             }
+            console.log('Modal mostrado con fallback manual');
         }
     };
     
@@ -297,7 +310,7 @@ window.initializeUnifiedModal = function() {
         if (birthdayData.color) {
             $('input[name="birthday_color"][value="' + birthdayData.color + '"]').prop('checked', true);
         } else {
-             to first birthday color
+            // Default to first birthday color
             $('input[name="birthday_color"]:first').prop('checked', true);
         }
         
@@ -346,8 +359,23 @@ window.initializeUnifiedModal = function() {
         
         var eventType = $('input[name="event_type"]:checked').val();
         
-        // No need to convert dates - HTML5 date inputs already provide YYYY-MM-DD format
-        // which is what our backend expects after parsing
+        // Validación manual para cumpleaños
+        if (eventType === 'birthday') {
+            var birthdayName = $('#birthday_name').val().trim();
+            var birthdayDate = $('#birthday_date').val();
+            
+            if (!birthdayName) {
+                alert('Por favor, ingresa el nombre de la persona');
+                $('#birthday_name').focus();
+                return false;
+            }
+            
+            if (!birthdayDate) {
+                alert('Por favor, selecciona la fecha de cumpleaños');
+                $('#birthday_date').focus();
+                return false;
+            }
+        }
         
         var formData = $(this).serialize();
         
@@ -362,6 +390,8 @@ window.initializeUnifiedModal = function() {
                 targetUrl = 'PHP/nuevoEvento.php';
             }
         }
+        
+        console.log('URL de destino:', targetUrl);
         
         // Submit form via AJAX
         $.ajax({
@@ -460,6 +490,9 @@ window.initializeUnifiedModal = function() {
             }
         }
     });
+    
+    console.log('Modal unificado inicializado correctamente');
+    return true;
 };
 </script>
 

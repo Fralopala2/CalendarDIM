@@ -11,7 +11,7 @@ if (!isset($_GET['date'])) {
 $date = $_GET['date'];
 
 try {
-     regulares
+    // Obtener eventos regulares
     $sql = "SELECT id, evento, fecha_inicio, fecha_fin, color_evento, hora_inicio, descripcion, 'event' as type
             FROM eventoscalendar 
             WHERE fecha_inicio = ? 

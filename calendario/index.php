@@ -10,6 +10,7 @@ include('PHP/config.php');
 	<meta http-equiv="Pragma" content="no-cache">
 	<meta http-equiv="Expires" content="0">
 	<title>Calendario - Versión Final</title>
+	<link rel="icon" type="image/svg+xml" href="IMAGES/ImagenAgenda.svg">
 	<link rel="stylesheet" type="text/css" href="css/fullcalendar.min.css">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/home.css?v=<?php echo time(); ?>" media="(min-width: 1025px)">
@@ -58,12 +59,35 @@ include('PHP/config.php');
 $(document).ready(function() {
     var isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
     
-    if (typeof window.initializeUnifiedModal === 'function') {
-        window.initializeUnifiedModal();
-    }
-    
+    // Inicializar el modal unificado
     setTimeout(function() {
-    }, 500);
+        console.log('Verificando dependencias...');
+        
+        // Verificar que jQuery y Bootstrap estén cargados
+        if (typeof $ === 'undefined') {
+            console.error('jQuery no está cargado');
+            return;
+        }
+        console.log('✓ jQuery cargado');
+        
+        if (typeof $.fn.modal === 'undefined') {
+            console.error('Bootstrap modal no está disponible');
+            return;
+        }
+        console.log('✓ Bootstrap modal disponible');
+        
+        if (typeof window.initializeUnifiedModal === 'function') {
+            console.log('✓ initializeUnifiedModal disponible');
+            var modalInitialized = window.initializeUnifiedModal();
+            if (modalInitialized) {
+                console.log('✅ Modal inicializado correctamente');
+            } else {
+                console.error('❌ Error: No se pudo inicializar el modal');
+            }
+        } else {
+            console.error('❌ initializeUnifiedModal no está disponible');
+        }
+    }, 500); // Aumentar el tiempo para asegurar que todo esté cargado
     
     $("#calendar").fullCalendar({
         header: {
@@ -211,7 +235,7 @@ $(document).ready(function() {
                 }, 100);
             } else {
                 console.error('openUnifiedModalForCreate function not found');
-                alert('Error: No se pudo abrir el modal. Recarga la página.');
+                alert('Error: No se pudo abrir el modal. Intenta recargar la página.');
             }
         },
         
@@ -432,7 +456,7 @@ $(document).ready(function() {
                         }, 200);
                     } else {
                         console.error('Función openUnifiedModalForCreate no encontrada');
-                        alert('Error: No se pudo abrir el modal. Recarga la página.');
+                        alert('Error: No se pudo abrir el modal. Intenta recargar la página.');
                     }
                 }
             }

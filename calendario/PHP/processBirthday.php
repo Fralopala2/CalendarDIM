@@ -32,7 +32,7 @@ $dia_nacimiento = $date_parts['day'];
 $mes_nacimiento = $date_parts['month'];
 
 try {
-     (if birthday_id or event_id is provided)
+    // Check if updating existing birthday (if birthday_id or event_id is provided)
     $birthday_id = null;
     if (isset($_POST['birthday_id']) && !empty($_POST['birthday_id'])) {
         $birthday_id = intval($_POST['birthday_id']);
@@ -41,7 +41,7 @@ try {
     }
     
     if ($birthday_id) {
-         birthday
+        // Update existing birthday
         $sql = "UPDATE cumpleanos SET nombre = ?, dia_nacimiento = ?, mes_nacimiento = ?, color_cumpleanos = ? WHERE id = ?";
         $stmt = mysqli_prepare($con, $sql);
         
@@ -60,7 +60,7 @@ try {
         echo json_encode(['success' => true, 'message' => 'Birthday updated successfully', 'id' => $birthday_id]);
         
     } else {
-         birthday
+        // Create new birthday
         $sql = "INSERT INTO cumpleanos (nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos) VALUES (?, ?, ?, ?)";
         $stmt = mysqli_prepare($con, $sql);
         
