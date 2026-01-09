@@ -59,23 +59,17 @@ include('PHP/config.php');
 
 <script>
 $(document).ready(function() {
-    // Debug: Verificar que estamos en móvil
+    // Check screen size and auto-collapse sidebar
     var isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-    console.log('Dispositivo móvil detectado:', isMobileDevice);
-    console.log('Ancho de ventana:', window.innerWidth);
     
-    // Initialize modal con verificación
+    // Initialize modal
     if (typeof window.initializeUnifiedModal === 'function') {
         window.initializeUnifiedModal();
-        console.log('Modal inicializado correctamente');
-    } else {
-        console.error('Función initializeUnifiedModal no encontrada');
     }
     
-    // Verificar que las funciones del modal existen después de la inicialización
+    // Verify modal functions are available after initialization
     setTimeout(function() {
-        console.log('openUnifiedModalForCreate existe:', typeof window.openUnifiedModalForCreate === 'function');
-        console.log('openUnifiedModalForEdit existe:', typeof window.openUnifiedModalForEdit === 'function');
+        // Modal functions should be available now
     }, 500);
     
     $("#calendar").fullCalendar({
@@ -475,9 +469,8 @@ $(document).ready(function() {
                 
                 var dateStr = $(this).data('date');
                 if (dateStr) {
-                    // Verificar que la función existe
+                    // Open modal for event creation
                     if (typeof window.openUnifiedModalForCreate === 'function') {
-                        console.log('Abriendo modal para fecha:', dateStr);
                         window.openUnifiedModalForCreate();
                         setTimeout(function() {
                             $("#fecha_inicio").val(dateStr);
@@ -503,7 +496,6 @@ $(document).ready(function() {
                     
                     var dateStr = $(this).data('date');
                     if (dateStr && typeof window.openUnifiedModalForCreate === 'function') {
-                        console.log('Abriendo modal via click fallback para fecha:', dateStr);
                         window.openUnifiedModalForCreate();
                         setTimeout(function() {
                             $("#fecha_inicio").val(dateStr);
@@ -526,7 +518,6 @@ $(document).ready(function() {
                 
                 var dateStr = $(this).data('date');
                 if (dateStr && typeof window.openUnifiedModalForCreate === 'function') {
-                    console.log('Abriendo modal para tablet en fecha:', dateStr);
                     window.openUnifiedModalForCreate();
                     setTimeout(function() {
                         $("#fecha_inicio").val(dateStr);

@@ -167,14 +167,12 @@
 <script>
 // Modal functions - will be called from index.php
 window.initializeUnifiedModal = function() {
-    console.log('Inicializando modal unificado...');
     
     // Global variable to track modal mode
     window.unifiedModalMode = 'create';
     
     // Function to open modal in create mode
     window.openUnifiedModalForCreate = function() {
-        console.log('Intentando abrir modal para crear evento...');
         
         // Check if modal exists
         if ($('#unifiedEventModal').length === 0) {
@@ -183,7 +181,6 @@ window.initializeUnifiedModal = function() {
             return;
         }
         
-        console.log('Modal encontrado, configurando para crear...');
         window.unifiedModalMode = 'create';
         
         // Clear all form fields
@@ -214,9 +211,8 @@ window.initializeUnifiedModal = function() {
                 focus: true,
                 show: true
             });
-            console.log('Modal mostrado correctamente');
         } catch (error) {
-            console.error('Error al mostrar modal:', error);
+            // Error showing modal
             // Fallback para móvil - mostrar modal manualmente
             $('#unifiedEventModal').addClass('show').css('display', 'block');
             $('body').addClass('modal-open');
