@@ -1,356 +1,261 @@
-class UnifiedModal {
-    constructor() {
-        this.eventManager = null;
-        this.birthdayManager = null;
-        this.currentEventId = null;
-        this.currentBirthdayId = null;
-        this.isEditMode = false;
-        this.selectedDate = null;
-    }
-
-    init(eventManager, birthdayManager) {
-        this.eventManager = eventManager;
-        this.birthdayManager = birthdayManager;
-        this.createModalHTML();
-        this.bindEvents();
-    }
-
-    createModalHTML() {
-        const modalHTML = `
-            <div class="modal" id="unifiedEventModal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header text-center">
-                            <h5 class="modal-title">Gestión de eventos</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        
-                        <form id="formUnifiedEvent" class="form-horizontal">
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <div class="col-sm-12">
-                                        <div id="event-type-selector">
-                                            <input type="radio" name="event_type" value="event" id="event_type_event" checked>
-                                            <label for="event_type_event">Evento</label>
-                                            <input type="radio" name="event_type" value="birthday" id="event_type_birthday">
-                                            <label for="event_type_birthday">Cumpleaños</label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div id="event-fields">
-                                    <div class="form-group">
-                                        <label for="evento" class="col-sm-12 control-label">Nombre del Evento</label>
-                                        <div class="col-sm-12">
-                                            <input type="text" class="form-control" name="evento" id="evento" 
-                                                   placeholder="Nombre del Evento" required/>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="hora_inicio" class="col-sm-12 control-label">Hora de Inicio</label>
-                                        <div class="col-sm-12">
-                                            <input type="time" class="form-control" name="hora_inicio" id="hora_inicio">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="descripcion" class="col-sm-12 control-label">Descripción</label>
-                                        <div class="col-sm-12">
-                                            <textarea class="form-control" name="descripcion" id="descripcion" 
-                                                      placeholder="Descripción del evento" rows="3"></textarea>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="fecha_inicio" class="col-sm-12 control-label">Fecha Inicio</label>
-                                        <div class="col-sm-12">
-                                            <input type="date" class="form-control" name="fecha_inicio" id="fecha_inicio" 
-                                                   placeholder="Fecha Inicio" required>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="fecha_fin" class="col-sm-12 control-label">Fecha Final</label>
-                                        <div class="col-sm-12">
-                                            <input type="date" class="form-control" name="fecha_fin" id="fecha_fin" 
-                                                   placeholder="Fecha Final" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="col-sm-12 control-label">Color del Evento</label>
-                                        <div class="col-md-12">
-                                            <div id="event-color-palette" class="color-palette">
-                                                <input type="radio" name="color_evento" id="color_1" value="#007bff" checked>
-                                                <label for="color_1" class="color-option" style="background-color: #007bff;"></label>
-                                                
-                                                <input type="radio" name="color_evento" id="color_2" value="#28a745">
-                                                <label for="color_2" class="color-option" style="background-color: #28a745;"></label>
-                                                
-                                                <input type="radio" name="color_evento" id="color_3" value="#dc3545">
-                                                <label for="color_3" class="color-option" style="background-color: #dc3545;"></label>
-                                                
-                                                <input type="radio" name="color_evento" id="color_4" value="#ffc107">
-                                                <label for="color_4" class="color-option" style="background-color: #ffc107;"></label>
-                                                
-                                                <input type="radio" name="color_evento" id="color_5" value="#6f42c1">
-                                                <label for="color_5" class="color-option" style="background-color: #6f42c1;"></label>
-                                                
-                                                <input type="radio" name="color_evento" id="color_6" value="#fd7e14">
-                                                <label for="color_6" class="color-option" style="background-color: #fd7e14;"></label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div id="birthday-fields" style="display: none;">
-                                    <div class="form-group">
-                                        <label for="birthday_name" class="col-sm-12 control-label">Nombre de la Persona</label>
-                                        <div class="col-sm-12">
-                                            <input type="text" class="form-control" name="birthday_name" id="birthday_name" 
-                                                   placeholder="Nombre de la persona">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="birthday_day" class="col-sm-12 control-label">Día</label>
-                                        <div class="col-sm-12">
-                                            <select class="form-control" name="birthday_day" id="birthday_day">
-                                                <option value="">Seleccionar día</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="birthday_month" class="col-sm-12 control-label">Mes</label>
-                                        <div class="col-sm-12">
-                                            <select class="form-control" name="birthday_month" id="birthday_month">
-                                                <option value="">Seleccionar mes</option>
-                                                <option value="1">Enero</option>
-                                                <option value="2">Febrero</option>
-                                                <option value="3">Marzo</option>
-                                                <option value="4">Abril</option>
-                                                <option value="5">Mayo</option>
-                                                <option value="6">Junio</option>
-                                                <option value="7">Julio</option>
-                                                <option value="8">Agosto</option>
-                                                <option value="9">Septiembre</option>
-                                                <option value="10">Octubre</option>
-                                                <option value="11">Noviembre</option>
-                                                <option value="12">Diciembre</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                <button type="button" id="deleteEventBtn" class="btn btn-danger" style="display: none;">Eliminar</button>
-                                <button type="submit" class="btn btn-primary">Guardar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        $('body').append(modalHTML);
-        this.populateDayOptions();
-    }
-
-    populateDayOptions() {
-        const daySelect = $('#birthday_day');
-        for (let i = 1; i <= 31; i++) {
-            daySelect.append(`<option value="${i}">${i}</option>`);
-        }
-    }
-
-    bindEvents() {
-        $('input[name="event_type"]').on('change', () => {
-            this.toggleEventType();
-        });
-
-        $('#formUnifiedEvent').on('submit', (e) => {
-            e.preventDefault();
-            this.saveEvent();
-        });
-
-        $('#deleteEventBtn').on('click', () => {
-            this.deleteEvent();
-        });
-
-        $('.close, [data-dismiss="modal"]').on('click', () => {
-            this.closeModal();
-        });
-    }
-
-    toggleEventType() {
-        const eventType = $('input[name="event_type"]:checked').val();
+// Modal functions - will be called from index.html
+window.initializeUnifiedModal = function() {
+    
+    // Global variable to track modal mode
+    window.unifiedModalMode = 'create';
+    
+    // Function to open modal in create mode
+    window.openUnifiedModalForCreate = function() {
+        window.unifiedModalMode = 'create';
         
-        if (eventType === 'event') {
-            $('#event-fields').show();
-            $('#birthday-fields').hide();
+        // Clear all form fields
+        $('#event_id').val('');
+        $('#evento').val('');
+        $('#hora_inicio').val('');
+        $('#descripcion').val('');
+        $('#fecha_inicio').val('');
+        $('#fecha_fin').val('');
+        $('#birthday_name').val('');
+        $('#birthday_date').val('');
+        
+        // Set to event mode by default
+        $('input[name="event_type"][value="event"]').prop('checked', true).trigger('change');
+        
+        // Reset color selection to first option
+        $('input[name="color_evento"]:first').prop('checked', true);
+        
+        // Update button states for create mode
+        $('#save-btn').text('Guardar').prop('disabled', false);
+        $('#delete-btn').prop('disabled', true);
+        
+        // Show modal
+        $('#unifiedEventModal').modal({
+            backdrop: 'static',
+            keyboard: true,
+            focus: true,
+            show: true
+        });
+    };
+    
+    // Function to open modal in edit mode
+    window.openUnifiedModalForEdit = function(eventData) {
+        window.unifiedModalMode = 'edit';
+        
+        // Populate form fields with event data
+        $('#event_id').val(eventData.id);
+        $('#evento').val(eventData.evento || eventData.title);
+        $('#hora_inicio').val(eventData.hora_inicio || '');
+        $('#descripcion').val(eventData.descripcion || '');
+        
+        // Set dates
+        $('#fecha_inicio').val(eventData.fecha_inicio || eventData.start);
+        $('#fecha_fin').val(eventData.fecha_fin || eventData.end);
+        
+        // Set to event mode
+        $('input[name="event_type"][value="event"]').prop('checked', true).trigger('change');
+        
+        // Set color selection if available
+        if (eventData.color_evento || eventData.color) {
+            $('input[name="color_evento"][value="' + (eventData.color_evento || eventData.color) + '"]').prop('checked', true);
+        }
+        
+        // Update button states for edit mode
+        $('#save-btn').text('Actualizar').prop('disabled', false);
+        $('#delete-btn').prop('disabled', false);
+        
+        // Show modal
+        $('#unifiedEventModal').modal('show');
+    };
+    
+    // Function to open modal in birthday edit mode
+    window.openUnifiedModalForBirthdayEdit = function(birthdayData) {
+        window.unifiedModalMode = 'edit';
+        
+        // Clear all form fields first
+        $('#event_id').val('');
+        $('#evento').val('');
+        $('#hora_inicio').val('');
+        $('#descripcion').val('');
+        $('#fecha_inicio').val('');
+        $('#fecha_fin').val('');
+        $('#birthday_name').val('');
+        $('#birthday_date').val('');
+        
+        // Set to birthday mode
+        $('input[name="event_type"][value="birthday"]').prop('checked', true).trigger('change');
+        
+        // Populate birthday fields
+        $('#event_id').val(birthdayData.birthday_id || birthdayData.id);
+        $('#birthday_name').val(birthdayData.nombre || birthdayData.name);
+        
+        // Set the birthday date
+        var birthdayDateFormatted = birthdayData.date || 
+            new Date().getFullYear() + '-' + 
+            String(birthdayData.mes_nacimiento || birthdayData.month).padStart(2, '0') + '-' + 
+            String(birthdayData.dia_nacimiento || birthdayData.day).padStart(2, '0');
+        $('#birthday_date').val(birthdayDateFormatted);
+        
+        // Set birthday color if available
+        if (birthdayData.color) {
+            $('input[name="birthday_color"][value="' + birthdayData.color + '"]').prop('checked', true);
         } else {
+            $('input[name="birthday_color"]:first').prop('checked', true);
+        }
+        
+        // Update button states for edit mode
+        $('#save-btn').text('Actualizar').prop('disabled', false);
+        $('#delete-btn').prop('disabled', false);
+        
+        // Show modal
+        $('#unifiedEventModal').modal('show');
+    };
+    
+    // Toggle between event and birthday fields
+    $('input[name="event_type"]').change(function() {
+        if ($(this).val() === 'birthday') {
             $('#event-fields').hide();
             $('#birthday-fields').show();
-        }
-    }
-
-    openModal(date = null, eventData = null) {
-        this.selectedDate = date;
-        this.resetForm();
-        
-        if (eventData) {
-            this.isEditMode = true;
-            this.populateForm(eventData);
-            $('#deleteEventBtn').show();
+            $('#color-selection-group').hide();
+            
+            $('#evento').removeAttr('required');
+            $('#fecha_inicio').removeAttr('required');
+            $('#fecha_fin').removeAttr('required');
+            
+            $('#birthday_name').attr('required', true);
+            $('#birthday_date').attr('required', true);
         } else {
-            this.isEditMode = false;
-            $('#deleteEventBtn').hide();
-            if (date) {
-                $('#fecha_inicio').val(date);
-                $('#fecha_fin').val(date);
+            $('#event-fields').show();
+            $('#birthday-fields').hide();
+            $('#color-selection-group').show();
+            
+            $('#evento').attr('required', true);
+            $('#fecha_inicio').attr('required', true);
+            $('#fecha_fin').attr('required', true);
+            
+            $('#birthday_name').removeAttr('required');
+            $('#birthday_date').removeAttr('required');
+        }
+    });
+    
+    // Handle form submission
+    $('#formUnifiedEvent').submit(function(e) {
+        e.preventDefault();
+        
+        var eventType = $('input[name="event_type"]:checked').val();
+        
+        if (eventType === 'birthday') {
+            var birthdayName = $('#birthday_name').val().trim();
+            var birthdayDate = $('#birthday_date').val();
+            var birthdayColor = $('input[name="birthday_color"]:checked').val();
+            
+            if (!birthdayName) {
+                alert('Por favor, ingresa el nombre de la persona');
+                $('#birthday_name').focus();
+                return false;
+            }
+            
+            if (!birthdayDate) {
+                alert('Por favor, selecciona la fecha de cumpleaños');
+                $('#birthday_date').focus();
+                return false;
+            }
+            
+            var birthdayDateObj = new Date(birthdayDate);
+            var birthdayData = {
+                nombre: birthdayName,
+                dia_nacimiento: birthdayDateObj.getDate(),
+                mes_nacimiento: birthdayDateObj.getMonth() + 1,
+                color_cumpleanos: birthdayColor
+            };
+            
+            if (window.unifiedModalMode === 'edit') {
+                birthdayData.id = $('#event_id').val();
+            }
+            
+            if (window.birthdayManager) {
+                window.birthdayManager.saveBirthday(birthdayData)
+                    .then(function(response) {
+                        $('#unifiedEventModal').modal('hide');
+                        window.refreshCalendar();
+                    })
+                    .catch(function(error) {
+                        alert('Error al guardar cumpleaños: ' + (error.error || error));
+                    });
+            }
+        } else {
+            var eventData = {
+                evento: $('#evento').val().trim(),
+                fecha_inicio: $('#fecha_inicio').val(),
+                fecha_fin: $('#fecha_fin').val(),
+                color_evento: $('input[name="color_evento"]:checked').val(),
+                hora_inicio: $('#hora_inicio').val() || null,
+                descripcion: $('#descripcion').val().trim() || null
+            };
+            
+            if (window.unifiedModalMode === 'edit') {
+                eventData.id = $('#event_id').val();
+            }
+            
+            if (window.eventManager) {
+                window.eventManager.saveEvent(eventData)
+                    .then(function(response) {
+                        $('#unifiedEventModal').modal('hide');
+                        window.refreshCalendar();
+                    })
+                    .catch(function(error) {
+                        alert('Error al guardar evento: ' + (error.error || error));
+                    });
             }
         }
-        
-        $('#unifiedEventModal').modal('show');
-    }
-
-    populateForm(eventData) {
-        if (eventData.type === 'birthday') {
-            $('input[name="event_type"][value="birthday"]').prop('checked', true);
-            this.toggleEventType();
+    });
+    
+    // Handle delete button
+    $('#delete-btn').click(function() {
+        var eventType = $('input[name="event_type"]:checked').val();
+        var confirmMessage = eventType === 'birthday' ? 
+            '¿Está seguro de que desea eliminar este cumpleaños?' : 
+            '¿Está seguro de que desea eliminar este evento?';
             
-            $('#birthday_name').val(eventData.nombre);
-            $('#birthday_day').val(eventData.dia_nacimiento);
-            $('#birthday_month').val(eventData.mes_nacimiento);
-            this.currentBirthdayId = eventData.birthday_id;
-        } else {
-            $('input[name="event_type"][value="event"]').prop('checked', true);
-            this.toggleEventType();
+        if (confirm(confirmMessage)) {
+            var eventId = $('#event_id').val();
             
-            $('#evento').val(eventData.evento || eventData.title);
-            $('#fecha_inicio').val(eventData.start);
-            $('#fecha_fin').val(eventData.end);
-            $('#hora_inicio').val(eventData.hora_inicio || '');
-            $('#descripcion').val(eventData.descripcion || '');
-            $(`input[name="color_evento"][value="${eventData.color}"]`).prop('checked', true);
-            this.currentEventId = eventData.id;
+            if (!eventId) {
+                alert('No se puede eliminar: ID no encontrado');
+                return;
+            }
+            
+            if (eventType === 'birthday' && window.birthdayManager) {
+                window.birthdayManager.deleteBirthday(eventId)
+                    .then(function(response) {
+                        $('#unifiedEventModal').modal('hide');
+                        window.refreshCalendar();
+                    })
+                    .catch(function(error) {
+                        alert('Error al eliminar cumpleaños: ' + (error.error || error));
+                    });
+            } else if (window.eventManager) {
+                window.eventManager.deleteEvent(eventId)
+                    .then(function(response) {
+                        $('#unifiedEventModal').modal('hide');
+                        window.refreshCalendar();
+                    })
+                    .catch(function(error) {
+                        alert('Error al eliminar evento: ' + (error.error || error));
+                    });
+            }
         }
-    }
-
-    resetForm() {
-        $('#formUnifiedEvent')[0].reset();
-        $('input[name="event_type"][value="event"]').prop('checked', true);
-        this.toggleEventType();
-        this.currentEventId = null;
-        this.currentBirthdayId = null;
-        this.isEditMode = false;
-    }
-
-    saveEvent() {
-        const eventType = $('input[name="event_type"]:checked').val();
-        
-        if (eventType === 'event') {
-            this.saveRegularEvent();
-        } else {
-            this.saveBirthday();
-        }
-    }
-
-    saveRegularEvent() {
-        const eventData = {
-            id: this.currentEventId,
-            evento: $('#evento').val(),
-            fecha_inicio: $('#fecha_inicio').val(),
-            fecha_fin: $('#fecha_fin').val(),
-            color_evento: $('input[name="color_evento"]:checked').val(),
-            hora_inicio: $('#hora_inicio').val(),
-            descripcion: $('#descripcion').val()
-        };
-
-        this.eventManager.saveEvent(eventData)
-            .then((result) => {
-                this.closeModal();
-                this.refreshCalendar();
-                this.showSuccess('Evento guardado correctamente');
-            })
-            .catch((error) => {
-                this.showError('Error al guardar el evento: ' + error.error);
-            });
-    }
-
-    saveBirthday() {
-        const birthdayData = {
-            id: this.currentBirthdayId,
-            nombre: $('#birthday_name').val(),
-            dia_nacimiento: $('#birthday_day').val(),
-            mes_nacimiento: $('#birthday_month').val()
-        };
-
-        this.birthdayManager.saveBirthday(birthdayData)
-            .then((result) => {
-                this.closeModal();
-                this.refreshCalendar();
-                this.showSuccess('Cumpleaños guardado correctamente');
-            })
-            .catch((error) => {
-                this.showError('Error al guardar el cumpleaños: ' + error.error);
-            });
-    }
-
-    deleteEvent() {
-        if (!confirm('¿Estás seguro de que quieres eliminar este elemento?')) {
-            return;
-        }
-
-        const eventType = $('input[name="event_type"]:checked').val();
-        
-        if (eventType === 'event' && this.currentEventId) {
-            this.eventManager.deleteEvent(this.currentEventId)
-                .then(() => {
-                    this.closeModal();
-                    this.refreshCalendar();
-                    this.showSuccess('Evento eliminado correctamente');
-                })
-                .catch((error) => {
-                    this.showError('Error al eliminar el evento: ' + error.error);
-                });
-        } else if (eventType === 'birthday' && this.currentBirthdayId) {
-            this.birthdayManager.deleteBirthday(this.currentBirthdayId)
-                .then(() => {
-                    this.closeModal();
-                    this.refreshCalendar();
-                    this.showSuccess('Cumpleaños eliminado correctamente');
-                })
-                .catch((error) => {
-                    this.showError('Error al eliminar el cumpleaños: ' + error.error);
-                });
-        }
-    }
-
-    closeModal() {
+    });
+    
+    // Handle modal close
+    $('.modal .close, .modal [data-dismiss="modal"]').click(function() {
         $('#unifiedEventModal').modal('hide');
-        this.resetForm();
-    }
-
-    refreshCalendar() {
-        if (window.calendarInstance) {
-            window.calendarInstance.refetchEvents();
+    });
+    
+    $('#unifiedEventModal').click(function(e) {
+        if (e.target === this) {
+            $(this).modal('hide');
         }
-    }
-
-    showSuccess(message) {
-        alert(message);
-    }
-
-    showError(message) {
-        alert(message);
-    }
-}
-
-window.unifiedModal = new UnifiedModal();
+    });
+    
+    return true;
+};

@@ -2,6 +2,8 @@ class DatabaseManager {
     constructor() {
         this.db = null;
         this.isInitialized = false;
+        this.useSQLite = false;
+        this.localStorage = window.localStorage;
     }
 
     init() {
@@ -11,24 +13,53 @@ class DatabaseManager {
                 return;
             }
 
-            document.addEventListener('deviceready', () => {
-                this.db = window.sqlitePlugin.openDatabase({
-                    name: 'calendario.db',
-                    location: 'default'
-                });
+            const initDatabase = () => {
+                if (window.sqlitePlugin) {
+                    this.useSQLite = true;
+                    this.db = window.sqlitePlugin.openDatabase({
+                        name: 'calendario.db',
+                        location: 'default'
+                    });
 
-                this.createTables()
-                    .then(() => {
-                        this.isInitialized = true;
-                        resolve(this.db);
-                    })
-                    .catch(reject);
-            });
+                    this.createTables()
+                        .then(() => {
+                            this.isInitialized = true;
+                            resolve(this.db);
+                        })
+                        .catch(reject);
+                } else {
+                    this.useSQLite = false;
+                    this.initLocalStorage();
+                    this.isInitialized = true;
+                    resolve(this.localStorage);
+                }
+            };
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('deviceready', initDatabase);
+                setTimeout(initDatabase, 2000);
+            } else {
+                initDatabase();
+            }
         });
+    }
+
+    initLocalStorage() {
+        if (!this.localStorage.getItem('calendario_eventos')) {
+            this.localStorage.setItem('calendario_eventos', JSON.stringify([]));
+        }
+        if (!this.localStorage.getItem('calendario_cumpleanos')) {
+            this.localStorage.setItem('calendario_cumpleanos', JSON.stringify([]));
+        }
     }
 
     createTables() {
         return new Promise((resolve, reject) => {
+            if (!this.useSQLite) {
+                resolve();
+                return;
+            }
+
             const createEventosTable = `
                 CREATE TABLE IF NOT EXISTS eventoscalendar (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,6 +102,10 @@ class DatabaseManager {
 
     getDatabase() {
         return this.db;
+    }
+
+    isUsingSQLite() {
+        return this.useSQLite;
     }
 }
 

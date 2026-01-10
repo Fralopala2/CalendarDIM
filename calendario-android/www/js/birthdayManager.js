@@ -1,6 +1,7 @@
 class BirthdayManager {
     constructor(database) {
         this.db = database;
+        this.useSQLite = window.databaseManager && window.databaseManager.isUsingSQLite();
     }
 
     saveBirthday(data) {
@@ -33,72 +34,149 @@ class BirthdayManager {
 
     createBirthday(nombre, diaNacimiento, mesNacimiento) {
         return new Promise((resolve, reject) => {
-            this.db.transaction(tx => {
-                tx.executeSql(
-                    'INSERT INTO cumpleanos (nombre, dia_nacimiento, mes_nacimiento) VALUES (?, ?, ?)',
-                    [nombre, diaNacimiento, mesNacimiento],
-                    (tx, result) => {
-                        resolve({
-                            success: true,
-                            message: 'Birthday created successfully',
-                            birthday_id: result.insertId
-                        });
-                    },
-                    (tx, error) => {
-                        reject({
-                            success: false,
-                            error: 'Failed to create birthday',
-                            details: error
-                        });
-                    }
-                );
-            });
+            if (this.useSQLite) {
+                this.db.transaction(tx => {
+                    tx.executeSql(
+                        'INSERT INTO cumpleanos (nombre, dia_nacimiento, mes_nacimiento) VALUES (?, ?, ?)',
+                        [nombre, diaNacimiento, mesNacimiento],
+                        (tx, result) => {
+                            resolve({
+                                success: true,
+                                message: 'Birthday created successfully',
+                                birthday_id: result.insertId
+                            });
+                        },
+                        (tx, error) => {
+                            reject({
+                                success: false,
+                                error: 'Failed to create birthday',
+                                details: error
+                            });
+                        }
+                    );
+                });
+            } else {
+                try {
+                    const cumpleanos = JSON.parse(localStorage.getItem('calendario_cumpleanos') || '[]');
+                    const newId = Date.now();
+                    const newBirthday = {
+                        id: newId,
+                        nombre: nombre,
+                        dia_nacimiento: diaNacimiento,
+                        mes_nacimiento: mesNacimiento,
+                        created_at: new Date().toISOString()
+                    };
+                    cumpleanos.push(newBirthday);
+                    localStorage.setItem('calendario_cumpleanos', JSON.stringify(cumpleanos));
+                    resolve({
+                        success: true,
+                        message: 'Birthday created successfully',
+                        birthday_id: newId
+                    });
+                } catch (error) {
+                    reject({
+                        success: false,
+                        error: 'Failed to create birthday',
+                        details: error
+                    });
+                }
+            }
         });
     }
 
     updateBirthday(id, nombre, diaNacimiento, mesNacimiento) {
         return new Promise((resolve, reject) => {
-            this.db.transaction(tx => {
-                tx.executeSql(
-                    'UPDATE cumpleanos SET nombre = ?, dia_nacimiento = ?, mes_nacimiento = ? WHERE id = ?',
-                    [nombre, diaNacimiento, mesNacimiento, id],
-                    (tx, result) => {
+            if (this.useSQLite) {
+                this.db.transaction(tx => {
+                    tx.executeSql(
+                        'UPDATE cumpleanos SET nombre = ?, dia_nacimiento = ?, mes_nacimiento = ? WHERE id = ?',
+                        [nombre, diaNacimiento, mesNacimiento, id],
+                        (tx, result) => {
+                            resolve({
+                                success: true,
+                                message: 'Birthday updated successfully',
+                                birthday_id: id
+                            });
+                        },
+                        (tx, error) => {
+                            reject({
+                                success: false,
+                                error: 'Failed to update birthday',
+                                details: error
+                            });
+                        }
+                    );
+                });
+            } else {
+                try {
+                    const cumpleanos = JSON.parse(localStorage.getItem('calendario_cumpleanos') || '[]');
+                    const birthdayIndex = cumpleanos.findIndex(b => b.id == id);
+                    if (birthdayIndex !== -1) {
+                        cumpleanos[birthdayIndex] = {
+                            ...cumpleanos[birthdayIndex],
+                            nombre: nombre,
+                            dia_nacimiento: diaNacimiento,
+                            mes_nacimiento: mesNacimiento
+                        };
+                        localStorage.setItem('calendario_cumpleanos', JSON.stringify(cumpleanos));
                         resolve({
                             success: true,
                             message: 'Birthday updated successfully',
                             birthday_id: id
                         });
-                    },
-                    (tx, error) => {
+                    } else {
                         reject({
                             success: false,
-                            error: 'Failed to update birthday',
-                            details: error
+                            error: 'Birthday not found'
                         });
                     }
-                );
-            });
+                } catch (error) {
+                    reject({
+                        success: false,
+                        error: 'Failed to update birthday',
+                        details: error
+                    });
+                }
+            }
         });
     }
 
     getAllBirthdays() {
         return new Promise((resolve, reject) => {
-            this.db.transaction(tx => {
-                tx.executeSql(
-                    'SELECT id, nombre, dia_nacimiento, mes_nacimiento, created_at FROM cumpleanos ORDER BY mes_nacimiento ASC, dia_nacimiento ASC, nombre ASC',
-                    [],
-                    (tx, result) => {
-                        const birthdays = [];
-                        for (let i = 0; i < result.rows.length; i++) {
-                            birthdays.push(result.rows.item(i));
+            if (this.useSQLite) {
+                this.db.transaction(tx => {
+                    tx.executeSql(
+                        'SELECT id, nombre, dia_nacimiento, mes_nacimiento, created_at FROM cumpleanos ORDER BY mes_nacimiento ASC, dia_nacimiento ASC, nombre ASC',
+                        [],
+                        (tx, result) => {
+                            const birthdays = [];
+                            for (let i = 0; i < result.rows.length; i++) {
+                                birthdays.push(result.rows.item(i));
+                            }
+                            resolve(birthdays);
+                        },
+                        (tx, error) => {
+                            reject(error);
                         }
-                        resolve(birthdays);
-                    },
-                    (tx, error) => {
-                        reject(error);
-                    }
-                );
-            });
+                    );
+                });
+            } else {
+                try {
+                    const cumpleanos = JSON.parse(localStorage.getItem('calendario_cumpleanos') || '[]');
+                    cumpleanos.sort((a, b) => {
+                        if (a.mes_nacimiento !== b.mes_nacimiento) {
+                            return a.mes_nacimiento - b.mes_nacimiento;
+                        }
+                        if (a.dia_nacimiento !== b.dia_nacimiento) {
+                            return a.dia_nacimiento - b.dia_nacimiento;
+                        }
+                        return a.nombre.localeCompare(b.nombre);
+                    });
+                    resolve(cumpleanos);
+                } catch (error) {
+                    reject(error);
+                }
+            }
         });
     }
 
@@ -121,7 +199,7 @@ class BirthdayManager {
                                 title: '🎂 ' + birthday.nombre,
                                 start: birthdayDate,
                                 end: birthdayDate,
-                                color: '#FFD700',
+                                color: '#FF69B4',
                                 allDay: true,
                                 type: 'birthday',
                                 birthday_id: birthday.id,
@@ -144,74 +222,124 @@ class BirthdayManager {
             const day = dateObj.getDate();
             const month = dateObj.getMonth() + 1;
 
-            this.db.transaction(tx => {
-                tx.executeSql(
-                    'SELECT id, nombre, dia_nacimiento, mes_nacimiento, created_at FROM cumpleanos WHERE dia_nacimiento = ? AND mes_nacimiento = ? ORDER BY nombre ASC',
-                    [day, month],
-                    (tx, result) => {
-                        const birthdays = [];
-                        for (let i = 0; i < result.rows.length; i++) {
-                            birthdays.push(result.rows.item(i));
+            if (this.useSQLite) {
+                this.db.transaction(tx => {
+                    tx.executeSql(
+                        'SELECT id, nombre, dia_nacimiento, mes_nacimiento, created_at FROM cumpleanos WHERE dia_nacimiento = ? AND mes_nacimiento = ? ORDER BY nombre ASC',
+                        [day, month],
+                        (tx, result) => {
+                            const birthdays = [];
+                            for (let i = 0; i < result.rows.length; i++) {
+                                birthdays.push(result.rows.item(i));
+                            }
+                            resolve(birthdays);
+                        },
+                        (tx, error) => {
+                            reject(error);
                         }
-                        resolve(birthdays);
-                    },
-                    (tx, error) => {
-                        reject(error);
-                    }
-                );
-            });
+                    );
+                });
+            } else {
+                try {
+                    const cumpleanos = JSON.parse(localStorage.getItem('calendario_cumpleanos') || '[]');
+                    const birthdays = cumpleanos.filter(birthday => {
+                        return birthday.dia_nacimiento === day && birthday.mes_nacimiento === month;
+                    });
+                    
+                    birthdays.sort((a, b) => a.nombre.localeCompare(b.nombre));
+                    resolve(birthdays);
+                } catch (error) {
+                    reject(error);
+                }
+            }
         });
     }
 
     deleteBirthday(id) {
         return new Promise((resolve, reject) => {
-            this.db.transaction(tx => {
-                tx.executeSql(
-                    'DELETE FROM cumpleanos WHERE id = ?',
-                    [id],
-                    (tx, result) => {
-                        if (result.rowsAffected > 0) {
-                            resolve({
-                                success: true,
-                                message: 'Birthday deleted successfully'
-                            });
-                        } else {
+            if (this.useSQLite) {
+                this.db.transaction(tx => {
+                    tx.executeSql(
+                        'DELETE FROM cumpleanos WHERE id = ?',
+                        [id],
+                        (tx, result) => {
+                            if (result.rowsAffected > 0) {
+                                resolve({
+                                    success: true,
+                                    message: 'Birthday deleted successfully'
+                                });
+                            } else {
+                                reject({
+                                    success: false,
+                                    error: 'Birthday not found'
+                                });
+                            }
+                        },
+                        (tx, error) => {
                             reject({
                                 success: false,
-                                error: 'Birthday not found'
+                                error: 'Failed to delete birthday',
+                                details: error
                             });
                         }
-                    },
-                    (tx, error) => {
+                    );
+                });
+            } else {
+                try {
+                    const cumpleanos = JSON.parse(localStorage.getItem('calendario_cumpleanos') || '[]');
+                    const birthdayIndex = cumpleanos.findIndex(b => b.id == id);
+                    if (birthdayIndex !== -1) {
+                        cumpleanos.splice(birthdayIndex, 1);
+                        localStorage.setItem('calendario_cumpleanos', JSON.stringify(cumpleanos));
+                        resolve({
+                            success: true,
+                            message: 'Birthday deleted successfully'
+                        });
+                    } else {
                         reject({
                             success: false,
-                            error: 'Failed to delete birthday',
-                            details: error
+                            error: 'Birthday not found'
                         });
                     }
-                );
-            });
+                } catch (error) {
+                    reject({
+                        success: false,
+                        error: 'Failed to delete birthday',
+                        details: error
+                    });
+                }
+            }
         });
     }
 
     getBirthdayById(id) {
         return new Promise((resolve, reject) => {
-            this.db.transaction(tx => {
-                tx.executeSql(
-                    'SELECT id, nombre, dia_nacimiento, mes_nacimiento, created_at FROM cumpleanos WHERE id = ?',
-                    [id],
-                    (tx, result) => {
-                        if (result.rows.length > 0) {
-                            resolve(result.rows.item(0));
-                        } else {
-                            resolve(null);
+            if (this.useSQLite) {
+                this.db.transaction(tx => {
+                    tx.executeSql(
+                        'SELECT id, nombre, dia_nacimiento, mes_nacimiento, created_at FROM cumpleanos WHERE id = ?',
+                        [id],
+                        (tx, result) => {
+                            if (result.rows.length > 0) {
+                                resolve(result.rows.item(0));
+                            } else {
+                                resolve(null);
+                            }
+                        },
+                        (tx, error) => {
+                            reject(error);
                         }
-                    },
-                    (tx, error) => {
-                        reject(error);
-                    }
-                );
-            });
+                    );
+                });
+            } else {
+                try {
+                    const cumpleanos = JSON.parse(localStorage.getItem('calendario_cumpleanos') || '[]');
+                    const birthday = cumpleanos.find(b => b.id == id);
+                    resolve(birthday || null);
+                } catch (error) {
+                    reject(error);
+                }
+            }
         });
     }
 
@@ -224,16 +352,22 @@ class BirthdayManager {
             errors.push('Person name must be 100 characters or less');
         }
 
-        if (!data.dia_nacimiento || data.dia_nacimiento === '') {
+        if (!data.dia_nacimiento && data.dia_nacimiento !== 0) {
             errors.push('Birth day is required');
-        } else if (!Number.isInteger(Number(data.dia_nacimiento)) || data.dia_nacimiento < 1 || data.dia_nacimiento > 31) {
-            errors.push('Birth day must be between 1 and 31');
+        } else {
+            const day = parseInt(data.dia_nacimiento);
+            if (isNaN(day) || day < 1 || day > 31) {
+                errors.push('Birth day must be between 1 and 31');
+            }
         }
 
-        if (!data.mes_nacimiento || data.mes_nacimiento === '') {
+        if (!data.mes_nacimiento && data.mes_nacimiento !== 0) {
             errors.push('Birth month is required');
-        } else if (!Number.isInteger(Number(data.mes_nacimiento)) || data.mes_nacimiento < 1 || data.mes_nacimiento > 12) {
-            errors.push('Birth month must be between 1 and 12');
+        } else {
+            const month = parseInt(data.mes_nacimiento);
+            if (isNaN(month) || month < 1 || month > 12) {
+                errors.push('Birth month must be between 1 and 12');
+            }
         }
 
         if (data.dia_nacimiento && data.mes_nacimiento) {

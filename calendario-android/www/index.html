@@ -2,95 +2,609 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>Calendario DIM - App Android</title>
-    <link rel="icon" type="image/svg+xml" href="IMAGES/ImagenAgenda.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+    <title>Calendario DIM</title>
     <link rel="stylesheet" type="text/css" href="css/fullcalendar.min.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/home.css">
-    <link rel="stylesheet" type="text/css" href="css/home-tablet.css">
     <link rel="stylesheet" type="text/css" href="css/home-mobile.css">
-    <style>
-        .color-palette {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .color-option {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 2px solid #ddd;
-            cursor: pointer;
-            display: inline-block;
-        }
-        
-        input[type="radio"]:checked + .color-option {
-            border: 3px solid #000;
-        }
-        
-        input[type="radio"] {
-            display: none;
-        }
-        
-        #event-type-selector {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        #event-type-selector label {
-            margin: 0 15px;
-            padding: 8px 16px;
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        #event-type-selector input[type="radio"]:checked + label {
-            background: #007bff;
-            color: white;
-        }
-    </style>
 </head>
 <body>
-    <div class="banner-container">
-        <img src="IMAGES/ImagenAgenda.svg" alt="Calendar Banner" class="banner-image">
-    </div>
+<div class="banner-container">
+    <img src="IMAGES/ImagenAgenda.svg" alt="Calendar Banner" class="banner-image">
+</div>
 
-    <div class="main-container">
-        <div id="calendar-container" class="calendar-container">
-            <div id="calendar"></div>
+<div class="main-container">
+    <div id="calendar-container" class="calendar-container">
+        <div id="calendar"></div>
+    </div>
+    
+    <div id="sidebar-container" class="sidebar-expanded">
+        <div id="sidebar-header">
+            <h3 id="selected-date" class="sidebar-title">Hoy</h3>
+            <span class="sidebar-toggle-indicator">▼</span>
+        </div>
+        <div id="sidebar-content" class="sidebar-content">
+            <div id="timeline-container" class="timeline-container">
+                <!-- Timeline generado por JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Botón flotante para crear eventos -->
+<div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+    <button onclick="openModal(moment().format('YYYY-MM-DD'))" style="width: 56px; height: 56px; border-radius: 50%; background: #007bff; border: none; color: white; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">+</button>
+</div>
+
+<!-- Modal Simple -->
+<div id="eventModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 8px; padding: 20px; max-width: 90%; width: 400px; max-height: 80vh; overflow-y: auto;">
+        <h3>Crear Evento</h3>
+        
+        <div style="margin: 10px 0;">
+            <label>Tipo:</label><br>
+            <input type="radio" name="eventType" value="event" id="typeEvent" checked> <label for="typeEvent">Evento</label>
+            <input type="radio" name="eventType" value="birthday" id="typeBirthday"> <label for="typeBirthday">Cumpleaños</label>
         </div>
         
-        <div id="sidebar-container" class="sidebar-expanded">
-            <div id="sidebar-header">
-                <h3 id="selected-date" class="sidebar-title">Hoy</h3>
-                <span class="sidebar-toggle-indicator">▼</span>
+        <div id="eventFields">
+            <div style="margin: 10px 0;">
+                <label>Nombre del Evento:</label><br>
+                <input type="text" id="eventName" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
             </div>
-            <div id="sidebar-content" class="sidebar-content">
-                <div id="timeline-container" class="timeline-container">
-                    <!-- Timeline will be generated by JavaScript -->
+            
+            <div style="margin: 10px 0;">
+                <label>Fecha:</label><br>
+                <input type="date" id="eventDate" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div style="margin: 10px 0;">
+                <label>Hora (opcional):</label><br>
+                <input type="time" id="eventTime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div style="margin: 10px 0;">
+                <label>Descripción (opcional):</label><br>
+                <textarea id="eventDescription" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; height: 60px;"></textarea>
+            </div>
+            
+            <div style="margin: 10px 0;">
+                <label>Color del Evento:</label><br>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px;">
+                    <input type="radio" name="eventColor" value="#FF5722" id="color1" checked style="display: none;">
+                    <label for="color1" style="width: 30px; height: 30px; background: #FF5722; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                    
+                    <input type="radio" name="eventColor" value="#FFC107" id="color2" style="display: none;">
+                    <label for="color2" style="width: 30px; height: 30px; background: #FFC107; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                    
+                    <input type="radio" name="eventColor" value="#8BC34A" id="color3" style="display: none;">
+                    <label for="color3" style="width: 30px; height: 30px; background: #8BC34A; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                    
+                    <input type="radio" name="eventColor" value="#009688" id="color4" style="display: none;">
+                    <label for="color4" style="width: 30px; height: 30px; background: #009688; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                    
+                    <input type="radio" name="eventColor" value="#2196F3" id="color5" style="display: none;">
+                    <label for="color5" style="width: 30px; height: 30px; background: #2196F3; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
                 </div>
             </div>
         </div>
+        
+        <div id="birthdayFields" style="display: none;">
+            <div style="margin: 10px 0;">
+                <label>Nombre de la Persona:</label><br>
+                <input type="text" id="birthdayName" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div style="margin: 10px 0;">
+                <label>Fecha de Cumpleaños:</label><br>
+                <input type="date" id="birthdayDate" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div style="margin: 10px 0;">
+                <label>Color del Cumpleaños:</label><br>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px;">
+                    <input type="radio" name="birthdayColor" value="#FF69B4" id="bcolor1" checked style="display: none;">
+                    <label for="bcolor1" style="width: 30px; height: 30px; background: #FF69B4; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                    
+                    <input type="radio" name="birthdayColor" value="#9C27B0" id="bcolor2" style="display: none;">
+                    <label for="bcolor2" style="width: 30px; height: 30px; background: #9C27B0; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                    
+                    <input type="radio" name="birthdayColor" value="#E91E63" id="bcolor3" style="display: none;">
+                    <label for="bcolor3" style="width: 30px; height: 30px; background: #E91E63; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin: 20px 0; text-align: right;">
+            <button onclick="closeModal()" style="padding: 8px 16px; margin-right: 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancelar</button>
+            <button onclick="saveEvent()" style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Guardar</button>
+        </div>
     </div>
+</div>
 
-    <script src="cordova.js"></script>
-    <script src="js/jquery-3.0.0.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/moment.min.js"></script>
-    <script src="js/fullcalendar.min.js"></script>
-    <script src="locales/es.js"></script>
-    <script src="js/databaseManager.js"></script>
-    <script src="js/eventManager.js"></script>
-    <script src="js/birthdayManager.js"></script>
-    <script src="js/modalUnified.js"></script>
-    <script src="js/app.js"></script>
+<script src="cordova.js"></script>
+<script src="js/jquery-3.0.0.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/moment.min.js"></script>
+<script src="js/fullcalendar.min.js"></script>
+<script src="locales/es.js"></script>
+
+<script>
+$(document).ready(function() {
+    
+    // Generar timeline de 24 horas
+    function generateTimeline() {
+        var timelineContainer = $('#timeline-container');
+        timelineContainer.empty();
+        
+        for (var hour = 0; hour < 24; hour++) {
+            var hourSlot = $('<div class="hour-slot" data-hour="' + hour + '">' +
+                '<div class="hour-label">' + 
+                (hour < 10 ? '0' + hour : hour) + ':00' +
+                '</div>' +
+                '<div class="hour-content"></div>' +
+                '</div>');
+            timelineContainer.append(hourSlot);
+        }
+    }
+    
+    // Función para alternar sidebar
+    function toggleSidebar() {
+        var sidebar = $('#sidebar-container');
+        var indicator = $('.sidebar-toggle-indicator');
+        
+        if (sidebar.hasClass('sidebar-expanded')) {
+            sidebar.removeClass('sidebar-expanded').addClass('sidebar-collapsed');
+            indicator.text('▶');
+        } else {
+            sidebar.removeClass('sidebar-collapsed').addClass('sidebar-expanded');
+            indicator.text('▼');
+        }
+    }
+    
+    function initializeCalendar() {
+        generateTimeline();
+        
+        $("#calendar").fullCalendar({
+            header: {
+                left: "prev,next today",
+                center: "title",
+                right: "month,sidebarToggle"
+            },
+            
+            customButtons: {
+                sidebarToggle: {
+                    text: '☰',
+                    click: function(event) {
+                        event.preventDefault();
+                        toggleSidebar();
+                    }
+                }
+            },
+            
+            locale: 'es',
+            defaultView: "month",
+            height: 'auto',
+            selectable: true,
+            selectHelper: true,
+            editable: true,
+            fixedWeekCount: false,
+            showNonCurrentDates: false,
+            
+            dayClick: function(date, jsEvent, view) {
+                if (jsEvent.target.classList.contains('fc-day-number') || 
+                    jsEvent.target.classList.contains('fc-day-top')) {
+                    
+                    $('#selected-date').text(date.format('dddd, D [de] MMMM [de] YYYY'));
+                    updateSidebarForDate(date.format('YYYY-MM-DD'));
+                    
+                    return false;
+                } else {
+                    // Si no es el número del día, abrir modal
+                    openModal(date.format('YYYY-MM-DD'));
+                    return false;
+                }
+            },
+            
+            select: function(start, end, jsEvent, view){
+                openModal(start.format('YYYY-MM-DD'));
+            },
+            
+            events: function(start, end, timezone, callback) {
+                loadAllEvents(callback);
+            },
+            
+            eventClick: function(event, jsEvent, view){
+                jsEvent.stopPropagation();
+                jsEvent.preventDefault();
+                
+                if (event.type === 'birthday') {
+                    openEditBirthdayModal(event);
+                } else {
+                    openEditEventModal(event);
+                }
+                
+                return false;
+            },
+        });
+        
+        // Configurar fecha inicial
+        $('#selected-date').text(moment().format('dddd, D [de] MMMM [de] YYYY'));
+        updateSidebarForDate(moment().format('YYYY-MM-DD'));
+    }
+    
+    // Funciones del modal
+    window.openModal = function(date) {
+        $('#eventDate').val(date);
+        $('#birthdayDate').val(date);
+        $('#eventModal h3').text('Crear Evento');
+        $('#eventModal').data('editId', '');
+        $('#eventModal').css('display', 'flex');
+    };
+    
+    // Funciones para editar
+    window.openEditEventModal = function(event) {
+        $('#eventName').val(event.title.replace(/^\d{2}:\d{2} - /, ''));
+        $('#eventDate').val(event.start.format('YYYY-MM-DD'));
+        $('#eventTime').val(event.hora_inicio || '');
+        $('#eventDescription').val(event.descripcion || '');
+        
+        $('input[name="eventType"][value="event"]').prop('checked', true).trigger('change');
+        $('input[name="eventColor"][value="' + event.color + '"]').prop('checked', true).trigger('change');
+        
+        $('#eventModal h3').text('Editar Evento');
+        $('#eventModal').data('editId', event.id);
+        $('#eventModal').css('display', 'flex');
+    };
+    
+    window.openEditBirthdayModal = function(event) {
+        $('#birthdayName').val(event.title.replace('🎂 ', ''));
+        $('#birthdayDate').val(event.start.format('YYYY-MM-DD'));
+        
+        $('input[name="eventType"][value="birthday"]').prop('checked', true).trigger('change');
+        $('input[name="birthdayColor"][value="' + event.color + '"]').prop('checked', true).trigger('change');
+        
+        $('#eventModal h3').text('Editar Cumpleaños');
+        $('#eventModal').data('editId', event.id.replace('birthday_', ''));
+        $('#eventModal').css('display', 'flex');
+    };
+    
+    window.closeModal = function() {
+        $('#eventModal').hide();
+        $('#eventName').val('');
+        $('#birthdayName').val('');
+        $('#eventTime').val('');
+        $('#eventDescription').val('');
+        $('input[name="eventColor"]:first').prop('checked', true);
+        $('input[name="birthdayColor"]:first').prop('checked', true);
+    };
+    
+    window.saveEvent = function() {
+        var eventType = $('input[name="eventType"]:checked').val();
+        var editId = $('#eventModal').data('editId');
+        
+        if (eventType === 'birthday') {
+            var name = $('#birthdayName').val().trim();
+            var date = $('#birthdayDate').val();
+            var color = $('input[name="birthdayColor"]:checked').val();
+            
+            if (!name || !date) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            try {
+                var cumpleanos = JSON.parse(localStorage.getItem('calendario_cumpleanos') || '[]');
+                var birthdayMoment = moment(date);
+                
+                if (editId) {
+                    // Editar cumpleaños existente
+                    var index = cumpleanos.findIndex(b => b.id == editId);
+                    if (index !== -1) {
+                        cumpleanos[index].nombre = name;
+                        cumpleanos[index].dia_nacimiento = birthdayMoment.date();
+                        cumpleanos[index].mes_nacimiento = birthdayMoment.month() + 1;
+                        cumpleanos[index].color = color;
+                    }
+                } else {
+                    // Crear nuevo cumpleaños
+                    var newBirthday = {
+                        id: Date.now(),
+                        nombre: name,
+                        dia_nacimiento: birthdayMoment.date(),
+                        mes_nacimiento: birthdayMoment.month() + 1,
+                        color: color,
+                        created_at: new Date().toISOString()
+                    };
+                    cumpleanos.push(newBirthday);
+                }
+                
+                localStorage.setItem('calendario_cumpleanos', JSON.stringify(cumpleanos));
+                alert('Cumpleaños guardado correctamente');
+                
+            } catch (error) {
+                alert('Error guardando cumpleaños: ' + error.message);
+            }
+            
+        } else {
+            var name = $('#eventName').val().trim();
+            var date = $('#eventDate').val();
+            var time = $('#eventTime').val();
+            var description = $('#eventDescription').val().trim();
+            var color = $('input[name="eventColor"]:checked').val();
+            
+            if (!name || !date) {
+                alert('Por favor completa todos los campos requeridos');
+                return;
+            }
+            
+            try {
+                var eventos = JSON.parse(localStorage.getItem('calendario_eventos') || '[]');
+                var endDate = moment(date).add(1, 'day').format('YYYY-MM-DD');
+                
+                if (editId) {
+                    // Editar evento existente
+                    var index = eventos.findIndex(e => e.id == editId);
+                    if (index !== -1) {
+                        eventos[index].evento = name;
+                        eventos[index].fecha_inicio = date;
+                        eventos[index].fecha_fin = endDate;
+                        eventos[index].color_evento = color;
+                        eventos[index].hora_inicio = time || null;
+                        eventos[index].descripcion = description || null;
+                    }
+                } else {
+                    // Crear nuevo evento
+                    var newEvent = {
+                        id: Date.now(),
+                        evento: name,
+                        fecha_inicio: date,
+                        fecha_fin: endDate,
+                        color_evento: color,
+                        hora_inicio: time || null,
+                        descripcion: description || null
+                    };
+                    eventos.push(newEvent);
+                }
+                
+                localStorage.setItem('calendario_eventos', JSON.stringify(eventos));
+                alert('Evento guardado correctamente');
+                
+            } catch (error) {
+                alert('Error guardando evento: ' + error.message);
+            }
+        }
+        
+        closeModal();
+        $('#calendar').fullCalendar('refetchEvents');
+        
+        // Actualizar sidebar
+        var selectedDate = $('#selected-date').text();
+        if (selectedDate !== 'Hoy') {
+            var dateMoment = moment(selectedDate, 'dddd, D [de] MMMM [de] YYYY');
+            updateSidebarForDate(dateMoment.format('YYYY-MM-DD'));
+        } else {
+            updateSidebarForDate(moment().format('YYYY-MM-DD'));
+        }
+    };
+    
+    // Cambiar campos según tipo
+    $('input[name="eventType"]').change(function() {
+        if ($(this).val() === 'birthday') {
+            $('#eventFields').hide();
+            $('#birthdayFields').show();
+        } else {
+            $('#eventFields').show();
+            $('#birthdayFields').hide();
+        }
+    });
+    
+    // Cargar todos los eventos desde localStorage
+    function loadAllEvents(callback) {
+        try {
+            // Cargar eventos
+            var eventos = JSON.parse(localStorage.getItem('calendario_eventos') || '[]');
+            var eventList = eventos.map(function(row) {
+                var title = row.evento;
+                if (row.hora_inicio) {
+                    title = row.hora_inicio + ' - ' + title;
+                }
+                return {
+                    id: row.id,
+                    title: title,
+                    start: row.fecha_inicio,
+                    end: row.fecha_fin,
+                    color: row.color_evento
+                };
+            });
+            
+            // Cargar cumpleaños
+            var cumpleanos = JSON.parse(localStorage.getItem('calendario_cumpleanos') || '[]');
+            var currentYear = new Date().getFullYear();
+            var birthdayList = cumpleanos.map(function(birthday) {
+                var birthdayDate = currentYear + '-' + 
+                                 birthday.mes_nacimiento.toString().padStart(2, '0') + '-' + 
+                                 birthday.dia_nacimiento.toString().padStart(2, '0');
+                return {
+                    id: 'birthday_' + birthday.id,
+                    title: '🎂 ' + birthday.nombre,
+                    start: birthdayDate,
+                    end: birthdayDate,
+                    color: birthday.color || '#FF69B4',
+                    allDay: true,
+                    type: 'birthday'
+                };
+            });
+            
+            var allEvents = eventList.concat(birthdayList);
+            callback(allEvents);
+            
+        } catch (error) {
+            // Si hay error, usar eventos de demostración
+            callback([
+                {
+                    id: 'demo1',
+                    title: 'Evento de prueba',
+                    start: moment().format('YYYY-MM-DD'),
+                    color: '#FF5722'
+                },
+                {
+                    id: 'demo2',
+                    title: '🎂 Cumpleaños',
+                    start: moment().add(1, 'days').format('YYYY-MM-DD'),
+                    color: '#FF69B4'
+                }
+            ]);
+        }
+    }
+    
+    // Agregar estilos para colores seleccionados
+    $(document).on('change', 'input[name="eventColor"], input[name="birthdayColor"]', function() {
+        // Remover selección anterior
+        $('input[name="eventColor"], input[name="birthdayColor"]').next('label').css('border', '3px solid transparent');
+        // Agregar selección actual
+        $(this).next('label').css('border', '3px solid #333');
+    });
+    
+    // Inicializar selección de color por defecto
+    setTimeout(function() {
+        $('input[name="eventColor"]:checked, input[name="birthdayColor"]:checked').next('label').css('border', '3px solid #333');
+    }, 100);
+    
+    // Inicializar aplicación
+    function initApp() {
+        try {
+            initializeCalendar();
+        } catch (error) {
+            alert('Error inicializando calendario: ' + error.message);
+        }
+    }
+    
+    // Función para actualizar sidebar con eventos del día
+    function updateSidebarForDate(selectedDate) {
+        $('.hour-content').empty();
+        
+        try {
+            // Cargar eventos del día
+            var eventos = JSON.parse(localStorage.getItem('calendario_eventos') || '[]');
+            var cumpleanos = JSON.parse(localStorage.getItem('calendario_cumpleanos') || '[]');
+            
+            var selectedMoment = moment(selectedDate);
+            var selectedDay = selectedMoment.date();
+            var selectedMonth = selectedMoment.month() + 1;
+            
+            // Mostrar cumpleaños
+            cumpleanos.forEach(function(birthday) {
+                if (birthday.dia_nacimiento == selectedDay && birthday.mes_nacimiento == selectedMonth) {
+                    var birthdayHtml = '<div class="timeline-birthday clickable-sidebar-birthday" data-birthday-id="' + birthday.id + '" style="background: linear-gradient(135deg, ' + birthday.color + ' 0%, ' + birthday.color + 'CC 100%); border-left: 4px solid ' + birthday.color + ';">' +
+                                     '<div class="event-title">🎂 ' + birthday.nombre + '</div>' +
+                                     '</div>';
+                    $('.hour-slot[data-hour="0"] .hour-content').append(birthdayHtml);
+                }
+            });
+            
+            // Mostrar eventos
+            eventos.forEach(function(evento) {
+                if (evento.fecha_inicio === selectedDate) {
+                    var eventHtml = '';
+                    
+                    if (evento.hora_inicio) {
+                        var hour = parseInt(evento.hora_inicio.split(':')[0]);
+                        eventHtml = '<div class="timeline-event clickable-sidebar-event" data-event-id="' + evento.id + '" style="background: linear-gradient(135deg, ' + evento.color_evento + ' 0%, ' + evento.color_evento + 'CC 100%); border-left: 4px solid ' + evento.color_evento + ';">' +
+                                  '<div class="event-time">' + evento.hora_inicio.substring(0,5) + '</div>' +
+                                  '<div class="event-title">' + evento.evento + '</div>';
+                        
+                        if (evento.descripcion && evento.descripcion.trim() !== '') {
+                            eventHtml += '<div class="event-description">' + evento.descripcion + '</div>';
+                        }
+                        
+                        eventHtml += '</div>';
+                        $('.hour-slot[data-hour="' + hour + '"] .hour-content').append(eventHtml);
+                    } else {
+                        // Evento sin hora específica, mostrar en la primera hora
+                        eventHtml = '<div class="timeline-event clickable-sidebar-event" data-event-id="' + evento.id + '" style="background: linear-gradient(135deg, ' + evento.color_evento + ' 0%, ' + evento.color_evento + 'CC 100%); border-left: 4px solid ' + evento.color_evento + ';">' +
+                                  '<div class="event-title">' + evento.evento + '</div>';
+                        
+                        if (evento.descripcion && evento.descripcion.trim() !== '') {
+                            eventHtml += '<div class="event-description">' + evento.descripcion + '</div>';
+                        }
+                        
+                        eventHtml += '</div>';
+                        $('.hour-slot[data-hour="0"] .hour-content').append(eventHtml);
+                    }
+                }
+            });
+            
+            // Agregar eventos de click para editar
+            $('.clickable-sidebar-event').off('click').on('click', function(e) {
+                e.stopPropagation();
+                var eventId = $(this).data('event-id');
+                
+                var eventos = JSON.parse(localStorage.getItem('calendario_eventos') || '[]');
+                var evento = eventos.find(e => e.id == eventId);
+                
+                if (evento) {
+                    openEditEventModal({
+                        id: evento.id,
+                        title: evento.evento,
+                        start: moment(evento.fecha_inicio),
+                        color: evento.color_evento,
+                        hora_inicio: evento.hora_inicio,
+                        descripcion: evento.descripcion
+                    });
+                }
+            });
+            
+            $('.clickable-sidebar-birthday').off('click').on('click', function(e) {
+                e.stopPropagation();
+                var birthdayId = $(this).data('birthday-id');
+                
+                var cumpleanos = JSON.parse(localStorage.getItem('calendario_cumpleanos') || '[]');
+                var birthday = cumpleanos.find(b => b.id == birthdayId);
+                
+                if (birthday) {
+                    var birthdayDate = selectedMoment.year() + '-' + 
+                                     birthday.mes_nacimiento.toString().padStart(2, '0') + '-' + 
+                                     birthday.dia_nacimiento.toString().padStart(2, '0');
+                    
+                    openEditBirthdayModal({
+                        id: 'birthday_' + birthday.id,
+                        title: '🎂 ' + birthday.nombre,
+                        start: moment(birthdayDate),
+                        color: birthday.color,
+                        type: 'birthday'
+                    });
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error actualizando sidebar:', error);
+        }
+    }
+    
+    // Exponer función globalmente
+    window.updateSidebarForDate = updateSidebarForDate;
+    
+    // Múltiples puntos de entrada para asegurar inicialización
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+        initApp();
+    }
+    
+    document.addEventListener('deviceready', function() {
+        initApp();
+    }, false);
+    
+    // Fallback
+    setTimeout(function() {
+        if ($('#calendar').children().length === 0) {
+            initApp();
+        }
+    }, 2000);
+});
+</script>
+
 </body>
 </html>
