@@ -1,4 +1,48 @@
-# 📅 Sistema de Calendario - Instrucciones de Instalación
+# 📅 Sistema de Calendario - Versión Web y Android
+
+## 🎯 Dos Versiones Disponibles
+
+### 📱 **Versión Android APK** (Nueva)
+- App nativa para Android
+- Funciona completamente offline
+- Base de datos SQLite local
+- Ideal para demostración móvil
+
+### 🌐 **Versión Web** (Original)
+- Sistema web con PHP y MySQL
+- Funciona en cualquier navegador
+- Servidor local requerido
+
+---
+
+## 📱 VERSIÓN ANDROID APK
+
+### Características:
+- ✅ App nativa Android (APK instalable)
+- ✅ 100% offline (sin internet)
+- ✅ Base de datos SQLite local
+- ✅ Misma funcionalidad que versión web
+- ✅ Optimizada para móviles
+
+### Ubicación:
+```
+calendario-android/
+├── www/                   # Código fuente de la app
+├── platforms/android/     # Proyecto Android nativo
+└── build-instructions.md  # Instrucciones para generar APK
+```
+
+### Para Generar APK:
+1. Instalar Android Studio
+2. Configurar variables de entorno
+3. Ejecutar: `cordova build android`
+4. APK generado en: `platforms/android/app/build/outputs/apk/`
+
+**Ver instrucciones completas en:** `calendario-android/build-instructions.md`
+
+---
+
+## 🌐 VERSIÓN WEB - Instrucciones de Instalación
 
 ## 🎯 Requisitos del Sistema
 
