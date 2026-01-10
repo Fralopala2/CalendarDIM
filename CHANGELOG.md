@@ -2,13 +2,13 @@
 
 ## [2.0.0] - 2026-01-10
 
-### ✨ Nueva Versión Android APK
+### ✨ Nueva Versión Android APK - COMPLETADA ✅
 - **NUEVA**: App nativa Android con Apache Cordova
 - **NUEVA**: Base de datos SQLite local para funcionamiento offline
 - **NUEVA**: EventManager y BirthdayManager convertidos a JavaScript
 - **NUEVA**: Modal unificado adaptado para móviles
-- **NUEVA**: Estructura de proyecto Cordova completa
-- **NUEVA**: Instrucciones de compilación para generar APK
+- **NUEVA**: APK generada exitosamente y lista para instalar
+- **UBICACIÓN**: `calendario-android/platforms/android/app/build/outputs/apk/debug/app-debug.apk`
 
 ### 🔧 Arquitectura Android
 - **Añadido**: DatabaseManager.js para gestión SQLite
