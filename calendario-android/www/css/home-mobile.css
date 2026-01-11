@@ -431,19 +431,24 @@
   
   .modal-footer {
     padding: 15px 20px !important;
-    flex-direction: column !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
     position: sticky;
     bottom: 0;
     background: white;
     border-radius: 0 0 16px 16px !important;
     z-index: 1000;
+    gap: 8px !important;
   }
   
   .modal-footer .btn {
-    width: 100% !important;
-    margin: 5px 0 !important;
-    padding: 14px !important;
-    font-size: 16px !important;
+    flex: 1 !important;
+    min-width: 80px !important;
+    max-width: 120px !important;
+    margin: 0 !important;
+    padding: 12px 8px !important;
+    font-size: 14px !important;
     -webkit-tap-highlight-color: rgba(0,0,0,0.1);
     touch-action: manipulation;
   }
@@ -549,6 +554,14 @@
     font-size: 11px;
     padding: 5px 12px;
     bottom: 12px; /* Cambiar para que esté dentro del área */
+  }
+  
+  /* Botones del modal más pequeños en pantallas muy pequeñas */
+  .modal-footer .btn {
+    padding: 10px 6px !important;
+    font-size: 13px !important;
+    min-width: 70px !important;
+    max-width: 100px !important;
   }
 }
 
@@ -678,6 +691,15 @@
   margin-bottom: 8px;
 }
 
+.btn-success {
+  background: #28a745;
+  border: none;
+}
+
+.btn-success:hover {
+  background: #218838;
+}
+
 /* Botones mejorados */
 .btn {
   padding: 12px 24px;
@@ -685,6 +707,8 @@
   border-radius: 8px;
   font-weight: 600;
   transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
 }
 
 .btn-primary {
