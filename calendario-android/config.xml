@@ -10,4 +10,18 @@
     <content src="index.html" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
+    
+    <!-- Configuracion de iconos para Android -->
+    <platform name="android">
+        <icon src="www/IMAGES/logo.png" />
+        <icon density="ldpi" src="www/IMAGES/logo.png" />
+        <icon density="mdpi" src="www/IMAGES/logo.png" />
+        <icon density="hdpi" src="www/IMAGES/logo.png" />
+        <icon density="xhdpi" src="www/IMAGES/logo.png" />
+        <icon density="xxhdpi" src="www/IMAGES/logo.png" />
+        <icon density="xxxhdpi" src="www/IMAGES/logo.png" />
+    </platform>
+    
+    <!-- Icono global por defecto -->
+    <icon src="www/IMAGES/logo.png" />
 </widget>

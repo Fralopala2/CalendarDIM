@@ -86,6 +86,21 @@
                     
                     <input type="radio" name="eventColor" value="#2196F3" id="color5" style="display: none;">
                     <label for="color5" style="width: 30px; height: 30px; background: #2196F3; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                    
+                    <input type="radio" name="eventColor" value="#9C27B0" id="color6" style="display: none;">
+                    <label for="color6" style="width: 30px; height: 30px; background: #9C27B0; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                    
+                    <input type="radio" name="eventColor" value="#E91E63" id="color7" style="display: none;">
+                    <label for="color7" style="width: 30px; height: 30px; background: #E91E63; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                    
+                    <input type="radio" name="eventColor" value="#795548" id="color8" style="display: none;">
+                    <label for="color8" style="width: 30px; height: 30px; background: #795548; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                    
+                    <input type="radio" name="eventColor" value="#607D8B" id="color9" style="display: none;">
+                    <label for="color9" style="width: 30px; height: 30px; background: #607D8B; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                    
+                    <input type="radio" name="eventColor" value="#FF9800" id="color10" style="display: none;">
+                    <label for="color10" style="width: 30px; height: 30px; background: #FF9800; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
                 </div>
             </div>
         </div>
@@ -112,12 +127,19 @@
                     
                     <input type="radio" name="birthdayColor" value="#E91E63" id="bcolor3" style="display: none;">
                     <label for="bcolor3" style="width: 30px; height: 30px; background: #E91E63; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                    
+                    <input type="radio" name="birthdayColor" value="#673AB7" id="bcolor4" style="display: none;">
+                    <label for="bcolor4" style="width: 30px; height: 30px; background: #673AB7; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
+                    
+                    <input type="radio" name="birthdayColor" value="#3F51B5" id="bcolor5" style="display: none;">
+                    <label for="bcolor5" style="width: 30px; height: 30px; background: #3F51B5; border-radius: 50%; cursor: pointer; border: 3px solid transparent; display: block;"></label>
                 </div>
             </div>
         </div>
         
         <div style="margin: 20px 0; text-align: right;">
             <button onclick="closeModal()" style="padding: 8px 16px; margin-right: 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancelar</button>
+            <button id="deleteButton" onclick="deleteEvent()" style="padding: 8px 16px; margin-right: 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; display: none;">Eliminar</button>
             <button onclick="saveEvent()" style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Guardar</button>
         </div>
     </div>
@@ -240,6 +262,8 @@ $(document).ready(function() {
         $('#birthdayDate').val(date);
         $('#eventModal h3').text('Crear Evento');
         $('#eventModal').data('editId', '');
+        $('#eventModal').data('editType', '');
+        $('#deleteButton').hide();
         $('#eventModal').css('display', 'flex');
     };
     
@@ -255,6 +279,8 @@ $(document).ready(function() {
         
         $('#eventModal h3').text('Editar Evento');
         $('#eventModal').data('editId', event.id);
+        $('#eventModal').data('editType', 'event');
+        $('#deleteButton').show();
         $('#eventModal').css('display', 'flex');
     };
     
@@ -267,6 +293,8 @@ $(document).ready(function() {
         
         $('#eventModal h3').text('Editar Cumpleaños');
         $('#eventModal').data('editId', event.id.replace('birthday_', ''));
+        $('#eventModal').data('editType', 'birthday');
+        $('#deleteButton').show();
         $('#eventModal').css('display', 'flex');
     };
     
@@ -278,6 +306,53 @@ $(document).ready(function() {
         $('#eventDescription').val('');
         $('input[name="eventColor"]:first').prop('checked', true);
         $('input[name="birthdayColor"]:first').prop('checked', true);
+        $('#deleteButton').hide();
+        $('#eventModal').data('editId', '');
+        $('#eventModal').data('editType', '');
+    };
+    
+    window.deleteEvent = function() {
+        var editId = $('#eventModal').data('editId');
+        var editType = $('#eventModal').data('editType');
+        
+        if (!editId) {
+            alert('No se puede eliminar: ID no encontrado');
+            return;
+        }
+        
+        var confirmMessage = editType === 'birthday' ? 
+            '¿Estas seguro de que deseas eliminar este cumpleanos?' : 
+            '¿Estas seguro de que deseas eliminar este evento?';
+            
+        if (confirm(confirmMessage)) {
+            try {
+                if (editType === 'birthday') {
+                    var cumpleanos = JSON.parse(localStorage.getItem('calendario_cumpleanos') || '[]');
+                    cumpleanos = cumpleanos.filter(b => b.id != editId);
+                    localStorage.setItem('calendario_cumpleanos', JSON.stringify(cumpleanos));
+                    alert('Cumpleanos eliminado correctamente');
+                } else {
+                    var eventos = JSON.parse(localStorage.getItem('calendario_eventos') || '[]');
+                    eventos = eventos.filter(e => e.id != editId);
+                    localStorage.setItem('calendario_eventos', JSON.stringify(eventos));
+                    alert('Evento eliminado correctamente');
+                }
+                
+                closeModal();
+                $('#calendar').fullCalendar('refetchEvents');
+                
+                var selectedDate = $('#selected-date').text();
+                if (selectedDate !== 'Hoy') {
+                    var dateMoment = moment(selectedDate, 'dddd, D [de] MMMM [de] YYYY');
+                    updateSidebarForDate(dateMoment.format('YYYY-MM-DD'));
+                } else {
+                    updateSidebarForDate(moment().format('YYYY-MM-DD'));
+                }
+                
+            } catch (error) {
+                alert('Error eliminando: ' + error.message);
+            }
+        }
     };
     
     window.saveEvent = function() {
@@ -461,8 +536,9 @@ $(document).ready(function() {
     
     // Agregar estilos para colores seleccionados
     $(document).on('change', 'input[name="eventColor"], input[name="birthdayColor"]', function() {
-        // Remover selección anterior
-        $('input[name="eventColor"], input[name="birthdayColor"]').next('label').css('border', '3px solid transparent');
+        // Remover selección anterior del mismo grupo
+        var groupName = $(this).attr('name');
+        $('input[name="' + groupName + '"]').next('label').css('border', '3px solid transparent');
         // Agregar selección actual
         $(this).next('label').css('border', '3px solid #333');
     });
