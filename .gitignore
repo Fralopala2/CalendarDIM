@@ -59,3 +59,4 @@ composer.lock
 
 # Archivos de documentación de desarrollo (mantener solo README principal si existe)
 calendario/README_FILE_STRUCTURE.md
+calendario-android/build-instructions.md
