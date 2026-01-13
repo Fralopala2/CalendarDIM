@@ -373,6 +373,33 @@ $(document).ready(function() {
         console.log('✅ FullCalendar inicializado correctamente');
     }, 100);
     
+    // Recalcular el tamaño del calendario cuando cambia el tamaño de la ventana (e.g., abriendo DevTools)
+    var resizeTimeout;
+    $(window).on('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            if ($('#calendar').length) {
+                $('#calendar').fullCalendar('option', 'height', 'auto');
+                $('#calendar').fullCalendar('render');
+                console.log('✅ Calendario recalculado después de cambio de tamaño');
+            }
+        }, 250); // Esperar 250ms después de que termine de cambiar el tamaño
+    });
+    
+    // También detectar cambios de DevTools específicamente
+    let devtoolsOpen = false;
+    const threshold = 160; // Diferencia mínima de altura para considerar que DevTools se abrió
+    let lastHeight = window.innerHeight;
+    
+    const checkDevTools = setInterval(function() {
+        const currentHeight = window.innerHeight;
+        if (Math.abs(currentHeight - lastHeight) > threshold) {
+            console.log('DevTools detectado - Recalculando calendario...');
+            $('#calendar').fullCalendar('render');
+            lastHeight = currentHeight;
+        }
+    }, 500);
+    
     window.toggleSidebar = function() {
         var sidebar = $('#sidebar-container');
         var indicator = $('.sidebar-toggle-indicator');
@@ -522,6 +549,35 @@ $(document).ready(function() {
                 }
             }
         });
+        
+        // Agregar funcionalidad de swipe para cambiar de mes en mobile/tablet
+        var touchStartX = 0;
+        var touchEndX = 0;
+        var minSwipeDistance = 50; // Distancia mínima para detectar swipe (en píxeles)
+        
+        $('#calendar').on('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        $('#calendar').on('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            var swipeDistance = touchStartX - touchEndX;
+            
+            // Swipe hacia la izquierda = siguiente mes
+            if (swipeDistance > minSwipeDistance) {
+                console.log('Swipe izquierda - Siguiente mes');
+                $('#calendar').fullCalendar('next');
+            }
+            // Swipe hacia la derecha = mes anterior
+            else if (swipeDistance < -minSwipeDistance) {
+                console.log('Swipe derecha - Mes anterior');
+                $('#calendar').fullCalendar('prev');
+            }
+        }
     }
     
 });
