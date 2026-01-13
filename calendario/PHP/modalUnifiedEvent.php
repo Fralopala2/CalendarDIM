@@ -392,18 +392,28 @@ window.initializeUnifiedModal = function() {
         }
         
         console.log('URL de destino:', targetUrl);
+        console.log('FormData a enviar:', formData);
         
         // Submit form via AJAX
         $.ajax({
             url: targetUrl,
             method: 'POST',
             data: formData,
+            dataType: 'json',
             success: function(response) {
+                console.log('✅ Respuesta exitosa:', response);
                 // Close modal and refresh calendar
                 $('#unifiedEventModal').modal('hide');
-                location.reload(); // Refresh page to show changes
+                setTimeout(function() {
+                    // Reload page to show the new event
+                    location.reload();
+                }, 500);
             },
             error: function(xhr, status, error) {
+                console.error('❌ Error AJAX:', status, error);
+                console.error('Response status:', xhr.status);
+                console.error('Response text:', xhr.responseText);
+                
                 var errorMessage = 'Error al procesar la solicitud: ' + error;
                 
                 // Try to parse JSON error response for more details
@@ -421,10 +431,11 @@ window.initializeUnifiedModal = function() {
                 } catch (e) {
                     // If not JSON, use the raw response
                     if (xhr.responseText) {
-                        errorMessage += '\nRespuesta: ' + xhr.responseText;
+                        errorMessage += '\nRespuesta del servidor: ' + xhr.responseText.substring(0, 500);
                     }
                 }
                 
+                console.error('Mensaje final de error:', errorMessage);
                 alert(errorMessage);
             }
         });

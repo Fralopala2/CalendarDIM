@@ -35,10 +35,26 @@
   order: 1; /* Calendario primero */
   flex: none !important;
   padding: 5px 15px 15px 15px; /* Reducir padding superior */
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   background-color: #ffffff;
   min-width: auto !important;
   max-width: 100%;
+  height: auto !important;
+}
+
+/* Asegurar que el calendario muestra todas las filas */
+#calendar .fc-row.fc-week {
+  min-height: 80px !important;
+}
+
+#calendar .fc-day-grid-container {
+  overflow: visible !important;
+  height: auto !important;
+}
+
+#calendar .fc-view {
+  height: auto !important;
 }
 
 /* Sidebar para tablets - Debajo como móvil */

@@ -2,10 +2,18 @@
 
 include('config.php');
 
+// Habilitar headers JSON
+header('Content-Type: application/json');
+
+// Logging para debugging
+error_log("=== processBirthday.php called ===");
+error_log("POST data: " . json_encode($_POST));
+
 // Validate input
 if (!isset($_POST['birthday_name']) || !isset($_POST['birthday_date'])) {
     http_response_code(400);
-    echo json_encode(['error' => 'Missing required fields']);
+    echo json_encode(['error' => 'Missing required fields: birthday_name or birthday_date']);
+    error_log("Missing required fields");
     exit;
 }
 
@@ -30,6 +38,10 @@ if ($date_parts === false || !checkdate($date_parts['month'], $date_parts['day']
 
 $dia_nacimiento = $date_parts['day'];
 $mes_nacimiento = $date_parts['month'];
+$año_nacimiento = $date_parts['year'];
+
+// Crear fecha completa en formato YYYY-MM-DD
+$fecha_cumpleanios = sprintf('%04d-%02d-%02d', $año_nacimiento, $mes_nacimiento, $dia_nacimiento);
 
 try {
     // Check if updating existing birthday (if birthday_id or event_id is provided)
@@ -42,14 +54,14 @@ try {
     
     if ($birthday_id) {
         // Update existing birthday
-        $sql = "UPDATE cumpleanos SET nombre = ?, dia_nacimiento = ?, mes_nacimiento = ?, color_cumpleanos = ? WHERE id = ?";
+        $sql = "UPDATE cumpleanos SET nombre = ?, dia_nacimiento = ?, mes_nacimiento = ?, fecha_cumpleanios = ?, color_evento = ? WHERE id = ?";
         $stmt = mysqli_prepare($con, $sql);
         
         if (!$stmt) {
             throw new Exception("Database prepare failed: " . mysqli_error($con));
         }
         
-        mysqli_stmt_bind_param($stmt, "siisi", $birthday_name, $dia_nacimiento, $mes_nacimiento, $birthday_color, $birthday_id);
+        mysqli_stmt_bind_param($stmt, "siissi", $birthday_name, $dia_nacimiento, $mes_nacimiento, $fecha_cumpleanios, $birthday_color, $birthday_id);
         
         if (!mysqli_stmt_execute($stmt)) {
             throw new Exception("Database execute failed: " . mysqli_stmt_error($stmt));
@@ -61,14 +73,14 @@ try {
         
     } else {
         // Create new birthday
-        $sql = "INSERT INTO cumpleanos (nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO cumpleanos (nombre, dia_nacimiento, mes_nacimiento, fecha_cumpleanios, color_evento) VALUES (?, ?, ?, ?, ?)";
         $stmt = mysqli_prepare($con, $sql);
         
         if (!$stmt) {
             throw new Exception("Database prepare failed: " . mysqli_error($con));
         }
         
-        mysqli_stmt_bind_param($stmt, "siis", $birthday_name, $dia_nacimiento, $mes_nacimiento, $birthday_color);
+        mysqli_stmt_bind_param($stmt, "siiss", $birthday_name, $dia_nacimiento, $mes_nacimiento, $fecha_cumpleanios, $birthday_color);
         
         if (!mysqli_stmt_execute($stmt)) {
             throw new Exception("Database execute failed: " . mysqli_stmt_error($stmt));
@@ -83,6 +95,10 @@ try {
 } catch (Exception $e) {
     error_log("Birthday processing error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => 'Database error occurred']);
+    echo json_encode([
+        'error' => 'Database error occurred',
+        'message' => $e->getMessage()
+    ]);
 }
+exit;
 ?>

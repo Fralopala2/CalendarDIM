@@ -1,0 +1,56 @@
+/* Fix for FullCalendar rendering */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+#calendar {
+    width: 100%;
+}
+
+.fc-view {
+    width: 100% !important;
+}
+
+.calendar-container {
+    display: block;
+}
+
+/* Asegurar que todas las filas se muestran */
+.fc-row.fc-week {
+    min-height: 80px;
+}
+
+.fc-day-grid-container {
+    overflow: visible !important;
+}
+
+/* FullCalendar 2.x specific fixes */
+.fc-toolbar {
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+.fc-toolbar h2 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+    .fc-toolbar {
+        flex-direction: column;
+    }
+    
+    .fc-toolbar button,
+    .fc-toolbar .fc-today-button {
+        padding: 0.3em 0.6em;
+        font-size: 0.9em;
+    }
+    
+    .fc-row.fc-week {
+        min-height: 60px;
+    }
+}

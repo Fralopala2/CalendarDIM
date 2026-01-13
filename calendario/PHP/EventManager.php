@@ -60,11 +60,12 @@ class EventManager {
         if (!$stmt) {
             return [
                 'success' => false,
-                'error' => 'Failed to prepare statement',
+                'error' => 'Failed to prepare statement: ' . $this->connection->error,
                 'details' => []
             ];
         }
         
+        // Bind parameters with correct types: string, string, string, string, string, string
         $stmt->bind_param("ssssss", $evento, $fecha_inicio, $fecha_fin, $color_evento, $hora_inicio, $descripcion);
         
         if ($stmt->execute()) {
@@ -76,10 +77,11 @@ class EventManager {
                 'event_id' => $eventId
             ];
         } else {
+            $error = $stmt->error;
             $stmt->close();
             return [
                 'success' => false,
-                'error' => 'Failed to create event',
+                'error' => 'Failed to create event: ' . $error,
                 'details' => []
             ];
         }

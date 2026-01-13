@@ -13,6 +13,7 @@ include('PHP/config.php');
 	<link rel="icon" type="image/svg+xml" href="IMAGES/ImagenAgenda.svg">
 	<link rel="stylesheet" type="text/css" href="css/fullcalendar.min.css">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/fullcalendar-fix.css">
     <link rel="stylesheet" type="text/css" href="css/home.css?v=<?php echo time(); ?>" media="(min-width: 1025px)">
     <link rel="stylesheet" type="text/css" href="css/home-tablet.css?v=<?php echo time(); ?>" media="(min-width: 769px) and (max-width: 1024px)">
     <link rel="stylesheet" type="text/css" href="css/home-mobile.css?v=<?php echo time(); ?>" media="(max-width: 768px)">
@@ -89,14 +90,29 @@ $(document).ready(function() {
         }
     }, 500); // Aumentar el tiempo para asegurar que todo esté cargado
     
-    $("#calendar").fullCalendar({
+    // Initialize FullCalendar with proper height
+    setTimeout(function() {
+        console.log('🗓️ Inicializando FullCalendar...');
+        
+        $("#calendar").fullCalendar({
         header: {
             left: "prev,next today",
             center: "title",
-            right: "month,sidebarToggle"
+            right: "newEvent,month,sidebarToggle"
         },
         
         customButtons: {
+            newEvent: {
+                text: '+ Nuevo',
+                click: function(event) {
+                    if (typeof window.openUnifiedModalForCreate === 'function') {
+                        window.openUnifiedModalForCreate();
+                    } else {
+                        console.error('Función openUnifiedModalForCreate no encontrada');
+                        alert('Error: No se pudo abrir el modal. Intenta recargar la página.');
+                    }
+                }
+            },
             sidebarToggle: {
                 text: '☰',
                 click: function(event) {
@@ -107,12 +123,12 @@ $(document).ready(function() {
         },
         locale: 'es',
         defaultView: "month",
-        height: 'auto',
+        aspectRatio: 2.2,
         selectable: true,
         selectHelper: true,
         editable: true,
         fixedWeekCount: false,
-        showNonCurrentDates: false,
+        showNonCurrentDates: true,
         
         dayClick: function(date, jsEvent, view) {
             if (jsEvent.target.classList.contains('fc-day-number') || 
@@ -264,13 +280,13 @@ $(document).ready(function() {
             }
             
             $currentYear = date('Y');
-            $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos FROM cumpleanos";
+            $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_evento FROM cumpleanos";
             $result = mysqli_query($con, $sql);
             
             if ($result) {
                 while($row = mysqli_fetch_assoc($result)) {
                     $birthdayDate = $currentYear . '-' . sprintf('%02d', $row['mes_nacimiento']) . '-' . sprintf('%02d', $row['dia_nacimiento']);
-                    $birthdayColor = !empty($row['color_cumpleanos']) ? $row['color_cumpleanos'] : '#FF69B4';
+                    $birthdayColor = isset($row['color_evento']) && !empty($row['color_evento']) ? $row['color_evento'] : '#FF69B4';
                     
                     echo "{\n";
                     echo "  _id: 'birthday_" . $row['id'] . "',\n";
@@ -351,6 +367,11 @@ $(document).ready(function() {
             });
         }
     });
+    
+        // Force calendar to render
+        $('#calendar').fullCalendar('render');
+        console.log('✅ FullCalendar inicializado correctamente');
+    }, 100);
     
     window.toggleSidebar = function() {
         var sidebar = $('#sidebar-container');

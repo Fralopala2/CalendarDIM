@@ -198,10 +198,10 @@ class BirthdayManager {
         $calendarBirthdays = [];
         
         foreach ($allBirthdays as $birthday) {
-             for the specified year
+            // Generate birthday date for the specified year
             $birthdayDate = sprintf('%04d-%02d-%02d', $year, $birthday['mes_nacimiento'], $birthday['dia_nacimiento']);
             
-             (handle leap year issues)
+            // Validate date (handle leap year issues)
             if (checkdate($birthday['mes_nacimiento'], $birthday['dia_nacimiento'], $year)) {
                 $calendarBirthdays[] = [
                     'id' => 'birthday_' . $birthday['id'],
@@ -335,7 +335,7 @@ class BirthdayManager {
             $day = (int)$data['dia_nacimiento'];
             $month = (int)$data['mes_nacimiento'];
             
-             the date is valid (use a non-leap year for validation)
+            // Verify the date is valid (use a non-leap year for validation)
             if (!checkdate($month, $day, 2023)) {
                 $errors['dia_nacimiento'] = 'Invalid day/month combination';
             }

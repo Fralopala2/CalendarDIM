@@ -2,6 +2,14 @@
 
 require_once('config.php');
 
+// Habilitar headers JSON
+header('Content-Type: application/json');
+
+// Logging para debugging
+error_log("=== deleteBirthday.php called ===");
+error_log("POST data: " . json_encode($_POST));
+error_log("REQUEST data: " . json_encode($_REQUEST));
+
 // Validate input
 if (!isset($_REQUEST['id']) || empty($_REQUEST['id'])) {
     http_response_code(400);
@@ -10,9 +18,10 @@ if (!isset($_REQUEST['id']) || empty($_REQUEST['id'])) {
 }
 
 $id = intval($_REQUEST['id']);
+error_log("Deleting birthday ID: " . $id);
 
 try {
-     birthday from database
+    // Delete birthday from database
     $sqlDeleteBirthday = "DELETE FROM cumpleanos WHERE id = ?";
     $stmt = mysqli_prepare($con, $sqlDeleteBirthday);
     
@@ -38,6 +47,10 @@ try {
 } catch (Exception $e) {
     error_log("Birthday deletion error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => 'Database error occurred']);
+    echo json_encode([
+        'error' => 'Database error occurred',
+        'message' => $e->getMessage()
+    ]);
 }
+exit;
 ?>
