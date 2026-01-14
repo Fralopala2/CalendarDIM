@@ -36,15 +36,16 @@ Para ejecutar este calendario **completamente offline**, necesitas:
    - Crear nueva base de datos llamada `calendario`
    - Importar el archivo `calendario/database/calendario_enhanced.sql`
 
-5. **Configurar conexión:**
+5. **Configurar conexion:**
    - Abrir `calendario/PHP/config.php`
-   - Verificar que los datos de conexión sean:
+   - Verificar que los datos de conexion sean:
      ```php
      $usuario  = "root";
      $password = "";
      $servidor = "localhost";
      $basededatos = "calendario";
      ```
+   - **Nota:** En XAMPP por defecto el usuario es `root` sin password. Si usas otro entorno, ajusta las credenciales.
 
 6. **Acceder al calendario:**
    - Abrir navegador y ir a http://localhost/calendario/
@@ -95,35 +96,36 @@ USE calendario;
 -- Luego ejecutar el contenido de calendario_enhanced.sql
 ```
 
-## 🌐 Funcionalidades Offline
+## Funcionalidades Offline
 
-✅ **Completamente offline** - No requiere conexión a internet
-✅ **Todas las librerías incluidas** - jQuery, Bootstrap, FullCalendar
-✅ **Emojis del sistema** - Usa emojis nativos del SO
-✅ **Responsive design** - Funciona en móvil, tablet y desktop
-✅ **Base de datos local** - MySQL/MariaDB
+**Completamente offline** - No requiere conexion a internet
+**Todas las librerias incluidas** - jQuery, Bootstrap, FullCalendar
+**Emojis del sistema** - Usa emojis nativos del SO
+**Responsive design** - Funciona en movil, tablet y desktop
+**Base de datos local** - MySQL/MariaDB
 
 ## 📱 Características del Sistema
 
-### Gestión de Eventos:
-- ✅ Crear, editar y eliminar eventos
-- ✅ Fechas de inicio y fin
-- ✅ Horarios opcionales
-- ✅ Descripciones
-- ✅ 10 colores diferentes
-- ✅ Arrastrar y soltar para cambiar fechas
+### Gestion de Eventos:
+- Crear, editar y eliminar eventos
+- Fechas de inicio y fin
+- Horarios opcionales
+- Descripciones
+- 10 colores diferentes
+- Arrastrar y soltar para cambiar fechas
 
-### Gestión de Cumpleaños:
-- ✅ Crear, editar y eliminar cumpleaños
-- ✅ Recurrencia automática anual
-- ✅ Emoji de pastel 🎂
-- ✅ 5 colores específicos para cumpleaños
+### Gestion de Cumpleanos:
+- Crear, editar y eliminar cumpleanos
+- Recurrencia automatica anual
+- Emoji de pastel (icono)
+- 5 colores especificos para cumpleanos
 
 ### Interfaz:
-- ✅ Sidebar colapsible con timeline de 24 horas
-- ✅ Modal unificado para eventos y cumpleaños
-- ✅ Diseño responsive (móvil, tablet, desktop)
-- ✅ Interfaz en español
+- Sidebar colapsible con timeline de 24 horas
+- Modal unificado para eventos y cumpleanos
+- Diseno responsive (movil, tablet, desktop)
+- Swipe horizontal en movil/tablet para cambiar de mes
+- Interfaz en espanol
 
 ## 🔍 Solución de Problemas
 
