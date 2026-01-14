@@ -47,6 +47,9 @@ logs/
 cache/
 *.cache
 
+# Proyecto Android APK (vive en rama android-apk-version)
+calendario-android/
+
 # Archivos de Node.js (si los hubiera)
 node_modules/
 package*.json
