@@ -54,14 +54,14 @@ try {
     
     if ($birthday_id) {
         // Update existing birthday
-        $sql = "UPDATE cumpleanos SET nombre = ?, dia_nacimiento = ?, mes_nacimiento = ?, fecha_cumpleanios = ?, color_evento = ? WHERE id = ?";
+        $sql = "UPDATE cumpleanoscalendar SET nombre = ?, dia_nacimiento = ?, mes_nacimiento = ?, color_cumpleanos = ? WHERE id = ?";
         $stmt = mysqli_prepare($con, $sql);
         
         if (!$stmt) {
             throw new Exception("Database prepare failed: " . mysqli_error($con));
         }
         
-        mysqli_stmt_bind_param($stmt, "siissi", $birthday_name, $dia_nacimiento, $mes_nacimiento, $fecha_cumpleanios, $birthday_color, $birthday_id);
+        mysqli_stmt_bind_param($stmt, "siisi", $birthday_name, $dia_nacimiento, $mes_nacimiento, $birthday_color, $birthday_id);
         
         if (!mysqli_stmt_execute($stmt)) {
             throw new Exception("Database execute failed: " . mysqli_stmt_error($stmt));
@@ -73,14 +73,14 @@ try {
         
     } else {
         // Create new birthday
-        $sql = "INSERT INTO cumpleanos (nombre, dia_nacimiento, mes_nacimiento, fecha_cumpleanios, color_evento) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO cumpleanoscalendar (nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos) VALUES (?, ?, ?, ?)";
         $stmt = mysqli_prepare($con, $sql);
         
         if (!$stmt) {
             throw new Exception("Database prepare failed: " . mysqli_error($con));
         }
         
-        mysqli_stmt_bind_param($stmt, "siiss", $birthday_name, $dia_nacimiento, $mes_nacimiento, $fecha_cumpleanios, $birthday_color);
+        mysqli_stmt_bind_param($stmt, "siis", $birthday_name, $dia_nacimiento, $mes_nacimiento, $birthday_color);
         
         if (!mysqli_stmt_execute($stmt)) {
             throw new Exception("Database execute failed: " . mysqli_stmt_error($stmt));

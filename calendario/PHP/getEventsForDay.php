@@ -32,8 +32,8 @@ try {
     $day = $dateObj->format('d');
     $month = $dateObj->format('m');
     
-    $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_evento, 'birthday' as type
-            FROM cumpleanos 
+    $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos, 'birthday' as type
+            FROM cumpleanoscalendar 
             WHERE dia_nacimiento = ? AND mes_nacimiento = ?";
     
     $stmt = mysqli_prepare($con, $sql);
@@ -48,9 +48,9 @@ try {
             'evento' => '🎂 ' . $row['nombre'],
             'fecha_inicio' => $date,
             'fecha_fin' => $date,
-            'color_evento' => isset($row['color_evento']) ? $row['color_evento'] : '#FF69B4',
-            'hora_inicio' => '00:00', // Los cumpleaños van al inicio del día
-            'descripcion' => '', // Eliminar "Cumpleaños" - solo emoji + nombre
+            'color_evento' => isset($row['color_cumpleanos']) ? $row['color_cumpleanos'] : '#FF69B4',
+            'hora_inicio' => '00:00',
+            'descripcion' => '',
             'type' => 'birthday'
         ];
         $events[] = $birthday;

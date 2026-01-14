@@ -280,13 +280,13 @@ $(document).ready(function() {
             }
             
             $currentYear = date('Y');
-            $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_evento FROM cumpleanos";
+            $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos FROM cumpleanoscalendar";
             $result = mysqli_query($con, $sql);
             
             if ($result) {
                 while($row = mysqli_fetch_assoc($result)) {
                     $birthdayDate = $currentYear . '-' . sprintf('%02d', $row['mes_nacimiento']) . '-' . sprintf('%02d', $row['dia_nacimiento']);
-                    $birthdayColor = isset($row['color_evento']) && !empty($row['color_evento']) ? $row['color_evento'] : '#FF69B4';
+                    $birthdayColor = isset($row['color_cumpleanos']) && !empty($row['color_cumpleanos']) ? $row['color_cumpleanos'] : '#FF69B4';
                     
                     echo "{\n";
                     echo "  _id: 'birthday_" . $row['id'] . "',\n";
@@ -470,10 +470,15 @@ $(document).ready(function() {
     if (isTouchDevice) {
         var touchStartTime = 0;
         var touchMoved = false;
+        var touchStartX = 0;
+        var touchStartY = 0;
+        var minSwipeDistance = 50;
         
         $('#calendar').on('touchstart', '.fc-day:not(.fc-other-month)', function(e) {
             touchStartTime = Date.now();
             touchMoved = false;
+            touchStartX = e.originalEvent.touches[0].clientX;
+            touchStartY = e.originalEvent.touches[0].clientY;
         });
         
         $('#calendar').on('touchmove', '.fc-day:not(.fc-other-month)', function(e) {
@@ -503,8 +508,8 @@ $(document).ready(function() {
                             $('#fecha_fin').val(dateStr);
                         }, 200);
                     } else {
-                        console.error('Función openUnifiedModalForCreate no encontrada');
-                        alert('Error: No se pudo abrir el modal. Intenta recargar la página.');
+                        console.error('Funcion openUnifiedModalForCreate no encontrada');
+                        alert('Error: No se pudo abrir el modal. Intenta recargar la pagina.');
                     }
                 }
             }
@@ -529,6 +534,32 @@ $(document).ready(function() {
                 }
             }
         });
+        
+        var calendarSwipeStartX = 0;
+        var calendarSwipeStartY = 0;
+        var calendarSwipeEndX = 0;
+        var calendarSwipeEndY = 0;
+        
+        $('#calendar').on('touchstart', '.fc-view-container, .fc-toolbar', function(e) {
+            calendarSwipeStartX = e.originalEvent.touches[0].clientX;
+            calendarSwipeStartY = e.originalEvent.touches[0].clientY;
+        });
+        
+        $('#calendar').on('touchend', '.fc-view-container, .fc-toolbar', function(e) {
+            calendarSwipeEndX = e.originalEvent.changedTouches[0].clientX;
+            calendarSwipeEndY = e.originalEvent.changedTouches[0].clientY;
+            
+            var swipeDistanceX = calendarSwipeStartX - calendarSwipeEndX;
+            var swipeDistanceY = Math.abs(calendarSwipeStartY - calendarSwipeEndY);
+            
+            if (Math.abs(swipeDistanceX) > minSwipeDistance && swipeDistanceY < 100) {
+                if (swipeDistanceX > 0) {
+                    $('#calendar').fullCalendar('next');
+                } else {
+                    $('#calendar').fullCalendar('prev');
+                }
+            }
+        });
     }
     
     if (window.innerWidth > 768 && window.innerWidth <= 1024) {
@@ -549,35 +580,6 @@ $(document).ready(function() {
                 }
             }
         });
-        
-        // Agregar funcionalidad de swipe para cambiar de mes en mobile/tablet
-        var touchStartX = 0;
-        var touchEndX = 0;
-        var minSwipeDistance = 50; // Distancia mínima para detectar swipe (en píxeles)
-        
-        $('#calendar').on('touchstart', function(e) {
-            touchStartX = e.changedTouches[0].screenX;
-        });
-        
-        $('#calendar').on('touchend', function(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        });
-        
-        function handleSwipe() {
-            var swipeDistance = touchStartX - touchEndX;
-            
-            // Swipe hacia la izquierda = siguiente mes
-            if (swipeDistance > minSwipeDistance) {
-                console.log('Swipe izquierda - Siguiente mes');
-                $('#calendar').fullCalendar('next');
-            }
-            // Swipe hacia la derecha = mes anterior
-            else if (swipeDistance < -minSwipeDistance) {
-                console.log('Swipe derecha - Mes anterior');
-                $('#calendar').fullCalendar('prev');
-            }
-        }
     }
     
 });

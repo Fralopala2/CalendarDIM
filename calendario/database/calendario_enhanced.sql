@@ -36,14 +36,15 @@ CREATE TABLE `eventoscalendar` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cumpleanos`
+-- Table structure for table `cumpleanoscalendar`
 --
 
-CREATE TABLE `cumpleanos` (
+CREATE TABLE `cumpleanoscalendar` (
   `id` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL COMMENT 'Name of the person',
   `dia_nacimiento` int(2) NOT NULL COMMENT 'Birth day (1-31)',
   `mes_nacimiento` int(2) NOT NULL COMMENT 'Birth month (1-12)',
+  `color_cumpleanos` varchar(20) DEFAULT '#FF69B4' COMMENT 'Birthday color',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci COMMENT='Table for storing birthday information';
@@ -73,9 +74,9 @@ ALTER TABLE `eventoscalendar`
   ADD KEY `idx_fecha_fin` (`fecha_fin`);
 
 --
--- Indexes for table `cumpleanos`
+-- Indexes for table `cumpleanoscalendar`
 --
-ALTER TABLE `cumpleanos`
+ALTER TABLE `cumpleanoscalendar`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_birth_date` (`dia_nacimiento`,`mes_nacimiento`);
 
@@ -97,9 +98,9 @@ ALTER TABLE `eventoscalendar`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `cumpleanos`
+-- AUTO_INCREMENT for table `cumpleanoscalendar`
 --
-ALTER TABLE `cumpleanos`
+ALTER TABLE `cumpleanoscalendar`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
