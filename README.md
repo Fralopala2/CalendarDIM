@@ -116,14 +116,18 @@ USE calendario;
 
 ### Gestion de Cumpleanos:
 - Crear, editar y eliminar cumpleanos
-- Recurrencia automatica anual
+- Recurrencia automatica anual (se muestran en anos anteriores, actual y siguiente)
 - Emoji de pastel (icono)
 - 5 colores especificos para cumpleanos
+- Arrastrar y soltar para cambiar fecha
 
 ### Interfaz:
-- Sidebar colapsible con timeline de 24 horas
+- Sidebar colapsible con listado de eventos ordenados por hora
 - Modal unificado para eventos y cumpleanos
+- Fechas inicializadas con fecha actual al crear
+- Boton "Hoy" actualiza calendario y sidebar
 - Diseno responsive (movil, tablet, desktop)
+- Banner optimizado (140px en desktop, 80px en tablet, 70px en movil)
 - Swipe horizontal en movil/tablet para cambiar de mes
 - Interfaz en espanol
 

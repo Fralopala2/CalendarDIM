@@ -1,21 +1,17 @@
-/* Banner Image Styles */
 .banner-container {
   width: 100%;
   text-align: center;
   overflow: hidden;
-  height: 280px;
-  max-height: 280px; 
-  background-color: #f8f9fa;
+  height: 160px;
+  max-height: 160px; 
+  background-color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .banner-image {
-  width: 100%;
-  height: 280px;
-  max-height: 280px;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
 }
 
@@ -23,27 +19,29 @@
 /* Main Container Layout with Flexbox */
 .main-container {
   display: flex;
-  height: calc(100vh - 295px);
+  height: calc(100vh - 160px);
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   max-width: 100vw;
-  margin-top: 15px; /* Bajar el contenedor para no tapar el banner */
+  margin-top: 0;
+  align-items: stretch;
 }
 
 /* Calendar Container (Left side) */
 .calendar-container {
   flex: 1;
-  padding: 0 15px 15px 15px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  padding: 0 15px 0 15px;
+  overflow: hidden;
   background-color: #ffffff;
   position: relative;
-  max-width: calc(100vw - 300px); /* Reserve space for sidebar */
-  height: calc(100vh - 295px);
+  max-width: calc(100vw - 300px);
+  display: flex;
+  flex-direction: column;
 }
 
 #calendar {
   width: 100%;
+  flex: 1;
 }
 
 /* When sidebar is collapsed, calendar takes full width */
@@ -65,12 +63,10 @@
   flex-shrink: 0 !important;
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  order: 2; /* Ensures sidebar appears on the right */
+  order: 2;
   display: flex !important;
   flex-direction: column;
-  min-height: 100%;
-  position: relative; /* Ensure it stays in place */
-  height: calc(100vh - 295px); /* Same height as main container and calendar */
+  position: relative;
 }
 
 /* Expanded state (default) */
@@ -142,7 +138,7 @@
 
 /* Sidebar Content with Smooth Scrolling */
 .sidebar-content {
-  height: calc(100vh - 295px - 70px); /* Subtract banner height, margin and header height */
+  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   scroll-behavior: smooth;
@@ -167,158 +163,80 @@
 
 /* Enhanced Timeline Styles */
 .timeline-container {
-  padding: 0;
+  padding: 15px;
   background-color: #fafbfc;
 }
 
-.hour-slot {
-  display: flex;
-  min-height: 70px;
-  border-bottom: 1px solid #e9ecef;
-  position: relative;
-  transition: background-color 0.2s ease;
-}
-
-.hour-slot:hover {
-  background-color: #f8f9fa;
-}
-
-.hour-slot:nth-child(even) {
-  background-color: #ffffff;
-}
-
-.hour-label {
-  width: 70px;
-  padding: 12px 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #495057;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-right: 2px solid #dee2e6;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  flex-shrink: 0;
-  text-align: center;
-  position: relative;
-}
-
-.hour-label::after {
-  content: '';
-  position: absolute;
-  right: -1px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 2px;
-  height: 20px;
-  background-color: #6c757d;
-  opacity: 0.3;
-}
-
-.hour-content {
-  flex: 1;
-  padding: 12px;
-  position: relative;
-  min-height: 46px;
-}
-
-/* Enhanced Event Items in Timeline */
-.timeline-event {
+.event-item {
   background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
   color: white;
-  padding: 8px 12px;
-  margin: 3px 0;
+  padding: 12px 15px;
+  margin: 8px 0;
   border-radius: 8px;
-  font-size: 13px;
-  line-height: 1.4;
   box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
   transition: all 0.2s ease;
   cursor: pointer;
   border-left: 4px solid #0056b3;
 }
 
-.timeline-event:hover {
-  transform: translateX(-2px);
+.event-item:hover {
+  transform: translateX(-3px);
   box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
 }
 
-.timeline-event .event-time {
+.event-item .event-time {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 4px;
+  opacity: 0.95;
+}
+
+.event-item .event-title {
   font-weight: 600;
-  font-size: 12px;
-  opacity: 0.9;
-}
-
-.timeline-event .event-title {
-  font-weight: 500;
-  margin-top: 2px;
-}
-
-.timeline-event .event-description {
-  font-size: 11px;
-  opacity: 0.8;
-  margin-top: 2px;
-  font-style: italic;
-  max-height: none;
-  overflow: visible;
-  word-wrap: break-word;
-}
-
-/* Eventos clickeables en sidebar */
-.clickable-sidebar-event {
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.clickable-sidebar-event:hover {
-  transform: translateX(-3px);
-  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.5);
-  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
-}
-
-/* Cumpleaños clickeables en sidebar */
-.clickable-sidebar-birthday {
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.clickable-sidebar-birthday:hover {
-  transform: translateX(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
-  filter: brightness(0.8);
-}
-
-/* Enhanced Birthday Items */
-.timeline-birthday {
-  color: white;
-  padding: 8px 12px;
-  margin: 3px 0;
-  border-radius: 8px;
   font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.event-item .event-description {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 6px;
   line-height: 1.4;
-  box-shadow: 0 2px 4px rgba(253, 126, 20, 0.3);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.event-separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #dee2e6 50%, transparent 100%);
+  margin: 12px 0;
+}
+
+.birthday-item {
+  color: white;
+  padding: 12px 15px;
+  margin: 8px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   transition: all 0.2s ease;
   cursor: pointer;
   border-left: 4px solid;
-  /* Background y border-left-color se establecen dinámicamente via JavaScript */
+  font-weight: 600;
+  font-size: 13px;
 }
 
-.timeline-birthday:hover {
-  transform: translateX(-2px);
+.birthday-item:hover {
+  transform: translateX(-3px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
   filter: brightness(0.9);
 }
 
-/* Empty State for Timeline */
-.hour-content:empty::after {
-  content: '';
-  display: block;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, #dee2e6 50%, transparent 100%);
-  position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
+.no-events-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  font-style: italic;
+  font-size: 14px;
 }
 
 /* Responsive Design with Enhanced Breakpoints */
@@ -371,18 +289,39 @@
 
 @media (max-width: 768px) {
   .banner-container {
-    height: 120px; /* Reducir altura del banner en móvil */
-    max-height: 120px;
+    height: 80px;
+    max-height: 80px;
   }
   
   .banner-image {
-    height: 120px;
-    max-height: 120px;
+    height: 80px;
+    max-height: 80px;
   }
   
   .main-container {
     flex-direction: column;
-    height: calc(100vh - 120px); /* Ajustar altura total */
+    height: calc(100vh - 80px);
+  }
+  
+  .fc-toolbar {
+    padding: 10px !important;
+    flex-wrap: wrap !important;
+  }
+  
+  .fc-toolbar .fc-left,
+  .fc-toolbar .fc-right {
+    margin-bottom: 8px;
+  }
+  
+  .fc-toolbar .fc-center {
+    width: 100%;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .fc-toolbar h2 {
+    font-size: 1.3rem !important;
+    margin: 8px 0 !important;
   }
   
   /* Sidebar en móvil: más compacto y mejor posicionado */
@@ -509,17 +448,17 @@
 
 @media (max-width: 576px) {
   .banner-container {
-    height: 100px; /* Banner aún más pequeño en móvil */
-    max-height: 100px;
+    height: 70px;
+    max-height: 70px;
   }
   
   .banner-image {
-    height: 100px;
-    max-height: 100px;
+    height: 70px;
+    max-height: 70px;
   }
   
   .main-container {
-    height: calc(100vh - 100px);
+    height: calc(100vh - 70px);
   }
   
   /* Sidebar colapsado por defecto en móvil pequeño */
@@ -733,8 +672,61 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   overflow: hidden;
+  border: 1px solid #ddd;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
+.fc-view-container {
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  flex: 1;
+}
+
+.fc-view {
+  border-right: 1px solid #ddd;
+  height: 100%;
+}
+
+.fc-view > table {
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  height: 100%;
+}
+
+.fc-day-grid {
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+.fc-row:last-child {
+  border-bottom: 1px solid #ddd;
+}
+
+.fc-day:last-child {
+  border-right: 1px solid #ddd;
+}
+.fc-day-grid-container {
+  height: 100% !important;
+}
+
+.fc-scroller {
+  height: 100% !important;
+  overflow-y: hidden !important;
+}
+
+.fc-day-grid {
+  height: 100% !important;
+}
+.fc-bg table,
+.fc-content-skeleton table {
+  height: 100% !important;
+}
+.fc-bg table tbody tr td,
+.fc-content-skeleton table tbody tr td {
+  height: 100%;
+}
 /* FullCalendar customizations */
 .fc-toolbar {
   padding: 20px;
@@ -770,6 +762,18 @@
   font-weight: 600;
 }
 
+.fc-content-skeleton tbody tr {
+  height: auto;
+}
+
+.fc-content-skeleton tbody tr td {
+  height: auto;
+  vertical-align: top;
+}
+.fc-day-grid .fc-content-skeleton td,
+.fc-day-grid .fc-bg td {
+  border-color: #ddd;
+}
 /* Transition classes */
 .transitioning {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -777,19 +781,18 @@
 
 /* Responsive utilities */
 @media (max-width: 480px) {
-  /* Extra small mobile devices */
   .banner-container {
-    height: 80px !important;
-    max-height: 80px !important;
+    height: 60px !important;
+    max-height: 60px !important;
   }
   
   .banner-image {
-    height: 80px !important;
-    max-height: 80px !important;
+    height: 60px !important;
+    max-height: 60px !important;
   }
   
   .main-container {
-    height: calc(100vh - 80px) !important;
+    height: calc(100vh - 60px) !important;
   }
   
   /* Sidebar aún más compacto */
@@ -931,9 +934,20 @@
 }
 
 /* Override Styles */
+html {
+  height: 100%;
+  overflow-y: auto;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
 body .main-container {
   display: flex !important;
-  height: calc(100vh - 280px) !important;
+  height: calc(100vh - 160px) !important;
   max-width: 100vw !important;
   overflow: hidden !important;
 }
@@ -971,7 +985,9 @@ body .calendar-container {
   flex: 1 !important;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
   max-width: calc(100vw - 300px) !important;
-  overflow: auto !important;
+  overflow: hidden !important; /* Changed from auto to hidden to prevent internal scrolling and force expansion */
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 body #sidebar-header {
@@ -985,14 +1001,14 @@ body #sidebar-header {
 }
 
 body .banner-container {
-  height: 280px !important;
-  max-height: 280px !important;
+  height: 160px !important;
+  max-height: 160px !important;
   overflow: hidden !important;
 }
 
 body .banner-image {
-  height: 280px !important;
-  max-height: 280px !important;
+  object-fit: contain !important;
+  object-position: center !important;
 }
 
 #title{
@@ -1003,8 +1019,6 @@ body .banner-image {
   background: #ccc;
   padding: 8px 30px;
 }
-
-/****************/
 input {
   display: none;
 }

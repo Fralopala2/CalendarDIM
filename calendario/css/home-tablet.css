@@ -1,12 +1,11 @@
 /* CSS Optimizado para Tablets */
 
-/* Banner para tablets */
 .banner-container {
   width: 100%;
   text-align: center;
   overflow: hidden;
-  height: 180px; /* Reducir de 200px a 180px */
-  background-color: #f8f9fa;
+  height: 160px;
+  background-color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,7 +13,7 @@
 
 .banner-image {
   width: 100%;
-  height: 180px; /* Reducir de 200px a 180px */
+  height: 100%;
   object-fit: cover;
   object-position: center;
 }
@@ -22,9 +21,9 @@
 /* Container principal para tablets - Layout vertical como móvil */
 .main-container {
   display: flex;
-  flex-direction: column !important; /* Vertical como móvil */
+  flex-direction: column !important;
   height: auto !important;
-  min-height: calc(100vh - 180px); /* Ajustar para banner más pequeño */
+  min-height: calc(100vh - 160px);
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   margin-top: 2px; /* Reducir margen significativamente */
@@ -620,6 +619,7 @@
   transition: border-color 0.3s ease;
   min-height: 50px;
   -webkit-appearance: none;
+  appearance: none;
   touch-action: manipulation;
 }
 

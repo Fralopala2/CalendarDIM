@@ -25,13 +25,10 @@ if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $selectedDate)) {
 }
 
 try {
-     for the selected date
     $events = $eventManager->getEventsForDate($selectedDate);
     
-     for the selected date
     $birthdays = $birthdayManager->getBirthdaysForDate($selectedDate);
     
-    // Organize events chronologically
     usort($events, function($a, $b) {
         $timeA = $a['hora_inicio'] ?? '00:00:00';
         $timeB = $b['hora_inicio'] ?? '00:00:00';

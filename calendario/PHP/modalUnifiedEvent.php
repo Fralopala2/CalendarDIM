@@ -164,54 +164,43 @@
 <script>
 // Modal functions - will be called from index.php
 window.initializeUnifiedModal = function() {
-    console.log('Inicializando modal unificado...');
-    
-    // Verificar que el modal existe en el DOM
     if ($('#unifiedEventModal').length === 0) {
-        console.error('Modal no encontrado en el DOM');
         return false;
     }
     
-    console.log('Modal encontrado, configurando funciones...');
-    
-    // Global variable to track modal mode
     window.unifiedModalMode = 'create';
     
     // Function to open modal in create mode
     window.openUnifiedModalForCreate = function() {
-        console.log('Intentando abrir modal para crear evento...');
-        
-        // Verificar que el modal existe
         if ($('#unifiedEventModal').length === 0) {
-            console.error('Modal no encontrado en el DOM');
-            alert('Error: Modal no encontrado. Recarga la página.');
+            alert('Error: Modal no encontrado. Recarga la pagina.');
             return;
         }
         
         window.unifiedModalMode = 'create';
         
-        // Clear all form fields
         $('#event_id').val('');
         $('#evento').val('');
         $('#hora_inicio').val('');
         $('#descripcion').val('');
-        $('#fecha_inicio').val('');
-        $('#fecha_fin').val('');
         $('#birthday_name').val('');
-        $('#birthday_date').val('');
         
-        // Set to event mode by default
+        var today = new Date();
+        var todayFormatted = today.getFullYear() + '-' + 
+                            String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                            String(today.getDate()).padStart(2, '0');
+        
+        $('#fecha_inicio').val(todayFormatted);
+        $('#fecha_fin').val(todayFormatted);
+        $('#birthday_date').val(todayFormatted);
+        
         $('input[name="event_type"][value="event"]').prop('checked', true).trigger('change');
         
-        // Reset color selection to first option
         $('input[name="color_evento"]:first').prop('checked', true);
         
-        // Update button states for create mode
         $('#save-btn').text('Guardar').prop('disabled', false);
         $('#delete-btn').prop('disabled', true);
         
-        // Show modal with better error handling
-        console.log('Mostrando modal...');
         try {
             $('#unifiedEventModal').modal({
                 backdrop: 'static',
@@ -219,18 +208,13 @@ window.initializeUnifiedModal = function() {
                 focus: true,
                 show: true
             });
-            console.log('Modal mostrado correctamente');
         } catch (error) {
-            console.error('Error mostrando modal:', error);
-            // Fallback manual para mostrar modal
             $('#unifiedEventModal').addClass('show').css('display', 'block');
             $('body').addClass('modal-open');
             
-            // Crear backdrop manualmente si no existe
             if ($('.modal-backdrop').length === 0) {
                 $('<div class="modal-backdrop fade show"></div>').appendTo('body');
             }
-            console.log('Modal mostrado con fallback manual');
         }
     };
     
@@ -379,7 +363,6 @@ window.initializeUnifiedModal = function() {
         
         var formData = $(this).serialize();
         
-        // Determine the target PHP file based on event type and mode
         var targetUrl;
         if (eventType === 'birthday') {
             targetUrl = 'PHP/processBirthday.php';
@@ -391,32 +374,20 @@ window.initializeUnifiedModal = function() {
             }
         }
         
-        console.log('URL de destino:', targetUrl);
-        console.log('FormData a enviar:', formData);
-        
-        // Submit form via AJAX
         $.ajax({
             url: targetUrl,
             method: 'POST',
             data: formData,
             dataType: 'json',
             success: function(response) {
-                console.log('✅ Respuesta exitosa:', response);
-                // Close modal and refresh calendar
                 $('#unifiedEventModal').modal('hide');
                 setTimeout(function() {
-                    // Reload page to show the new event
                     location.reload();
                 }, 500);
             },
             error: function(xhr, status, error) {
-                console.error('❌ Error AJAX:', status, error);
-                console.error('Response status:', xhr.status);
-                console.error('Response text:', xhr.responseText);
-                
                 var errorMessage = 'Error al procesar la solicitud: ' + error;
                 
-                // Try to parse JSON error response for more details
                 try {
                     var response = JSON.parse(xhr.responseText);
                     if (response.error) {
@@ -429,13 +400,11 @@ window.initializeUnifiedModal = function() {
                         }
                     }
                 } catch (e) {
-                    // If not JSON, use the raw response
                     if (xhr.responseText) {
                         errorMessage += '\nRespuesta del servidor: ' + xhr.responseText.substring(0, 500);
                     }
                 }
                 
-                console.error('Mensaje final de error:', errorMessage);
                 alert(errorMessage);
             }
         });
@@ -502,7 +471,6 @@ window.initializeUnifiedModal = function() {
         }
     });
     
-    console.log('Modal unificado inicializado correctamente');
     return true;
 };
 </script>
@@ -662,7 +630,7 @@ window.initializeUnifiedModal = function() {
     }
     
     .modal-body {
-        padding: 20px !important;
+        padding: 15px !important;
         max-height: calc(100vh - 200px) !important;
     }
     
@@ -696,9 +664,15 @@ window.initializeUnifiedModal = function() {
     }
     
     .col-sm-10 {
-        width: 96% !important; /* Mismo ancho en móviles */
-        padding-left: 15px !important; /* Mantener margen izquierdo */
-        padding-right: 5px !important; /* Reducir margen derecho */
+        width: 100% !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    .form-control {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
     }
     
     .modal-footer {

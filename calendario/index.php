@@ -35,14 +35,7 @@ include('PHP/config.php');
         </div>
         <div id="sidebar-content" class="sidebar-content">
             <div id="timeline-container" class="timeline-container">
-                <?php for($hour = 0; $hour < 24; $hour++): ?>
-                    <div class="hour-slot" data-hour="<?php echo $hour; ?>">
-                        <div class="hour-label">
-                            <?php echo sprintf('%02d:00', $hour); ?>
-                        </div>
-                        <div class="hour-content"></div>
-                    </div>
-                <?php endfor; ?>
+                <div class="no-events-message">Selecciona un dia para ver los eventos</div>
             </div>
         </div>
     </div>
@@ -60,40 +53,146 @@ include('PHP/config.php');
 $(document).ready(function() {
     var isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
     
+    // Función para cargar eventos en la sidebar
+    window.loadEventsForSidebar = function(date) {
+        var dateFormatted = moment(date).format('YYYY-MM-DD');
+        var displayDate = moment(date).format('DD/MM/YYYY');
+        $('#selected-date').text(displayDate);
+
+        $.ajax({
+            url: 'PHP/getSidebarEvents.php',
+            method: 'GET',
+            data: { date: dateFormatted },
+            dataType: 'json',
+            success: function(response) {
+                var container = $('#timeline-container');
+                container.empty();
+                
+                if (response.success && (response.birthdays.length > 0 || response.events.length > 0)) {
+                    if (response.birthdays.length > 0) {
+                        response.birthdays.forEach(function(birthday) {
+                            var birthdayColor = birthday.color || '#FF69B4';
+                            var birthdayHtml = '<div class="birthday-item" data-birthday-id="' + birthday.id + '" ' +
+                                              'style="background: linear-gradient(135deg, ' + birthdayColor + ' 0%, ' + birthdayColor + 'CC 100%); ' +
+                                              'border-left-color: ' + birthdayColor + ';">' +
+                                              '🎂 ' + birthday.name +
+                                              '</div>';
+                            container.append(birthdayHtml);
+                        });
+                        
+                        if (response.events.length > 0) {
+                            container.append('<div class="event-separator"></div>');
+                        }
+                    }
+                    
+                    if (response.events.length > 0) {
+                        response.events.forEach(function(event, index) {
+                            var eventColor = event.color || '#007bff';
+                            var eventHtml = '<div class="event-item" data-event-id="' + event.id + '" ' +
+                                           'style="background: linear-gradient(135deg, ' + eventColor + ' 0%, ' + eventColor + 'CC 100%); ' +
+                                           'border-left-color: ' + eventColor + ';">';
+                            
+                            if (event.time) {
+                                eventHtml += '<div class="event-time">' + event.time + '</div>';
+                            }
+                            
+                            eventHtml += '<div class="event-title">' + event.title + '</div>';
+                            
+                            if (event.description && event.description.trim() !== '') {
+                                eventHtml += '<div class="event-description">' + event.description + '</div>';
+                            }
+                            
+                            eventHtml += '</div>';
+                            
+                            if (index < response.events.length - 1) {
+                                eventHtml += '<div class="event-separator"></div>';
+                            }
+                            
+                            container.append(eventHtml);
+                        });
+                    }
+                    
+                    // Rebind events for the items just added
+                    $('.event-item').off('click').on('click', function(e) {
+                        e.stopPropagation();
+                        var eventId = $(this).data('event-id');
+                        
+                        $.ajax({
+                            url: 'PHP/getEventDetails.php',
+                            method: 'GET',
+                            data: { id: eventId },
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.success && response.event) {
+                                    var eventData = {
+                                        id: response.event.id,
+                                        title: response.event.evento,
+                                        start_date: moment(response.event.fecha_inicio).format('DD-MM-YYYY'),
+                                        end_date: moment(response.event.fecha_fin).subtract(1, 'day').format('DD-MM-YYYY'),
+                                        color: response.event.color_evento,
+                                        time: response.event.hora_inicio ? response.event.hora_inicio.substring(0, 5) : '',
+                                        description: response.event.descripcion || ''
+                                    };
+                                    
+                                    window.openUnifiedModalForEdit(eventData);
+                                }
+                            }
+                        });
+                    });
+                    
+                    $('.birthday-item').off('click').on('click', function(e) {
+                        e.stopPropagation();
+                        var birthdayId = $(this).data('birthday-id');
+                        var birthdayName = $(this).text().replace('🎂 ', '').trim();
+                        var selectedDateMoment = moment($('#selected-date').text(), 'DD/MM/YYYY');
+                        
+                        var birthdayColor = '#FF69B4';
+                        if (response.birthdays) {
+                            response.birthdays.forEach(function(b) {
+                                if (b.id == birthdayId) {
+                                    birthdayColor = b.color;
+                                }
+                            });
+                        }
+                        
+                        var birthdayData = {
+                            id: birthdayId,
+                            name: birthdayName,
+                            day: selectedDateMoment.date(),
+                            month: selectedDateMoment.month() + 1,
+                            date: selectedDateMoment.format('YYYY-MM-DD'),
+                            color: birthdayColor
+                        };
+                        
+                        window.openUnifiedModalForBirthdayEdit(birthdayData);
+                    });
+                } else {
+                    container.html('<div class="no-events-message">No hay eventos para este día</div>');
+                }
+            },
+            error: function() {
+                $('#timeline-container').html('<div class="no-events-message">Error al cargar eventos</div>');
+            }
+        });
+    };
+
     // Inicializar el modal unificado
     setTimeout(function() {
-        console.log('Verificando dependencias...');
-        
-        // Verificar que jQuery y Bootstrap estén cargados
         if (typeof $ === 'undefined') {
-            console.error('jQuery no está cargado');
             return;
         }
-        console.log('✓ jQuery cargado');
         
         if (typeof $.fn.modal === 'undefined') {
-            console.error('Bootstrap modal no está disponible');
             return;
         }
-        console.log('✓ Bootstrap modal disponible');
         
         if (typeof window.initializeUnifiedModal === 'function') {
-            console.log('✓ initializeUnifiedModal disponible');
-            var modalInitialized = window.initializeUnifiedModal();
-            if (modalInitialized) {
-                console.log('✅ Modal inicializado correctamente');
-            } else {
-                console.error('❌ Error: No se pudo inicializar el modal');
-            }
-        } else {
-            console.error('❌ initializeUnifiedModal no está disponible');
+            window.initializeUnifiedModal();
         }
-    }, 500); // Aumentar el tiempo para asegurar que todo esté cargado
+    }, 500);
     
     // Initialize FullCalendar with proper height
     setTimeout(function() {
-        console.log('🗓️ Inicializando FullCalendar...');
-        
         $("#calendar").fullCalendar({
         header: {
             left: "prev,next today",
@@ -108,9 +207,15 @@ $(document).ready(function() {
                     if (typeof window.openUnifiedModalForCreate === 'function') {
                         window.openUnifiedModalForCreate();
                     } else {
-                        console.error('Función openUnifiedModalForCreate no encontrada');
-                        alert('Error: No se pudo abrir el modal. Intenta recargar la página.');
+                        alert('Error: No se pudo abrir el modal. Intenta recargar la pagina.');
                     }
+                }
+            },
+            today: {
+                text: 'Hoy',
+                click: function() {
+                    $('#calendar').fullCalendar('today');
+                    window.loadEventsForSidebar(moment());
                 }
             },
             sidebarToggle: {
@@ -123,7 +228,7 @@ $(document).ready(function() {
         },
         locale: 'es',
         defaultView: "month",
-        aspectRatio: 2.2,
+        height: 'parent',
         selectable: true,
         selectHelper: true,
         editable: true,
@@ -133,103 +238,7 @@ $(document).ready(function() {
         dayClick: function(date, jsEvent, view) {
             if (jsEvent.target.classList.contains('fc-day-number') || 
                 jsEvent.target.classList.contains('fc-day-top')) {
-                
-                $('#selected-date').text(date.format('DD/MM/YYYY'));
-                $('.hour-content').empty();
-                var selectedDate = date.format('YYYY-MM-DD');
-                
-                $.ajax({
-                    url: 'PHP/getEventsForDay.php',
-                    method: 'GET',
-                    data: { date: selectedDate },
-                    dataType: 'json',
-                    success: function(events) {
-                        if (events && events.length > 0) {
-                            events.forEach(function(event) {
-                                var eventHtml = '';
-                                
-                                if (event.type === 'birthday') {
-                                    var birthdayColor = event.color_evento || '#FF69B4';
-                                    eventHtml = '<div class="timeline-birthday clickable-sidebar-birthday" data-birthday-id="' + event.id + '" style="background: linear-gradient(135deg, ' + birthdayColor + ' 0%, ' + birthdayColor + 'CC 100%); border-left: 4px solid ' + birthdayColor + ';">' +
-                                              '<div class="event-title">' + event.evento + '</div>' +
-                                              '</div>';
-                                    $('.hour-slot[data-hour="0"] .hour-content').append(eventHtml);
-                                } else if (event.hora_inicio) {
-                                    var hour = parseInt(event.hora_inicio.split(':')[0]);
-                                    var eventColor = event.color_evento || '#007bff';
-                                    eventHtml = '<div class="timeline-event clickable-sidebar-event" data-event-id="' + event.id + '" style="background: linear-gradient(135deg, ' + eventColor + ' 0%, ' + eventColor + 'CC 100%); border-left: 4px solid ' + eventColor + ';">' +
-                                              '<div class="event-time">' + event.hora_inicio.substring(0,5) + '</div>' +
-                                              '<div class="event-title">' + event.evento + '</div>';
-                                    
-                                    if (event.descripcion && event.descripcion.trim() !== '') {
-                                        eventHtml += '<div class="event-description">' + event.descripcion + '</div>';
-                                    }
-                                    
-                                    eventHtml += '</div>';
-                                    $('.hour-slot[data-hour="' + hour + '"] .hour-content').append(eventHtml);
-                                }
-                            });
-                            
-                            $('.clickable-sidebar-event').off('click').on('click', function(e) {
-                                e.stopPropagation();
-                                var eventId = $(this).data('event-id');
-                                
-                                $.ajax({
-                                    url: 'PHP/getEventDetails.php',
-                                    method: 'GET',
-                                    data: { id: eventId },
-                                    dataType: 'json',
-                                    success: function(response) {
-                                        if (response.success && response.event) {
-                                            var eventData = {
-                                                id: response.event.id,
-                                                title: response.event.evento,
-                                                start_date: moment(response.event.fecha_inicio).format('DD-MM-YYYY'),
-                                                end_date: moment(response.event.fecha_fin).subtract(1, 'day').format('DD-MM-YYYY'),
-                                                color: response.event.color_evento,
-                                                time: response.event.hora_inicio ? response.event.hora_inicio.substring(0, 5) : '',
-                                                description: response.event.descripcion || ''
-                                            };
-                                            
-                                            window.openUnifiedModalForEdit(eventData);
-                                        }
-                                    },
-                                    error: function() {
-                                        alert('Error al cargar detalles del evento');
-                                    }
-                                });
-                            });
-                            
-                            $('.clickable-sidebar-birthday').off('click').on('click', function(e) {
-                                e.stopPropagation();
-                                var birthdayId = $(this).data('birthday-id');
-                                var birthdayName = $(this).find('.event-title').text().replace('🎂 ', '');
-                                var selectedDateMoment = moment($('#selected-date').text(), 'DD/MM/YYYY');
-                                
-                                var birthdayColor = '#FF69B4';
-                                events.forEach(function(evt) {
-                                    if (evt.type === 'birthday' && evt.id == birthdayId) {
-                                        birthdayColor = evt.color_evento;
-                                    }
-                                });
-                                
-                                var birthdayData = {
-                                    id: birthdayId,
-                                    name: birthdayName,
-                                    day: selectedDateMoment.date(),
-                                    month: selectedDateMoment.month() + 1,
-                                    date: selectedDateMoment.format('YYYY-MM-DD'),
-                                    color: birthdayColor
-                                };
-                                
-                                window.openUnifiedModalForBirthdayEdit(birthdayData);
-                            });
-                        }
-                    },
-                    error: function() {
-                    }
-                });
-                
+                window.loadEventsForSidebar(date);
                 return false;
             }
         },
@@ -250,8 +259,7 @@ $(document).ready(function() {
                     $('#fecha_fin').val(endDate.format('YYYY-MM-DD'));
                 }, 100);
             } else {
-                console.error('openUnifiedModalForCreate function not found');
-                alert('Error: No se pudo abrir el modal. Intenta recargar la página.');
+                alert('Error: No se pudo abrir el modal. Intenta recargar la pagina.');
             }
         },
         
@@ -280,22 +288,27 @@ $(document).ready(function() {
             }
             
             $currentYear = date('Y');
+            $previousYear = $currentYear - 1;
+            $nextYear = $currentYear + 1;
             $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos FROM cumpleanoscalendar";
             $result = mysqli_query($con, $sql);
             
             if ($result) {
                 while($row = mysqli_fetch_assoc($result)) {
-                    $birthdayDate = $currentYear . '-' . sprintf('%02d', $row['mes_nacimiento']) . '-' . sprintf('%02d', $row['dia_nacimiento']);
                     $birthdayColor = isset($row['color_cumpleanos']) && !empty($row['color_cumpleanos']) ? $row['color_cumpleanos'] : '#FF69B4';
                     
-                    echo "{\n";
-                    echo "  _id: 'birthday_" . $row['id'] . "',\n";
-                    echo "  title: '🎂 " . addslashes($row['nombre']) . "',\n";
-                    echo "  start: '" . $birthdayDate . "',\n";
-                    echo "  color: '" . $birthdayColor . "',\n";
-                    echo "  type: 'birthday',\n";
-                    echo "  allDay: true\n";
-                    echo "},\n";
+                    foreach ([$previousYear, $currentYear, $nextYear] as $year) {
+                        $birthdayDate = $year . '-' . sprintf('%02d', $row['mes_nacimiento']) . '-' . sprintf('%02d', $row['dia_nacimiento']);
+                        
+                        echo "{\n";
+                        echo "  _id: 'birthday_" . $row['id'] . "_" . $year . "',\n";
+                        echo "  title: '🎂 " . addslashes($row['nombre']) . "',\n";
+                        echo "  start: '" . $birthdayDate . "',\n";
+                        echo "  color: '" . $birthdayColor . "',\n";
+                        echo "  type: 'birthday',\n";
+                        echo "  allDay: true\n";
+                        echo "},\n";
+                    }
                 }
             }
             ?>
@@ -306,7 +319,8 @@ $(document).ready(function() {
             jsEvent.preventDefault();
             
             if (event.type === 'birthday') {
-                var birthdayId = event._id.replace('birthday_', '');
+                var birthdayIdParts = event._id.split('_');
+                var birthdayId = birthdayIdParts[1];
                 var birthdayName = event.title.replace('🎂 ', '');
                 var birthdayDate = moment(event.start);
                 
@@ -350,51 +364,80 @@ $(document).ready(function() {
         },
         
         eventDrop: function (event, delta) {
-            var idEvento = event._id.replace('event_', '');
-            var start = event.start.format('DD-MM-YYYY');
-            var end = event.end ? event.end.format('DD-MM-YYYY') : event.start.format('DD-MM-YYYY');
-            
-            $.ajax({
-                url: 'PHP/drag_drop_evento.php',
-                data: 'start=' + start + '&end=' + end + '&idEvento=' + idEvento,
-                type: "POST",
-                success: function (response) {
-                },
-                error: function() {
-                    $('#calendar').fullCalendar('refetchEvents');
-                    alert('Error al mover el evento');
-                }
-            });
+            if (event.type === 'birthday') {
+                var birthdayIdParts = event._id.split('_');
+                var birthdayId = birthdayIdParts[1];
+                var newDate = event.start;
+                var day = newDate.date();
+                var month = newDate.month() + 1;
+                
+                $.ajax({
+                    url: 'PHP/updateBirthdayDate.php',
+                    data: { id: birthdayId, day: day, month: month },
+                    type: "POST",
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            var currentDate = $('#selected-date').text();
+                            if (currentDate && currentDate !== 'Hoy') {
+                                var selectedMoment = moment(currentDate, 'DD/MM/YYYY');
+                                window.loadEventsForSidebar(selectedMoment);
+                            } else {
+                                window.loadEventsForSidebar(moment());
+                            }
+                        }
+                    },
+                    error: function() {
+                        $('#calendar').fullCalendar('refetchEvents');
+                        alert('Error al mover el cumpleanos');
+                    }
+                });
+            } else {
+                var idEvento = event._id.replace('event_', '');
+                var start = event.start.format('DD-MM-YYYY');
+                var end = event.end ? event.end.format('DD-MM-YYYY') : event.start.format('DD-MM-YYYY');
+                
+                $.ajax({
+                    url: 'PHP/drag_drop_evento.php',
+                    data: 'start=' + start + '&end=' + end + '&idEvento=' + idEvento,
+                    type: "POST",
+                    success: function (response) {
+                    },
+                    error: function() {
+                        $('#calendar').fullCalendar('refetchEvents');
+                        alert('Error al mover el evento');
+                    }
+                });
+            }
         }
     });
     
-        // Force calendar to render
-        $('#calendar').fullCalendar('render');
-        console.log('✅ FullCalendar inicializado correctamente');
+        // Cargar eventos de hoy automáticamente en la sidebar
+        window.loadEventsForSidebar(moment());
+        
+        // Trigger resize to fix layout
+        setTimeout(function() {
+            $(window).trigger('resize');
+        }, 500);
     }, 100);
     
-    // Recalcular el tamaño del calendario cuando cambia el tamaño de la ventana (e.g., abriendo DevTools)
     var resizeTimeout;
     $(window).on('resize', function() {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(function() {
             if ($('#calendar').length) {
-                $('#calendar').fullCalendar('option', 'height', 'auto');
                 $('#calendar').fullCalendar('render');
-                console.log('✅ Calendario recalculado después de cambio de tamaño');
             }
-        }, 250); // Esperar 250ms después de que termine de cambiar el tamaño
+        }, 250);
     });
     
-    // También detectar cambios de DevTools específicamente
     let devtoolsOpen = false;
-    const threshold = 160; // Diferencia mínima de altura para considerar que DevTools se abrió
+    const threshold = 160;
     let lastHeight = window.innerHeight;
     
     const checkDevTools = setInterval(function() {
         const currentHeight = window.innerHeight;
         if (Math.abs(currentHeight - lastHeight) > threshold) {
-            console.log('DevTools detectado - Recalculando calendario...');
             $('#calendar').fullCalendar('render');
             lastHeight = currentHeight;
         }
@@ -474,57 +517,84 @@ $(document).ready(function() {
         var touchStartY = 0;
         var minSwipeDistance = 50;
         
-        $('#calendar').on('touchstart', '.fc-day:not(.fc-other-month)', function(e) {
+        $('#calendar').on('touchstart', '.fc-day, .fc-day-top, .fc-day-number, .fc-content-skeleton td', function(e) {
             touchStartTime = Date.now();
             touchMoved = false;
             touchStartX = e.originalEvent.touches[0].clientX;
             touchStartY = e.originalEvent.touches[0].clientY;
         });
         
-        $('#calendar').on('touchmove', '.fc-day:not(.fc-other-month)', function(e) {
+        $('#calendar').on('touchmove', '.fc-day, .fc-day-top, .fc-day-number, .fc-content-skeleton td', function(e) {
             touchMoved = true;
         });
         
-        $('#calendar').on('touchend', '.fc-day:not(.fc-other-month)', function(e) {
-            e.preventDefault();
-            
+        $('#calendar').on('touchend', '.fc-day, .fc-day-top, .fc-day-number, .fc-content-skeleton td', function(e) {
             var touchDuration = Date.now() - touchStartTime;
             if (touchMoved || touchDuration > 500) {
                 return;
             }
             
-            var target = e.originalEvent.target || e.target;
+            var target = e.originalEvent.changedTouches[0].target || e.target;
             
-            if (!$(target).hasClass('fc-day-number') && 
-                !$(target).hasClass('fc-day-top') && 
-                !$(target).closest('.fc-event').length) {
+            // Check if clicking an event
+            if ($(target).closest('.fc-event').length) {
+                return;
+            }
+            
+            e.preventDefault();
+            
+            var $el = $(this);
+            var dateStr = $el.data('date') || $el.closest('[data-date]').data('date');
+            
+            if (!dateStr) {
+                // Fallback for empty skeleton cells
+                var index = $el.index();
+                var $row = $el.closest('.fc-row');
+                dateStr = $row.find('.fc-bg .fc-day').eq(index).data('date');
+            }
+            
+            if (dateStr) {
+                var $dayEl = $('.fc-day[data-date="' + dateStr + '"]');
+                if ($dayEl.hasClass('fc-other-month')) {
+                    return;
+                }
                 
-                var dateStr = $(this).data('date');
-                if (dateStr) {
-                    if (typeof window.openUnifiedModalForCreate === 'function') {
-                        window.openUnifiedModalForCreate();
-                        setTimeout(function() {
-                            $("#fecha_inicio").val(dateStr);
-                            $('#fecha_fin').val(dateStr);
-                        }, 200);
-                    } else {
-                        console.error('Funcion openUnifiedModalForCreate no encontrada');
-                        alert('Error: No se pudo abrir el modal. Intenta recargar la pagina.');
-                    }
+                if (typeof window.openUnifiedModalForCreate === 'function') {
+                    window.openUnifiedModalForCreate();
+                    setTimeout(function() {
+                        $("#fecha_inicio").val(dateStr);
+                        $('#fecha_fin').val(dateStr);
+                    }, 200);
                 }
             }
         });
         
-        $('#calendar').on('click', '.fc-day:not(.fc-other-month)', function(e) {
-            if (Date.now() - touchStartTime > 1000) {
+        // Consolidate click handler for devices that emulate mouse but are touch-enabled
+        $('#calendar').on('click', '.fc-day, .fc-day-top, .fc-day-number, .fc-content-skeleton td', function(e) {
+            // Only handle if it wasn't handled by touch (check time since touchstart)
+            if (Date.now() - touchStartTime > 500) {
                 var target = e.target || e.srcElement;
                 
-                if (!$(target).hasClass('fc-day-number') && 
-                    !$(target).hasClass('fc-day-top') && 
-                    !$(target).closest('.fc-event').length) {
+                if ($(target).closest('.fc-event').length) {
+                    return;
+                }
+                
+                var $el = $(this);
+                var dateStr = $el.data('date') || $el.closest('[data-date]').data('date');
+                
+                if (!dateStr) {
+                    var index = $el.index();
+                    var $row = $el.closest('.fc-row');
+                    dateStr = $row.find('.fc-bg .fc-day').eq(index).data('date');
+                }
+                
+                if (dateStr) {
+                    var $dayEl = $('.fc-day[data-date="' + dateStr + '"]');
+                    if ($dayEl.hasClass('fc-other-month')) {
+                        return;
+                    }
                     
-                    var dateStr = $(this).data('date');
-                    if (dateStr && typeof window.openUnifiedModalForCreate === 'function') {
+                    if (typeof window.openUnifiedModalForCreate === 'function') {
                         window.openUnifiedModalForCreate();
                         setTimeout(function() {
                             $("#fecha_inicio").val(dateStr);
@@ -562,25 +632,6 @@ $(document).ready(function() {
         });
     }
     
-    if (window.innerWidth > 768 && window.innerWidth <= 1024) {
-        $('#calendar').on('click', '.fc-day:not(.fc-other-month)', function(e) {
-            var target = e.target || e.srcElement;
-            
-            if (!$(target).hasClass('fc-day-number') && 
-                !$(target).hasClass('fc-day-top') && 
-                !$(target).closest('.fc-event').length) {
-                
-                var dateStr = $(this).data('date');
-                if (dateStr && typeof window.openUnifiedModalForCreate === 'function') {
-                    window.openUnifiedModalForCreate();
-                    setTimeout(function() {
-                        $("#fecha_inicio").val(dateStr);
-                        $('#fecha_fin').val(dateStr);
-                    }, 200);
-                }
-            }
-        });
-    }
     
 });
 </script>
