@@ -208,24 +208,52 @@
   min-height: 46px;
 }
 
-.timeline-event {
+.event-item, .birthday-item {
   color: white;
-  padding: 8px 12px;
-  margin: 3px 0;
+  padding: 12px 15px;
+  margin: 8px 0;
   border-radius: 8px;
-  font-size: 13px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
   cursor: pointer;
-  border-left: 4px solid transparent;
+  border-left: 4px solid rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  flex-shrink: 0;
 }
 
-.timeline-birthday {
-  color: white;
-  padding: 8px 12px;
-  margin: 3px 0;
-  border-radius: 8px;
+.event-item:hover, .birthday-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.event-item .event-time {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 4px;
+  opacity: 0.95;
+}
+
+.event-item .event-title, .birthday-item {
+  font-weight: 600;
   font-size: 13px;
-  cursor: pointer;
-  border-left: 4px solid transparent;
+}
+
+.event-item .event-description {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 6px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.no-events-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  font-style: italic;
+  font-size: 14px;
 }
 
 /* RESPONSIVE MÓVIL */
@@ -295,7 +323,7 @@
     top: auto;
     left: auto;
     right: auto;
-    height: 320px; /* Aumentar de 300px a 320px para dar más espacio */
+    height: 230px;
     background: white;
     border: none;
     box-shadow: none;
@@ -335,10 +363,12 @@
     flex-direction: row;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 10px;
-    height: 300px; /* Aumentar de 280px a 300px */
+    padding: 10px 15px;
+    height: 210px;
     -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
     scroll-behavior: smooth;
+    align-items: center; /* Center cards vertically */
+    gap: 12px;
   }
   
   .timeline-container::-webkit-scrollbar {
@@ -378,7 +408,7 @@
   
   .hour-content {
     padding: 6px;
-    min-height: 260px; /* Aumentar de 240px a 260px */
+    min-height: 170px;
     flex: 1;
   }
   
@@ -409,24 +439,31 @@
   }
   
   .modal-header {
-    padding: 15px 20px !important;
+    padding: 10px 15px !important;
     position: sticky;
     top: 0;
     z-index: 1000;
     background: white;
     border-radius: 16px 16px 0 0 !important;
   }
+
+  .modal-title {
+    font-size: 16px !important;
+  }
   
   .modal-body {
-    padding: 20px !important;
-    max-height: calc(100vh - 200px);
+    padding: 12px 15px !important;
+    max-height: calc(100vh - 160px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
   
   .modal-footer {
-    padding: 15px 20px !important;
-    flex-direction: column !important;
+    padding: 10px 15px !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
     position: sticky;
     bottom: 0;
     background: white;
@@ -435,40 +472,50 @@
   }
   
   .modal-footer .btn {
-    width: 100% !important;
-    margin: 5px 0 !important;
-    padding: 14px !important;
-    font-size: 16px !important;
+    flex: 1;
+    min-width: 100px;
+    margin: 0 !important;
+    padding: 10px 8px !important;
+    font-size: 13px !important;
     -webkit-tap-highlight-color: rgba(0,0,0,0.1);
     touch-action: manipulation;
   }
   
+  .modal-footer .btn#btn-salir {
+    flex-basis: 100%; /* El botón de salir puede ocupar toda la fila si se desea o dejarlo que fluya */
+  }
+  
   /* Mejorar controles de formulario para móvil */
   .form-control {
-    padding: 14px 16px;
-    font-size: 16px; /* Prevenir zoom en iOS */
-    border-radius: 10px;
-    min-height: 50px;
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    min-height: 40px;
     -webkit-appearance: none;
     appearance: none;
     touch-action: manipulation;
   }
   
   .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 8px;
+  }
+  
+  .control-label {
+    font-size: 13px;
+    margin-bottom: 4px;
   }
   
   /* Selector de tipo de evento en móvil */
   #event-type-selector label {
-    padding: 16px;
-    font-size: 16px;
+    padding: 10px;
+    font-size: 14px;
     -webkit-tap-highlight-color: rgba(0,0,0,0.1);
     touch-action: manipulation;
   }
   
   /* Mejorar área de texto */
   textarea.form-control {
-    min-height: 100px;
+    min-height: 60px;
     resize: vertical;
   }
   
@@ -523,11 +570,11 @@
   }
   
   .sidebar-content {
-    height: 250px;
+    height: 200px;
   }
   
   .timeline-container {
-    height: 230px;
+    height: 180px;
     padding: 8px;
   }
   
@@ -536,7 +583,7 @@
   }
   
   .hour-content {
-    min-height: 195px;
+    min-height: 145px;
   }
   
   /* Indicador más pequeño en móviles pequeños */
@@ -751,28 +798,16 @@
   display: none;
 }
 
-.color-option {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 3px solid transparent;
-  transition: all 0.2s ease;
-  display: inline-block;
-  position: relative;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.color-option:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.color-palette input[type="radio"]:checked + .color-option {
-  border-color: #333;
-  transform: scale(1.15);
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #333, 0 4px 12px rgba(0,0,0,0.3);
-}
+  .color-palette {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    padding: 10px;
+  }
+  
+  .color-option {
+    width: 28px;
+    height: 28px;
+  }
 
 /* Paleta de cumpleaños - solo una fila */
 #birthday-color-palette {

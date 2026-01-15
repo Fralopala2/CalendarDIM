@@ -127,7 +127,7 @@
   top: auto;
   left: auto;
   right: auto;
-  height: 380px; /* Más alto que móvil */
+  height: 220px; /* Más bajo para tablets */
   background: white;
   border: none;
   box-shadow: none;
@@ -146,11 +146,13 @@
   flex-direction: row; /* Horizontal como móvil */
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 12px;
-  height: 360px; /* Altura fija */
+  padding: 12px 18px;
+  height: 200px; /* Altura fija reducida */
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
   background-color: #fafbfc;
+  align-items: center; /* Center cards vertically */
+  gap: 15px;
 }
 
 .timeline-container::-webkit-scrollbar {
@@ -197,44 +199,47 @@
 
 .hour-content {
   padding: 8px;
-  min-height: 315px; /* Altura para el contenido */
+  min-height: 160px; /* Altura para el contenido reducida */
   flex: 1;
 }
 
-.timeline-event {
+.event-item, .birthday-item {
   color: white;
-  padding: 8px 12px;
-  margin: 3px 0;
+  padding: 12px 15px;
+  margin: 8px 0;
   border-radius: 8px;
-  font-size: 13px;
-  cursor: pointer;
-  border-left: 4px solid transparent;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
-  -webkit-tap-highlight-color: rgba(0,0,0,0.1);
-  touch-action: manipulation;
-}
-
-.timeline-event:hover {
-  transform: translateX(-2px);
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
-}
-
-.timeline-birthday {
-  color: white;
-  padding: 8px 12px;
-  margin: 3px 0;
-  border-radius: 8px;
-  font-size: 13px;
   cursor: pointer;
-  border-left: 4px solid transparent;
-  transition: all 0.2s ease;
-  -webkit-tap-highlight-color: rgba(0,0,0,0.1);
-  touch-action: manipulation;
+  border-left: 4px solid rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  flex-shrink: 0;
 }
 
-.timeline-birthday:hover {
-  transform: translateX(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+.event-item:hover, .birthday-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.event-item .event-time {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.event-item .event-title, .birthday-item {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.event-item .event-description {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 6px;
+  line-height: 1.4;
+  white-space: pre-wrap;
 }
 
 /* Indicador de scroll para tablets */

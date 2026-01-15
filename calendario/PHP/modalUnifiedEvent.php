@@ -12,7 +12,7 @@
                 </button>
             </div>
             
-            <form name="formUnifiedEvent" id="formUnifiedEvent" class="form-horizontal" method="POST">
+            <form name="formUnifiedEvent" id="formUnifiedEvent" method="POST">
                 <!-- Hidden field for event ID (edit mode) -->
                 <input type="hidden" name="event_id" id="event_id" value="">
                 
@@ -154,7 +154,7 @@
                 <div class="modal-footer">
                     <button type="submit" id="save-btn" class="btn btn-success">Guardar</button>
                     <button type="button" id="delete-btn" class="btn btn-danger" disabled>Eliminar</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+                    <button type="button" class="btn btn-secondary" id="btn-salir" data-dismiss="modal">Salir</button>
                 </div>
             </form>
         </div>
@@ -531,7 +531,7 @@ window.initializeUnifiedModal = function() {
 .modal-body {
   padding: 20px;
   overflow-y: auto;
-  max-height: 70vh;
+  max-height: 65vh; /* Limit height to prevent overflow */
 }
 
 .modal-header .modal-title {
@@ -630,60 +630,67 @@ window.initializeUnifiedModal = function() {
     }
     
     .modal-body {
-        padding: 15px !important;
-        max-height: calc(100vh - 200px) !important;
+        padding: 10px 15px !important;
+        max-height: calc(100vh - 160px) !important;
     }
     
     .color-palette {
-        grid-template-columns: repeat(5, 1fr);
-        grid-template-rows: repeat(2, 1fr);
-        gap: 10px;
-        padding: 12px;
-        max-width: 260px;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+        padding: 8px;
+        max-width: 100%;
     }
     
     #birthday-color-palette {
-        grid-template-columns: repeat(5, 1fr);
-        grid-template-rows: 1fr;
-        gap: 10px;
-        padding: 12px;
-        max-width: 260px;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+        padding: 8px;
+        max-width: 100%;
     }
     
     .color-option {
-        width: 32px;
-        height: 32px;
+        width: 26px;
+        height: 26px;
     }
     
     .modal-header .modal-title {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
     
     .form-group {
-        margin-bottom: 15px;
+        margin-bottom: 8px;
     }
     
-    .col-sm-10 {
+    #unifiedEventModal .col-sm-10, 
+    #unifiedEventModal .col-sm-12 {
         width: 100% !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
     }
     
     .form-control {
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box;
+        padding: 8px 12px;
+        height: auto;
     }
     
     .modal-footer {
-        flex-direction: column !important;
-        gap: 10px;
+        flex-direction: row !important;
+        justify-content: center !important;
+        gap: 6px;
+        padding: 10px !important;
     }
     
     .modal-footer .btn {
-        width: 100% !important;
+        flex: 1;
         margin: 0 !important;
+        padding: 8px 4px !important;
+        font-size: 12px !important;
+        min-height: 40px;
     }
+}
 }
 
 @media (max-width: 480px) {
@@ -714,7 +721,7 @@ window.initializeUnifiedModal = function() {
     border-radius: 6px;
     border: 1px solid #ced4da;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    width: calc(100% + 60px); /* Extender 40px más hacia la derecha */
+    width: 100%;
 }
 
 .form-control:focus {
@@ -722,14 +729,46 @@ window.initializeUnifiedModal = function() {
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-.form-group {
-    margin-bottom: 0.8rem;
+/* Fix for Desktop Inputs Width and Layout */
+#unifiedEventModal .col-sm-10,
+#unifiedEventModal .col-sm-12,
+#unifiedEventModal .col-md-12 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    float: none !important;
+    display: block !important;
 }
 
-.col-sm-10 {
-    width: 96%; /* Aumentar más el ancho hacia la derecha */
-    padding-left: 15px; /* Mantener margen izquierdo original */
-    padding-right: 5px; /* Reducir margen derecho para más espacio */
+#unifiedEventModal .form-group {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-bottom: 12px !important;
+    display: block; /* Ensure block layout without overriding jQuery .hide() */
+}
+
+#unifiedEventModal .form-control {
+    width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    height: auto;
+}
+
+#unifiedEventModal textarea.form-control {
+    min-height: 80px;
+    max-height: 150px;
+    resize: vertical;
+}
+
+/* Specific padding for mobile */
+@media (max-width: 768px) {
+    #unifiedEventModal .col-sm-10, 
+    #unifiedEventModal .col-sm-12 {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
 }
 
 /* Estilos para los radio buttons de tipo de evento */
@@ -737,8 +776,8 @@ window.initializeUnifiedModal = function() {
     display: flex;
     background: #f8f9fa;
     border-radius: 8px;
-    padding: 6px;
-    margin: 20px 0;
+    padding: 4px;
+    margin: 10px 0;
     justify-content: center;
 }
 
@@ -749,12 +788,12 @@ window.initializeUnifiedModal = function() {
 #event-type-selector label {
     flex: 1;
     text-align: center;
-    padding: 12px 24px;
+    padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     margin: 0 4px;
 }
 
@@ -789,5 +828,19 @@ window.initializeUnifiedModal = function() {
 .modal-footer {
     border-top: 1px solid #dee2e6;
     border-radius: 0 0 10px 10px;
+    display: flex !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    padding: 15px !important;
+    flex-wrap: wrap;
+}
+
+.modal-footer .btn {
+    flex: 1;
+    max-width: 120px;
+    min-width: 90px;
+    margin: 0 !important;
+    padding: 8px 12px;
+    font-size: 14px;
 }
 </style>

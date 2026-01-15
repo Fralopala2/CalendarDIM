@@ -30,13 +30,13 @@
 /* Calendar Container (Left side) */
 .calendar-container {
   flex: 1;
-  padding: 0 15px 0 15px;
+  padding: 0 15px 15px 15px;
   overflow: hidden;
   background-color: #ffffff;
   position: relative;
-  max-width: calc(100vw - 300px);
   display: flex;
   flex-direction: column;
+  min-width: 0; /* Allow shrinking if needed */
 }
 
 #calendar {
@@ -45,12 +45,11 @@
 }
 
 /* When sidebar is collapsed, calendar takes full width */
-#sidebar-container.sidebar-collapsed ~ .calendar-container,
-.main-container:has(#sidebar-container.sidebar-collapsed) .calendar-container {
+.main-container.sidebar-collapsed .calendar-container {
   flex: 1;
-  max-width: calc(100vw - 50px) !important; /* Full width minus small margins when collapsed */
+  max-width: 100% !important;
   margin: 0;
-  padding: 0 25px 15px 25px; /* Reduced padding */
+  padding: 0 15px 15px 15px;
 }
 
 /* Sidebar Styles (Right side) */
@@ -245,13 +244,8 @@
     width: 260px; /* Reduced proportionally */
   }
   
-  #sidebar-container.sidebar-collapsed {
-    margin-right: -260px;
-  }
-  
   .calendar-container {
-    padding: 15px; /* Reduced from 20px to 15px */
-    max-width: calc(100vw - 280px); /* Adjust for smaller sidebar */
+    padding: 10px;
   }
 }
 
@@ -260,17 +254,13 @@
     width: 240px; /* Reduced proportionally */
   }
   
-  #sidebar-container.sidebar-collapsed {
-    margin-right: -240px;
-  }
-  
   .hour-label {
     width: 60px;
     font-size: 12px;
   }
   
   .calendar-container {
-    max-width: calc(100vw - 260px); /* Adjust for smaller sidebar */
+    padding: 10px;
   }
   
   /* Improve touch targets on smaller screens */
