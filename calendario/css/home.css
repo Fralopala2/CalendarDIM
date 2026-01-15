@@ -1,1042 +1,203 @@
-.banner-container {
-  width: 100%;
-  text-align: center;
-  overflow: hidden;
-  height: 160px;
-  max-height: 160px; 
-  background-color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.banner-image {
-  object-fit: contain;
-  object-position: center;
-}
-
-
-/* Main Container Layout with Flexbox */
-.main-container {
-  display: flex;
-  height: calc(100vh - 160px);
-  overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  max-width: 100vw;
-  margin-top: 0;
-  align-items: stretch;
-}
-
-/* Calendar Container (Left side) */
-.calendar-container {
-  flex: 1;
-  padding: 0 15px 15px 15px;
-  overflow: hidden;
-  background-color: #ffffff;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0; /* Allow shrinking if needed */
-}
-
-#calendar {
-  width: 100%;
-  flex: 1;
-}
-
-/* When sidebar is collapsed, calendar takes full width */
-.main-container.sidebar-collapsed .calendar-container {
-  flex: 1;
-  max-width: 100% !important;
+/* Global Styles */
+html, body {
+  height: 100%;
   margin: 0;
-  padding: 0 15px 15px 15px;
+  padding: 0;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Sidebar Styles (Right side) */
-#sidebar-container {
-  width: 280px !important;
-  background-color: #ffffff !important;
-  border-left: 2px solid #e9ecef !important;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  overflow: hidden !important;
-  flex-shrink: 0 !important;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  order: 2;
-  display: flex !important;
-  flex-direction: column;
-  position: relative;
-}
-
-/* Expanded state (default) */
-#sidebar-container.sidebar-expanded {
-  width: 280px !important;
-  margin-right: 0 !important;
-  display: flex !important;
-  opacity: 1 !important;
-}
-
-/* Collapsed state */
-#sidebar-container.sidebar-collapsed {
-  width: 0 !important;
-  margin-right: 0 !important;
-  box-shadow: none !important;
-  border: none !important;
-  overflow: hidden !important;
-  opacity: 0 !important;
-  min-width: 0 !important;
-  max-width: 0 !important;
-}
-
-/* Sidebar Header */
-#sidebar-header {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* Center the title */
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-bottom: 1px solid #dee2e6;
-  min-height: 70px;
-  color: white;
-}
-
-/* Ocultar el indicador de toggle en desktop */
-.sidebar-toggle-indicator {
+.banner-container {
   display: none !important;
 }
 
-.sidebar-toggle-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: all 0.2s ease;
-}
-
-.sidebar-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.05);
-}
-
-.sidebar-toggle-btn:focus {
-  outline: 2px solid rgba(255, 255, 255, 0.5);
-  outline-offset: 2px;
-}
-
-.sidebar-title {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-/* Sidebar Content with Smooth Scrolling */
-.sidebar-content {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-}
-
-.sidebar-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.sidebar-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.sidebar-content::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-
-.sidebar-content::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-/* Enhanced Timeline Styles */
-.timeline-container {
-  padding: 15px;
-  background-color: #fafbfc;
-}
-
-.event-item {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-  color: white;
-  padding: 12px 15px;
-  margin: 8px 0;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
-  transition: all 0.2s ease;
-  cursor: pointer;
-  border-left: 4px solid #0056b3;
-}
-
-.event-item:hover {
-  transform: translateX(-3px);
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
-}
-
-.event-item .event-time {
-  font-weight: 700;
-  font-size: 14px;
-  margin-bottom: 4px;
-  opacity: 0.95;
-}
-
-.event-item .event-title {
-  font-weight: 600;
-  font-size: 13px;
-  margin-bottom: 4px;
-}
-
-.event-item .event-description {
-  font-size: 12px;
-  opacity: 0.85;
-  margin-top: 6px;
-  line-height: 1.4;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-}
-
-.event-separator {
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, #dee2e6 50%, transparent 100%);
-  margin: 12px 0;
-}
-
-.birthday-item {
-  color: white;
-  padding: 12px 15px;
-  margin: 8px 0;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  transition: all 0.2s ease;
-  cursor: pointer;
-  border-left: 4px solid;
-  font-weight: 600;
-  font-size: 13px;
-}
-
-.birthday-item:hover {
-  transform: translateX(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-  filter: brightness(0.9);
-}
-
-.no-events-message {
-  text-align: center;
-  padding: 40px 20px;
-  color: #6c757d;
-  font-style: italic;
-  font-size: 14px;
-}
-
-/* Responsive Design with Enhanced Breakpoints */
-@media (max-width: 1200px) {
-  #sidebar-container {
-    width: 260px; /* Reduced proportionally */
-  }
-  
-  .calendar-container {
-    padding: 10px;
-  }
-}
-
-@media (max-width: 992px) {
-  #sidebar-container {
-    width: 240px; /* Reduced proportionally */
-  }
-  
-  .hour-label {
-    width: 60px;
-    font-size: 12px;
-  }
-  
-  .calendar-container {
-    padding: 10px;
-  }
-  
-  /* Improve touch targets on smaller screens */
-  .sidebar-toggle-btn {
-    padding: 10px 14px;
-    font-size: 18px;
-  }
-  
-  .timeline-event,
-  .timeline-birthday {
-    padding: 10px 14px;
-    margin: 4px 0;
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 768px) {
-  .banner-container {
-    height: 80px;
-    max-height: 80px;
-  }
-  
-  .banner-image {
-    height: 80px;
-    max-height: 80px;
-  }
-  
-  .main-container {
-    flex-direction: column;
-    height: calc(100vh - 80px);
-  }
-  
-  .fc-toolbar {
-    padding: 10px !important;
-    flex-wrap: wrap !important;
-  }
-  
-  .fc-toolbar .fc-left,
-  .fc-toolbar .fc-right {
-    margin-bottom: 8px;
-  }
-  
-  .fc-toolbar .fc-center {
-    width: 100%;
-    margin-top: 8px;
-    margin-bottom: 8px;
-  }
-  
-  .fc-toolbar h2 {
-    font-size: 1.3rem !important;
-    margin: 8px 0 !important;
-  }
-  
-  /* Sidebar en móvil: más compacto y mejor posicionado */
-  #sidebar-container {
-    width: 100%;
-    height: 60px; /* Mucho más compacto */
-    border-left: none;
-    border-top: 2px solid #e9ecef;
-    order: 2;
-    position: relative;
-    overflow: visible;
-  }
-  
-  #sidebar-container.sidebar-collapsed {
-    height: 0;
-    margin-bottom: 0;
-    margin-right: 0;
-    overflow: hidden;
-  }
-  
-  .calendar-container {
-    order: 1;
-    max-width: 100%;
-    padding: 10px;
-    flex: 1;
-    overflow: auto;
-  }
-  
-  /* Header del sidebar más compacto */
-  #sidebar-header {
-    min-height: 60px;
-    padding: 10px 15px;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .sidebar-title {
-    font-size: 14px;
-    margin: 0;
-  }
-  
-  /* Contenido del sidebar como overlay cuando se expande */
-  .sidebar-content {
-    position: absolute;
-    top: 60px;
-    left: 0;
-    right: 0;
-    height: 300px;
-    background: white;
-    border: 2px solid #e9ecef;
-    border-top: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 1000;
-    display: none;
-  }
-  
-  #sidebar-container.sidebar-expanded .sidebar-content {
-    display: block;
-  }
-  
-  /* Timeline horizontal en móvil */
-  .timeline-container {
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    padding: 10px;
-    height: 280px;
-  }
-  
-  .hour-slot {
-    flex-direction: column;
-    min-width: 100px;
-    min-height: auto;
-    border-right: 1px solid #e9ecef;
-    border-bottom: none;
-    flex-shrink: 0;
-  }
-  
-  .hour-label {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #dee2e6;
-    padding: 6px;
-    font-size: 11px;
-    min-height: 30px;
-  }
-  
-  .hour-content {
-    padding: 6px;
-    min-height: 240px;
-    flex: 1;
-  }
-  
-  /* Botón toggle más visible */
-  .sidebar-toggle-btn {
-    padding: 8px 12px;
-    font-size: 16px;
-    min-width: 40px;
-    min-height: 40px;
-    border-radius: 6px;
-  }
-  
-  /* Eventos más compactos */
-  .timeline-event,
-  .timeline-birthday {
-    padding: 6px 8px;
-    margin: 2px 0;
-    font-size: 11px;
-    min-height: auto;
-    border-radius: 6px;
-  }
-  
-  /* Mejorar modal para tablet */
-  .modal-dialog {
-    margin: 15px;
-    max-width: calc(100% - 30px);
-  }
-  
-  .modal-content {
-    border-radius: 12px;
-  }
-}
-
-@media (max-width: 576px) {
-  .banner-container {
-    height: 70px;
-    max-height: 70px;
-  }
-  
-  .banner-image {
-    height: 70px;
-    max-height: 70px;
-  }
-  
-  .main-container {
-    height: calc(100vh - 70px);
-  }
-  
-  /* Sidebar colapsado por defecto en móvil pequeño */
-  #sidebar-container {
-    height: 50px; /* Aún más compacto */
-  }
-  
-  #sidebar-container.sidebar-collapsed {
-    height: 0;
-    margin-bottom: 0;
-  }
-  
-  #sidebar-header {
-    min-height: 50px;
-    padding: 8px 12px;
-  }
-  
-  .sidebar-title {
-    font-size: 13px;
-  }
-  
-  .sidebar-content {
-    height: 250px; /* Altura fija para overlay */
-    top: 50px;
-  }
-  
-  .calendar-container {
-    padding: 8px;
-  }
-  
-  /* Timeline más compacto */
-  .timeline-container {
-    height: 230px;
-    padding: 8px;
-  }
-  
-  .hour-slot {
-    min-width: 80px;
-  }
-  
-  .hour-label {
-    padding: 4px;
-    font-size: 10px;
-    min-height: 25px;
-  }
-  
-  .hour-content {
-    min-height: 195px;
-    padding: 4px;
-  }
-  
-  .timeline-event,
-  .timeline-birthday {
-    font-size: 10px;
-    padding: 4px 6px;
-    margin: 1px 0;
-  }
-  
-  /* Botón toggle más pequeño */
-  .sidebar-toggle-btn {
-    padding: 6px 10px;
-    font-size: 14px;
-    min-width: 35px;
-    min-height: 35px;
-  }
-  
-  /* Modal móvil mejorado */
-  .modal-dialog {
-    margin: 10px;
-    max-width: calc(100% - 20px);
-  }
-  
-  .modal-content {
-    border-radius: 16px;
-  }
-  
-  .modal-header {
-    padding: 15px;
-  }
-  
-  .modal-body {
-    padding: 15px;
-  }
-  
-  .modal-footer {
-    padding: 15px;
-    flex-direction: column;
-  }
-  
-  .modal-footer .btn {
-    width: 100%;
-    margin: 3px 0;
-    padding: 10px;
-    font-size: 14px;
-  }
-  
-  /* Controles de formulario optimizados */
-  .form-control {
-    padding: 10px 12px;
-    font-size: 16px; /* Prevenir zoom en iOS */
-    border-radius: 8px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  /* Navegación del calendario mejorada */
-  .fc-toolbar {
-    flex-direction: column;
-    padding: 10px;
-  }
-  
-  .fc-toolbar .fc-left,
-  .fc-toolbar .fc-center,
-  .fc-toolbar .fc-right {
-    margin: 3px 0;
-  }
-  
-  .fc-button {
-    padding: 8px 12px !important;
-    font-size: 12px !important;
-    margin: 1px !important;
-  }
-  
-  /* Celdas del calendario optimizadas para touch */
-  .fc-day-number {
-    padding: 6px;
-    font-size: 14px;
-  }
-  
-  .fc-event {
-    font-size: 11px;
-    padding: 3px 5px;
-  }
-}
-
-/* Animation for smooth transitions */
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.timeline-event,
-.timeline-birthday {
-  animation: slideIn 0.3s ease-out;
-}
-
-/* Focus and accessibility improvements */
-.timeline-event:focus,
-.timeline-birthday:focus {
-  outline: 2px solid #007bff;
-  outline-offset: 2px;
-}
-
-/* Selected day highlighting */
-.fc-day.selected-day {
-  background-color: rgba(0, 123, 255, 0.1) !important;
-  border: 2px solid #007bff !important;
-}
-
-/* Dragging state for events */
-.fc-event.dragging {
-  opacity: 0.7;
-  transform: scale(1.05);
-  z-index: 1000;
-}
-
-/* Loading and error states for timeline */
-.timeline-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100px;
-  color: #6c757d;
-  font-style: italic;
-}
-
-.timeline-loading::before {
-  content: "⏳ ";
-  margin-right: 8px;
-}
-
-.timeline-error {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 60px;
-  color: #dc3545;
-  font-style: italic;
-  font-size: 12px;
-  text-align: center;
-  padding: 10px;
-}
-
-.timeline-error::before {
-  content: "⚠️ ";
-  margin-right: 8px;
-}
-
-/* Enhanced calendar styles */
-#calendar {
-  max-width: 100%;
-  margin: 0 auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #ddd;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.fc-view-container {
-  border-right: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  flex: 1;
-}
-
-.fc-view {
-  border-right: 1px solid #ddd;
-  height: 100%;
-}
-
-.fc-view > table {
-  border-right: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  height: 100%;
-}
-
-.fc-day-grid {
-  border-right: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-}
-
-.fc-row:last-child {
-  border-bottom: 1px solid #ddd;
-}
-
-.fc-day:last-child {
-  border-right: 1px solid #ddd;
-}
-.fc-day-grid-container {
-  height: 100% !important;
-}
-
-.fc-scroller {
-  height: 100% !important;
-  overflow-y: hidden !important;
-}
-
-.fc-day-grid {
-  height: 100% !important;
-}
-.fc-bg table,
-.fc-content-skeleton table {
-  height: 100% !important;
-}
-.fc-bg table tbody tr td,
-.fc-content-skeleton table tbody tr td {
-  height: 100%;
-}
-/* FullCalendar customizations */
-.fc-toolbar {
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.fc-toolbar h2 {
-  color: white;
-  font-weight: 600;
-}
-
-.fc-button {
-  background: rgba(255, 255, 255, 0.2) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  color: white !important;
-  margin-left: 8px !important; /* Add separation between buttons */
-}
-
-.fc-button:hover {
-  background: rgba(255, 255, 255, 0.3) !important;
-}
-
-.fc-button:focus {
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5) !important;
-}
-
-.fc-today {
-  background-color: rgba(0, 123, 255, 0.1) !important;
-}
-
-.fc-day-number {
-  font-weight: 600;
-}
-
-.fc-content-skeleton tbody tr {
-  height: auto;
-}
-
-.fc-content-skeleton tbody tr td {
-  height: auto;
-  vertical-align: top;
-}
-.fc-day-grid .fc-content-skeleton td,
-.fc-day-grid .fc-bg td {
-  border-color: #ddd;
-}
-/* Transition classes */
-.transitioning {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-/* Responsive utilities */
-@media (max-width: 480px) {
-  .banner-container {
-    height: 60px !important;
-    max-height: 60px !important;
-  }
-  
-  .banner-image {
-    height: 60px !important;
-    max-height: 60px !important;
-  }
-  
-  .main-container {
-    height: calc(100vh - 60px) !important;
-  }
-  
-  /* Sidebar aún más compacto */
-  #sidebar-container {
-    height: 45px !important;
-  }
-  
-  #sidebar-container.sidebar-collapsed {
-    height: 0 !important;
-    margin-bottom: 0 !important;
-  }
-  
-  #sidebar-header {
-    min-height: 45px !important;
-    padding: 6px 10px !important;
-  }
-  
-  .sidebar-title {
-    font-size: 12px !important;
-  }
-  
-  .sidebar-content {
-    height: 220px !important;
-    top: 45px !important;
-  }
-  
-  .calendar-container {
-    padding: 5px !important;
-  }
-  
-  /* Timeline ultra compacto */
-  .timeline-container {
-    height: 200px !important;
-    padding: 5px !important;
-  }
-  
-  .hour-slot {
-    min-width: 70px !important;
-  }
-  
-  .hour-label {
-    padding: 3px !important;
-    font-size: 9px !important;
-    min-height: 20px !important;
-  }
-  
-  .hour-content {
-    min-height: 170px !important;
-    padding: 3px !important;
-  }
-  
-  .timeline-event,
-  .timeline-birthday {
-    font-size: 9px !important;
-    padding: 3px 4px !important;
-    margin: 1px 0 !important;
-  }
-  
-  /* Botón toggle ultra compacto */
-  .sidebar-toggle-btn {
-    padding: 4px 8px !important;
-    font-size: 12px !important;
-    min-width: 30px !important;
-    min-height: 30px !important;
-  }
-  
-  /* Calendario más compacto */
-  .fc-toolbar {
-    padding: 5px !important;
-  }
-  
-  .fc-button {
-    padding: 6px 10px !important;
-    font-size: 11px !important;
-    margin: 1px !important;
-  }
-  
-  .fc-day-number {
-    padding: 4px !important;
-    font-size: 12px !important;
-  }
-  
-  .fc-event {
-    font-size: 10px !important;
-    padding: 2px 4px !important;
-  }
-}
-
-/* Animaciones suaves para móvil */
-@media (max-width: 768px) {
-  .sidebar-content {
-    transition: all 0.3s ease-in-out;
-  }
-  
-  #sidebar-container.sidebar-expanded .sidebar-content {
-    animation: slideDown 0.3s ease-out;
-  }
-  
-  #sidebar-container.sidebar-collapsed .sidebar-content {
-    animation: slideUp 0.3s ease-in;
-  }
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-}
-
-/* Print styles */
-@media print {
-  .main-container {
-    display: block;
-  }
-  
-  #sidebar-container {
-    display: none;
-  }
-  
-  .calendar-container {
-    padding: 0;
-  }
-}
-
-/* Override Styles */
-html {
-  height: 100%;
-  overflow-y: auto;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-}
-
-body .main-container {
-  display: flex !important;
-  height: calc(100vh - 160px) !important;
-  max-width: 100vw !important;
-  overflow: hidden !important;
-}
-
-body #sidebar-container {
-  display: flex !important;
-  flex-direction: column !important;
-  width: 280px !important;
-  background-color: #ffffff !important;
-  border-left: 2px solid #e9ecef !important;
-  order: 2 !important;
-  flex-shrink: 0 !important;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  position: relative !important;
-}
-
-body #sidebar-container.sidebar-expanded {
-  display: flex !important;
-  width: 280px !important;
-  margin-right: 0 !important;
-}
-
-body #sidebar-container.sidebar-collapsed {
-  width: 0 !important;
-  margin-right: 0 !important;
-  border: none !important;
-  overflow: hidden !important;
-  opacity: 0 !important;
-  min-width: 0 !important;
-  max-width: 0 !important;
-  padding: 0 !important;
-}
-
-body .calendar-container {
-  flex: 1 !important;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  max-width: calc(100vw - 300px) !important;
-  overflow: hidden !important; /* Changed from auto to hidden to prevent internal scrolling and force expansion */
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-body #sidebar-header {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 20px !important;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  min-height: 70px !important;
-  color: white !important;
-}
-
-body .banner-container {
-  height: 160px !important;
-  max-height: 160px !important;
-  overflow: hidden !important;
-}
-
-body .banner-image {
-  object-fit: contain !important;
-  object-position: center !important;
-}
-
-#title{
-  font-family: Georgia, "Times New Roman", Times, serif;
-  color: #9c27b0;
-  font-weight: 800;
-  border-bottom: 3px solid coral;
-  background: #ccc;
-  padding: 8px 30px;
-}
-input {
-  display: none;
-}
-
-
-.fc-content{
+.fc-content {
   color: #fff !important;
 }
 
-
-
-/* Removed btnCerrar styles - X icon functionality removed as per requirements 4.1 */
-
-.circu{
-  padding: 25px;
-  background: #ccc;
-  border-radius: 50px;
+/* Hard reset for all FullCalendar buttons to avoid unwanted borders/shadows */
+.fc-button {
+  box-shadow: none !important;
+  text-shadow: none !important;
+  border-image: none !important;
+  outline: none !important;
 }
 
-#grupoRadio label:hover{
-  cursor: pointer;
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-#grupoRadio input[type="radio"]:checked + label {
-  border: 3px solid #ccc !important;  
-}
+/* DESKTOP LAYOUT (min-width: 1025px) */
+@media (min-width: 1025px) {
+  .main-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+    padding: 15px;
+    gap: 15px;
+    overflow: hidden;
+    align-items: stretch;
+  }
 
+  /* Calendar Container */
+  .calendar-container {
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
 
-.activado input[type=radio]:checked + label {
-  border: 3px solid #555 !important;  
+  #calendar {
+    flex: 1;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .fc-toolbar {
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    min-height: 70px;
+    box-sizing: border-box;
+    margin-bottom: 0 !important;
+  }
+
+  .fc-toolbar h2 {
+    color: white;
+    font-weight: 600;
+  }
+
+  .fc-button {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+    margin-left: 8px !important;
+    min-height: 34px;
+    padding: 6px 12px !important;
+  }
+
+  .fc-sidebarToggle-button {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+    padding: 6px 10px !important;
+    margin-left: 8px !important;
+    font-size: 15px !important;
+    border-radius: 6px !important;
+    min-height: 34px !important;
+    min-width: 38px !important;
+    cursor: pointer;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Sidebar */
+  #sidebar-container {
+    width: 280px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #ddd !important;
+    border-radius: 8px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex !important;
+    flex-direction: column;
+  }
+
+  #sidebar-container.sidebar-collapsed {
+    width: 0 !important;
+    margin-right: -15px !important;
+    border: none !important;
+    opacity: 0 !important;
+    min-width: 0 !important;
+  }
+
+  #sidebar-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .sidebar-toggle-indicator {
+    display: none !important;
+  }
+
+  .sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    background: #fafbfc;
+  }
+
+  /* Premium Timeline Event Styles */
+  .timeline-container {
+    padding: 15px;
+  }
+
+  .event-item {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    padding: 12px 15px;
+    margin: 8px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border-left: 4px solid #0056b3;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .event-item:hover {
+    transform: translateX(-3px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+  }
+
+  .event-item .event-time {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 4px;
+    opacity: 0.95;
+  }
+
+  .birthday-item {
+    color: white;
+    padding: 12px 15px;
+    margin: 8px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border-left: 4px solid rgba(0,0,0,0.1);
+    font-weight: 600;
+    font-size: 13px;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .birthday-item:hover {
+    transform: translateX(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    filter: brightness(0.9);
+  }
+
+  .no-events-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+    font-style: italic;
+    font-size: 14px;
+  }
 }

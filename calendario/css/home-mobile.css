@@ -1,824 +1,241 @@
 /* CSS Simplificado para Móvil */
-
-.banner-container {
-  width: 100%;
-  text-align: center;
-  overflow: hidden;
-  height: 100px;
-  background-color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.banner-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-.main-container {
-  display: flex;
-  height: calc(100vh - 100px);
-  overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-/* Calendario */
-.calendar-container {
-  flex: 1;
-  padding: 15px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background-color: #ffffff;
-  min-width: 0;
-  height: auto !important;
-}
-
-/* Asegurar que el calendario muestra todas las filas */
-#calendar .fc-row.fc-week {
-  min-height: 80px !important;
-}
-
-#calendar .fc-day-grid-container {
-  overflow: visible !important;
-  height: auto !important;
-}
-
-#calendar .fc-view {
-  height: auto !important;
-}
-
-/* Sidebar */
-#sidebar-container {
-  width: 280px;
-  background-color: #ffffff;
-  border-left: 2px solid #e9ecef;
-  transition: all 0.3s ease;
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-/* Estilos específicos para DESKTOP (min-width: 769px) */
-@media (min-width: 769px) {
-  .main-container {
-    display: flex !important;
-    flex-direction: row !important;
-    height: calc(100vh - 100px) !important;
-    overflow: hidden !important;
-    max-width: 100vw !important;
-  }
-  
-  .calendar-container {
-    flex: 1 !important;
-    order: 1 !important;
-    padding: 15px !important;
-    overflow: auto !important;
-    min-width: 0 !important;
-    width: calc(100% - 280px) !important;
-  }
-  
-  #sidebar-container {
-    width: 280px !important;
-    height: calc(100vh - 100px) !important;
-    border-left: 2px solid #e9ecef !important;
-    border-top: none !important;
-    order: 2 !important;
-    position: relative !important;
-    flex-shrink: 0 !important;
-    overflow: hidden !important;
-  }
-  
-  #sidebar-container.sidebar-collapsed {
-    width: 0 !important;
-    border: none !important;
-    opacity: 0 !important;
-  }
-  
-  .sidebar-content {
-    height: calc(100vh - 100px - 70px) !important;
-    overflow-y: auto !important;
-  }
-  
-  .timeline-container {
-    display: block !important;
-    flex-direction: column !important;
-    overflow-x: visible !important;
-    overflow-y: auto !important;
-    padding: 0 !important;
-    height: auto !important;
-  }
-  
-  .hour-slot {
-    display: flex !important;
-    flex-direction: row !important;
-    min-width: auto !important;
-    border-right: none !important;
-    border-bottom: 1px solid #e9ecef !important;
-    min-height: 70px !important;
-  }
-  
-  .hour-label {
-    width: 70px !important;
-    border-right: 2px solid #dee2e6 !important;
-    border-bottom: none !important;
-    padding: 12px 8px !important;
-    font-size: 13px !important;
-    min-height: auto !important;
-  }
-  
-  .hour-content {
-    flex: 1 !important;
-    padding: 12px !important;
-    min-height: 46px !important;
-  }
-}
-
-#sidebar-container.sidebar-collapsed {
-  width: 0;
-  border: none;
-  opacity: 0;
-}
-
-#sidebar-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 70px;
-  color: white;
-}
-
-.sidebar-title {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: white;
-}
-
-.sidebar-toggle-indicator {
-  display: none;
-  font-size: 16px;
-  transition: transform 0.3s ease;
-}
-
-#sidebar-container.sidebar-collapsed .sidebar-toggle-indicator {
-  transform: rotate(-90deg);
-}
-
-.sidebar-content {
-  height: calc(100vh - 100px - 70px);
-  overflow-y: auto;
-}
-
-/* Timeline */
-.timeline-container {
-  padding: 0;
-  background-color: #fafbfc;
-}
-
-.hour-slot {
-  display: flex;
-  min-height: 70px;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.hour-label {
-  width: 70px;
-  padding: 12px 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #495057;
-  background: #f8f9fa;
-  border-right: 2px solid #dee2e6;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.hour-content {
-  flex: 1;
-  padding: 12px;
-  min-height: 46px;
-}
-
-.event-item, .birthday-item {
-  color: white;
-  padding: 12px 15px;
-  margin: 8px 0;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
-  cursor: pointer;
-  border-left: 4px solid rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
-  min-width: 160px;
-  flex-shrink: 0;
-}
-
-.event-item:hover, .birthday-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.event-item .event-time {
-  font-weight: 700;
-  font-size: 14px;
-  margin-bottom: 4px;
-  opacity: 0.95;
-}
-
-.event-item .event-title, .birthday-item {
-  font-weight: 600;
-  font-size: 13px;
-}
-
-.event-item .event-description {
-  font-size: 12px;
-  opacity: 0.85;
-  margin-top: 6px;
-  line-height: 1.4;
-  white-space: pre-wrap;
-}
-
-.no-events-message {
-  text-align: center;
-  padding: 40px 20px;
-  color: #6c757d;
-  font-style: italic;
-  font-size: 14px;
-}
-
-/* RESPONSIVE MÓVIL */
 @media (max-width: 768px) {
   .banner-container {
-    height: 100px;
+    display: none !important;
   }
-  
-  .banner-image {
-    height: 100px;
-  }
-  
+
   .main-container {
+    display: flex;
     flex-direction: column !important;
-    height: auto !important;
-    min-height: calc(100vh - 100px);
+    height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+    padding: 15px;
+    gap: 15px;
+    margin: 0;
+    overflow: hidden;
   }
-  
+
+  /* Calendario */
+  .calendar-container {
+    order: 1;
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+
+  /* Toolbar Móvil: 3 botones Izq, 3 botones Der, Título debajo centrado */
+  .fc-toolbar {
+    padding: 12px 10px !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important; /* Cambiado de space-between */
+    align-items: center !important;
+    margin-bottom: 0 !important;
+    gap: 0; /* Controlado por flex individual */
+  }
+
+  /* SEPARACIÓN RADICAL: Izquierda pegada al borde, Derecha pegada al borde */
+  .fc-left {
+    order: 1 !important;
+    flex: 1 !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    margin: 0 !important;
+    float: none !important;
+  }
+
+  .fc-right {
+    order: 2 !important;
+    flex: 1 !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    margin: 0 !important;
+    float: none !important;
+  }
+
+  /* El título abajo ocupando todo el ancho */
+  .fc-center {
+    width: 100% !important;
+    order: 3 !important;
+    margin: 10px 0 0 0 !important;
+    text-align: center !important;
+    display: block !important;
+    float: none !important;
+    flex: 1 1 100% !important;
+  }
+
+  .fc-left > *, .fc-right > * {
+    display: flex !important;
+    gap: 2px;
+  }
+
+  /* ELIMINAR FLOAT DE TODOS LOS ELEMENTOS DEL TOOLBAR */
+  .fc-toolbar > * > * {
+    float: none !important;
+    display: inline-flex !important;
+    vertical-align: middle;
+  }
+
+  .fc-toolbar h2 {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: white !important;
+    margin: 0 !important;
+    text-align: center !important;
+  }
+
+  /* UNIFICAR TODOS LOS BOTONES */
+  .fc-button {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+    padding: 0 8px !important;
+    font-size: 13px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    margin: 0 1px !important;
+    box-shadow: none !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px !important;
+    text-shadow: none !important;
+    box-sizing: border-box !important;
+  }
+
+  .fc-newEvent-button {
+    min-width: 65px !important;
+  }
+
+  .fc-sidebarToggle-button {
+    font-size: 18px !important;
+    min-width: 38px !important;
+  }
+
+  #calendar {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+    border: none !important;
+  }
+
+  .fc-view-container {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* Sidebar Móvil */
   #sidebar-container {
     width: 100% !important;
     height: auto !important;
-    border-left: none !important;
-    border-top: 2px solid #e9ecef;
+    border: 1px solid #ddd !important;
+    border-radius: 8px;
     order: 2;
-    position: relative !important;
     transition: all 0.3s ease;
+    background-color: #ffffff;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex !important;
+    flex-direction: column;
   }
-  
+
   #sidebar-container.sidebar-collapsed {
     height: 0 !important;
-    overflow: hidden;
-    border: none;
+    border: none !important;
+    opacity: 0;
+    padding: 0 !important;
   }
-  
-  #sidebar-container.sidebar-expanded {
-    height: auto !important;
-  }
-  
-  .calendar-container {
-    order: 1;
-    max-width: 100%;
-    padding: 10px;
-    flex: none !important;
-    min-width: auto !important;
-  }
-  
+
   #sidebar-header {
-    min-height: 45px; /* Reducir de 60px a 45px */
-    padding: 8px 15px; /* Reducir padding de 10px a 8px */
-    flex-direction: row;
-    justify-content: space-between;
-    cursor: pointer; /* Hacer clickeable todo el header */
-  }
-  
-  .sidebar-title {
-    font-size: 13px; /* Reducir de 14px a 13px */
-  }
-  
-  .sidebar-toggle-indicator {
-    display: block !important;
-    font-size: 14px; /* Hacer el indicador un poco más pequeño */
-  }
-  
-  /* Contenido del sidebar directamente debajo, no como overlay */
-  .sidebar-content {
-    position: relative; /* Cambiar de absolute a relative */
-    top: auto;
-    left: auto;
-    right: auto;
-    height: 230px;
-    background: white;
-    border: none;
-    box-shadow: none;
-    z-index: auto;
-    display: block; /* Siempre visible cuando el sidebar está expandido */
-  }
-  
-  #sidebar-container.sidebar-collapsed .sidebar-content {
-    display: none;
-  }
-  
-  /* Añadir indicador de scroll dentro del timeline */
-  .sidebar-content::after {
-    content: "← Desliza para ver más horas →";
-    position: absolute;
-    bottom: 15px; /* Cambiar a 15px desde abajo para que esté dentro del área */
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(102, 126, 234, 0.9);
-    color: white;
-    padding: 6px 16px;
-    border-radius: 15px;
-    font-size: 12px;
-    z-index: 10;
-    pointer-events: none;
-    animation: fadeInOut 4s ease-in-out;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  }
-  
-  @keyframes fadeInOut {
-    0%, 100% { opacity: 0; }
-    25%, 75% { opacity: 1; }
-  }
-  
-  .timeline-container {
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 10px 15px;
-    height: 210px;
-    -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
-    scroll-behavior: smooth;
-    align-items: center; /* Center cards vertically */
-    gap: 12px;
-  }
-  
-  .timeline-container::-webkit-scrollbar {
-    height: 8px;
-  }
-  
-  .timeline-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-  }
-  
-  .timeline-container::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-  }
-  
-  .timeline-container::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-  }
-  
-  .hour-slot {
-    flex-direction: column;
-    min-width: 120px; /* Aumentar de 100px a 120px */
-    border-right: 1px solid #e9ecef;
-    border-bottom: none;
-    flex-shrink: 0;
-  }
-  
-  .hour-label {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #dee2e6;
-    padding: 6px;
-    font-size: 11px;
-    min-height: 30px;
-  }
-  
-  .hour-content {
-    padding: 6px;
-    min-height: 170px;
-    flex: 1;
-  }
-  
-  /* MODAL ESPECÍFICO PARA MÓVIL */
-  .modal {
-    z-index: 9999 !important;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .modal-backdrop {
-    z-index: 9998 !important;
-  }
-  
-  .modal-dialog {
-    margin: 10px !important;
-    max-width: calc(100% - 20px) !important;
-    width: calc(100% - 20px) !important;
-    position: relative;
-    z-index: 10000;
-  }
-  
-  .modal-content {
-    border-radius: 16px !important;
-    max-height: calc(100vh - 40px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    position: relative;
-  }
-  
-  .modal-header {
-    padding: 10px 15px !important;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: white;
-    border-radius: 16px 16px 0 0 !important;
-  }
-
-  .modal-title {
-    font-size: 16px !important;
-  }
-  
-  .modal-body {
-    padding: 12px 15px !important;
-    max-height: calc(100vh - 160px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .modal-footer {
-    padding: 10px 15px !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    position: sticky;
-    bottom: 0;
-    background: white;
-    border-radius: 0 0 16px 16px !important;
-    z-index: 1000;
-  }
-  
-  .modal-footer .btn {
-    flex: 1;
-    min-width: 100px;
-    margin: 0 !important;
-    padding: 10px 8px !important;
-    font-size: 13px !important;
-    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
-    touch-action: manipulation;
-  }
-  
-  .modal-footer .btn#btn-salir {
-    flex-basis: 100%; /* El botón de salir puede ocupar toda la fila si se desea o dejarlo que fluya */
-  }
-  
-  /* Mejorar controles de formulario para móvil */
-  .form-control {
-    padding: 10px 12px;
-    font-size: 14px;
-    border-radius: 8px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
     min-height: 40px;
-    -webkit-appearance: none;
-    appearance: none;
-    touch-action: manipulation;
   }
-  
-  .form-group {
-    margin-bottom: 8px;
-  }
-  
-  .control-label {
-    font-size: 13px;
-    margin-bottom: 4px;
-  }
-  
-  /* Selector de tipo de evento en móvil */
-  #event-type-selector label {
-    padding: 10px;
-    font-size: 14px;
-    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
-    touch-action: manipulation;
-  }
-  
-  /* Mejorar área de texto */
-  textarea.form-control {
-    min-height: 60px;
-    resize: vertical;
-  }
-  
-  /* Asegurar que los elementos sean clickeables en móvil */
-  .fc-day, .fc-day-number, .fc-day-top {
-    cursor: pointer;
-    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
-    touch-action: manipulation;
-  }
-  
-  /* Mejorar eventos en el calendario para móvil */
-  .fc-event {
-    font-size: 12px;
-    padding: 4px 6px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
-    touch-action: manipulation;
-  }
-  
-  /* Mejorar paleta de colores en móvil */
-  .color-option {
-    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
-    touch-action: manipulation;
-  }
-}
 
-@media (max-width: 576px) {
-  .banner-container {
-    height: 100px;
-  }
-  
-  .banner-image {
-    height: 100px;
-  }
-  
-  .main-container {
-    height: auto;
-    min-height: calc(100vh - 100px);
-  }
-  
-  #sidebar-container {
-    height: auto;
-  }
-  
-  #sidebar-header {
-    min-height: 50px;
-    padding: 8px 12px;
-  }
-  
   .sidebar-title {
     font-size: 13px;
+    margin: 0;
+    font-weight: 600;
   }
-  
+
   .sidebar-content {
     height: 200px;
+    background: #fafbfc;
   }
-  
+
   .timeline-container {
-    height: 180px;
-    padding: 8px;
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    padding: 10px !important;
+    gap: 10px !important;
+    height: 100% !important;
+    -webkit-overflow-scrolling: touch;
   }
-  
+
   .hour-slot {
-    min-width: 100px; /* Mantener 100px en móviles muy pequeños */
+    min-width: 110px;
+    border-right: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
   }
-  
-  .hour-content {
-    min-height: 145px;
-  }
-  
-  /* Indicador más pequeño en móviles pequeños */
-  .sidebar-content::after {
-    content: "← Desliza →";
+
+  .hour-label {
+    padding: 4px;
     font-size: 11px;
-    padding: 5px 12px;
-    bottom: 12px; /* Cambiar para que esté dentro del área */
-  }
-}
-
-/* Calendario FullCalendar */
-#calendar {
-  max-width: 100%;
-  margin: 0 auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.fc-toolbar {
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.fc-toolbar h2 {
-  color: white;
-  font-weight: 600;
-}
-
-.fc-button {
-  background: rgba(255, 255, 255, 0.2) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  color: white !important;
-}
-
-.fc-button:hover {
-  background: rgba(255, 255, 255, 0.3) !important;
-}
-
-.fc-today {
-  background-color: rgba(0, 123, 255, 0.1) !important;
-}
-
-.fc-content {
-  color: #fff !important;
-}
-
-/* Modal mejorado para móvil */
-.modal {
-  z-index: 9999 !important;
-}
-
-/* Estilos del modal para DESKTOP (por defecto) */
-.modal-dialog {
-  margin: 1.75rem auto;
-  max-width: 450px;
-  width: auto;
-  position: relative;
-  display: flex;
-  align-items: center;
-  min-height: calc(100% - 3.5rem);
-}
-
-.modal-content {
-  border-radius: 8px;
-  border: none;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-  width: 100%;
-  position: relative;
-}
-
-.modal-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 8px 8px 0 0;
-  padding: 15px 20px;
-}
-
-.modal-header .close {
-  color: white !important;
-  opacity: 0.8;
-  text-shadow: none;
-}
-
-.modal-header .close:hover {
-  color: white !important;
-  opacity: 1;
-}
-
-.modal-title {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.modal-body {
-  padding: 20px;
-}
-
-.modal-footer {
-  padding: 15px 20px;
-  border-top: 1px solid #e9ecef;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-
-.modal-footer .btn {
-  margin: 0 5px;
-  padding: 10px 20px;
-  font-size: 14px;
-}
-
-/* Mejorar controles de formulario en móvil */
-.form-control {
-  padding: 12px 16px;
-  font-size: 16px; /* Prevenir zoom en iOS */
-  border-radius: 8px;
-  border: 2px solid #e9ecef;
-  transition: border-color 0.3s ease;
-}
-
-.form-control:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.control-label {
-  font-weight: 600;
-  color: #495057;
-  margin-bottom: 8px;
-}
-
-/* Botones mejorados */
-.btn {
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-.btn-secondary {
-  background: #6c757d;
-  border: none;
-}
-
-.btn-danger {
-  background: #dc3545;
-  border: none;
-}
-
-/* Selector de tipo de evento mejorado */
-#event-type-selector {
-  display: flex;
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 4px;
-  margin-bottom: 20px;
-}
-
-#event-type-selector input[type="radio"] {
-  display: none;
-}
-
-#event-type-selector label {
-  flex: 1;
-  text-align: center;
-  padding: 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
-}
-
-#event-type-selector input[type="radio"]:checked + label {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-}
-
-/* Paleta de colores para desktop */
-.color-palette {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  justify-items: center;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #dee2e6;
-  max-width: 280px;
-  margin: 0 auto;
-}
-
-.color-palette input[type="radio"] {
-  display: none;
-}
-
-  .color-palette {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 8px;
-    padding: 10px;
-  }
-  
-  .color-option {
-    width: 28px;
-    height: 28px;
+    background: #f8f9fa;
+    text-align: center;
+    border-bottom: 1px solid #dee2e6;
   }
 
-/* Paleta de cumpleaños - solo una fila */
-#birthday-color-palette {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  justify-items: center;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #dee2e6;
-  max-width: 280px;
-  margin: 0 auto;
+  .hour-content {
+    padding: 6px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* PREMIUM CARDS FOR MOBILE */
+  .event-item {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    padding: 8px 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+    border-left: 3px solid #0056b3;
+    font-size: 11px;
+    transition: all 0.2s ease;
+  }
+
+  .event-item .event-time {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .birthday-item {
+    background: linear-gradient(135deg, #ff69b4 0%, #ee1d8d 100%);
+    color: white;
+    padding: 8px 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(255, 105, 180, 0.3);
+    border-left: 3px solid #ee1d8d;
+    font-size: 11px;
+    font-weight: 600;
+  }
 }

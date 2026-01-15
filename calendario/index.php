@@ -14,16 +14,14 @@ include('PHP/config.php');
 	<link rel="stylesheet" type="text/css" href="css/fullcalendar.min.css">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/fullcalendar-fix.css">
-    <link rel="stylesheet" type="text/css" href="css/home.css?v=<?php echo time(); ?>" media="(min-width: 1025px)">
-    <link rel="stylesheet" type="text/css" href="css/home-tablet.css?v=<?php echo time(); ?>" media="(min-width: 769px) and (max-width: 1024px)">
-    <link rel="stylesheet" type="text/css" href="css/home-mobile.css?v=<?php echo time(); ?>" media="(max-width: 768px)">
+    <link rel="stylesheet" type="text/css" href="css/home.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" type="text/css" href="css/home-tablet.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" type="text/css" href="css/home-mobile.css?v=<?php echo time(); ?>">
 </head>
 <body>
-<div class="banner-container">
-    <img src="IMAGES/ImagenAgenda.svg" alt="Calendar Banner" class="banner-image">
-</div>
 
 <div class="main-container">
+
     <div id="calendar-container" class="calendar-container">
         <div id="calendar"></div>
     </div>
