@@ -26,8 +26,7 @@ try {
             ORDER BY hora_inicio ASC, evento ASC";
     
     $stmt = mysqli_prepare($con, $sql);
-    $nextDay = date('Y-m-d', strtotime($selectedDate . ' +1 day'));
-    mysqli_stmt_bind_param($stmt, 'ss', $nextDay, $selectedDate);
+    mysqli_stmt_bind_param($stmt, 'ss', $selectedDate, $selectedDate);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     

@@ -13,12 +13,12 @@
             </div>
             
             <form name="formUnifiedEvent" id="formUnifiedEvent" method="POST">
-                <!-- Hidden field for event ID (edit mode) -->
-                <input type="hidden" name="event_id" id="event_id" value="">
-                
-                <!-- Event Type Selector -->
-                <div class="form-group">
-                    <div class="col-sm-12">
+                <div class="modal-body">
+                    <!-- Hidden field for event ID (edit mode) -->
+                    <input type="hidden" name="event_id" id="event_id" value="">
+                    
+                    <!-- Event Type Selector -->
+                    <div class="form-group">
                         <div id="event-type-selector">
                             <input type="radio" name="event_type" value="event" id="event_type_event" checked>
                             <label for="event_type_event">Evento</label>
@@ -26,72 +26,71 @@
                             <label for="event_type_birthday">Cumpleaños</label>
                         </div>
                     </div>
-                </div>
 
-                <!-- Event Fields -->
-                <div id="event-fields">
-                    <div class="form-group">
-                        <label for="evento" class="col-sm-12 control-label">Nombre del Evento</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="evento" id="evento" 
-                                   placeholder="Nombre del Evento" required/>
+                    <!-- Event Fields -->
+                    <div id="event-fields">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label for="evento" class="control-label">Nombre del Evento</label>
+                                    <input type="text" class="form-control" name="evento" id="evento" 
+                                           placeholder="Nombre del Evento" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="hora_inicio" class="control-label">Hora</label>
+                                    <input type="time" class="form-control" name="hora_inicio" id="hora_inicio">
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="hora_inicio" class="col-sm-12 control-label">Hora de Inicio</label>
-                        <div class="col-sm-10">
-                            <input type="time" class="form-control" name="hora_inicio" id="hora_inicio">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="descripcion" class="col-sm-12 control-label">Descripción</label>
-                        <div class="col-sm-10">
+                        
+                        <div class="form-group">
+                            <label for="descripcion" class="control-label">Descripción</label>
                             <textarea class="form-control" name="descripcion" id="descripcion" 
-                                      placeholder="Descripción del evento" rows="3"></textarea>
+                                      placeholder="Descripción del evento" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="fecha_inicio" class="control-label">Fecha Inicio</label>
+                                    <input type="date" class="form-control" name="fecha_inicio" id="fecha_inicio" 
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="fecha_fin" class="control-label">Fecha Final</label>
+                                    <input type="date" class="form-control" name="fecha_fin" id="fecha_fin" 
+                                           required>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="fecha_inicio" class="col-sm-12 control-label">Fecha Inicio</label>
-                        <div class="col-sm-10">
-                            <input type="date" class="form-control" name="fecha_inicio" id="fecha_inicio" 
-                                   placeholder="Fecha Inicio" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="fecha_fin" class="col-sm-12 control-label">Fecha Final</label>
-                        <div class="col-sm-10">
-                            <input type="date" class="form-control" name="fecha_fin" id="fecha_fin" 
-                                   placeholder="Fecha Final" required>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Birthday Fields (hidden by default) -->
-                <div id="birthday-fields" style="display: none;">
-                    <div class="form-group">
-                        <label for="birthday_name" class="col-sm-12 control-label">Nombre de la Persona</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="birthday_name" id="birthday_name" 
-                                   placeholder="Nombre de la persona">
+                    <!-- Birthday Fields (hidden by default) -->
+                    <div id="birthday-fields" style="display: none;">
+                        <div class="row">
+                            <div class="col-sm-7">
+                                <div class="form-group">
+                                    <label for="birthday_name" class="control-label">Nombre de la Persona</label>
+                                    <input type="text" class="form-control" name="birthday_name" id="birthday_name" 
+                                           placeholder="Nombre">
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                    <label for="birthday_date" class="control-label">Fecha</label>
+                                    <input type="date" class="form-control" name="birthday_date" id="birthday_date">
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="birthday_date" class="col-sm-12 control-label">Fecha de Cumpleaños</label>
-                        <div class="col-sm-10">
-                            <input type="date" class="form-control" name="birthday_date" id="birthday_date">
-                        </div>
-                    </div>
-                    
-                    <!-- Birthday Color Selection -->
-                    <div class="form-group">
-                        <label class="col-sm-12 control-label">Color del Cumpleaños</label>
-                        <div class="col-md-12">
-                            <div id="birthday-color-palette" class="color-palette">
+                        
+                        <!-- Birthday Color Selection -->
+                        <div class="form-group">
+                            <label class="control-label">Color del Cumpleaños</label>
+                            <div id="birthday-color-palette" class="color-palette single-row">
                                 <input type="radio" name="birthday_color" id="birthday_color_1" value="#FF69B4" checked>
                                 <label for="birthday_color_1" class="color-option" style="background-color: #FF69B4;" title="Rosa"></label>
 
@@ -109,14 +108,11 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Enhanced Color Selection -->
-                <div class="form-group" id="color-selection-group">
-                    <label class="col-sm-12 control-label">Color del Evento</label>
-                    <div class="col-md-12">
-                        <div id="color-palette" class="color-palette">
-                            <!-- Primera fila de colores -->
+                    <!-- Enhanced Color Selection -->
+                    <div class="form-group" id="color-selection-group">
+                        <label class="control-label">Color del Evento</label>
+                        <div id="color-palette" class="color-palette single-row">
                             <input type="radio" name="color_evento" id="color_1" value="#FF5722" checked>
                             <label for="color_1" class="color-option" style="background-color: #FF5722;" title="Naranja"></label>
 
@@ -132,7 +128,6 @@
                             <input type="radio" name="color_evento" id="color_5" value="#2196F3">
                             <label for="color_5" class="color-option" style="background-color: #2196F3;" title="Azul"></label>
 
-                            <!-- Segunda fila de colores -->
                             <input type="radio" name="color_evento" id="color_6" value="#9c27b0">
                             <label for="color_6" class="color-option" style="background-color: #9c27b0;" title="Morado"></label>
 
@@ -171,7 +166,7 @@ window.initializeUnifiedModal = function() {
     window.unifiedModalMode = 'create';
     
     // Function to open modal in create mode
-    window.openUnifiedModalForCreate = function() {
+    window.openUnifiedModalForCreate = function(defaultDate) {
         if ($('#unifiedEventModal').length === 0) {
             alert('Error: Modal no encontrado. Recarga la pagina.');
             return;
@@ -185,14 +180,17 @@ window.initializeUnifiedModal = function() {
         $('#descripcion').val('');
         $('#birthday_name').val('');
         
-        var today = new Date();
-        var todayFormatted = today.getFullYear() + '-' + 
-                            String(today.getMonth() + 1).padStart(2, '0') + '-' + 
-                            String(today.getDate()).padStart(2, '0');
+        var dateToUse = defaultDate;
+        if (!dateToUse) {
+            var today = new Date();
+            dateToUse = today.getFullYear() + '-' + 
+                                String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                                String(today.getDate()).padStart(2, '0');
+        }
         
-        $('#fecha_inicio').val(todayFormatted);
-        $('#fecha_fin').val(todayFormatted);
-        $('#birthday_date').val(todayFormatted);
+        $('#fecha_inicio').val(dateToUse);
+        $('#fecha_fin').val(dateToUse);
+        $('#birthday_date').val(dateToUse);
         
         $('input[name="event_type"][value="event"]').prop('checked', true).trigger('change');
         
@@ -508,9 +506,9 @@ window.initializeUnifiedModal = function() {
 .modal-dialog {
   position: relative;
   width: auto;
-  max-width: 600px;
-  min-width: 500px;
-  margin: 0 auto;
+  max-width: 500px; /* Reduced from 600px */
+  min-width: 320px;
+  margin: 1.75rem auto;
   pointer-events: none;
 }
 
@@ -519,96 +517,94 @@ window.initializeUnifiedModal = function() {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-height: 90vh;
+  max-height: 95vh;
   pointer-events: auto;
   background-color: #fff;
   background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
+  border: none;
+  border-radius: 12px;
   outline: 0;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
 .modal-body {
-  padding: 20px;
+  padding: 15px 20px;
   overflow-y: auto;
-  max-height: 65vh; /* Limit height to prevent overflow */
+}
+
+.modal-header {
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    color: white;
 }
 
 .modal-header .modal-title {
-    font-weight: 600;
-    font-size: 1.25rem;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: white !important;
     width: 100%;
-    text-align: center;
+    margin: 0;
 }
 
 .modal-header .close {
-    color: white;
-    opacity: 0.8;
-    font-size: 1.5rem;
-    font-weight: bold;
+    padding: 1rem;
+    margin: -1rem -1rem -1rem auto;
+    color: white !important;
+    opacity: 0.9;
     text-shadow: none;
 }
 
 .modal-header .close:hover {
-    color: white;
     opacity: 1;
 }
 
-/* Paleta de colores mejorada */
+/* Paleta de colores mejorada - Una sola fila horizontal */
 .color-palette {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 8px;
-    justify-items: center;
+    display: flex;
+    flex-wrap: nowrap; /* Force single row */
+    overflow-x: auto; /* Allow scroll if very narrow */
+    gap: 12px; /* Increased gap slightly */
     padding: 12px;
     background-color: #f8f9fa;
     border-radius: 8px;
     border: 1px solid #dee2e6;
-    max-width: 280px;
-    margin: 0 auto;
+    justify-content: center; /* Center colors when there is space */
+    scrollbar-width: none; /* Hide scrollbar for cleaner look */
 }
 
-/* Paleta específica para cumpleaños - solo 5 colores en 1 fila */
-#birthday-color-palette {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: 1fr;
-    gap: 8px;
-    justify-items: center;
-    padding: 12px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-    max-width: 280px;
-    margin: 0 auto;
-}
-
-.color-palette input[type="radio"] {
+.color-palette::-webkit-scrollbar {
     display: none;
 }
 
+.color-palette input[type="radio"] {
+    display: none !important; /* CRITICAL: Hide the actual radio circle */
+}
+
 .color-option {
-    width: 30px;
-    height: 30px;
+    flex: 0 0 28px; /* Fixed size */
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     cursor: pointer;
-    border: 3px solid transparent;
-    transition: all 0.2s ease;
+    border: 2px solid #fff;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-block;
     position: relative;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 0;
 }
 
 .color-option:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transform: scale(1.15);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-.color-palette input[type="radio"]:checked + .color-option {
-    border-color: #333;
-    transform: scale(1.15);
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #333, 0 4px 12px rgba(0,0,0,0.3);
+input[type="radio"]:checked + .color-option {
+    transform: scale(1.25);
+    box-shadow: 0 0 0 2px #333, 0 4px 10px rgba(0,0,0,0.2);
 }
 
 /* Responsive design para el modal */
@@ -729,55 +725,13 @@ window.initializeUnifiedModal = function() {
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* Fix for Desktop Inputs Width and Layout */
-#unifiedEventModal .col-sm-10,
-#unifiedEventModal .col-sm-12,
-#unifiedEventModal .col-md-12 {
-    width: 100% !important;
-    max-width: 100% !important;
-    flex: 0 0 100% !important;
-    padding-left: 15px !important;
-    padding-right: 15px !important;
-    float: none !important;
-    display: block !important;
-}
-
-#unifiedEventModal .form-group {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    margin-bottom: 12px !important;
-    display: block; /* Ensure block layout without overriding jQuery .hide() */
-}
-
-#unifiedEventModal .form-control {
-    width: 100% !important;
-    display: block !important;
-    box-sizing: border-box !important;
-    height: auto;
-}
-
-#unifiedEventModal textarea.form-control {
-    min-height: 80px;
-    max-height: 150px;
-    resize: vertical;
-}
-
-/* Specific padding for mobile */
-@media (max-width: 768px) {
-    #unifiedEventModal .col-sm-10, 
-    #unifiedEventModal .col-sm-12 {
-        padding-left: 10px !important;
-        padding-right: 10px !important;
-    }
-}
-
 /* Estilos para los radio buttons de tipo de evento */
 #event-type-selector {
     display: flex;
     background: #f8f9fa;
     border-radius: 8px;
     padding: 4px;
-    margin: 10px 0;
+    margin: 10px 0 15px 0;
     justify-content: center;
 }
 
@@ -813,26 +767,15 @@ window.initializeUnifiedModal = function() {
     transition: all 0.3s ease;
 }
 
-.modal-content {
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.modal-header {
-    border-bottom: 1px solid #dee2e6;
-    border-radius: 10px 10px 0 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
 .modal-footer {
     border-top: 1px solid #dee2e6;
-    border-radius: 0 0 10px 10px;
+    border-radius: 0 0 12px 12px;
     display: flex !important;
     justify-content: center !important;
     gap: 10px !important;
     padding: 15px !important;
     flex-wrap: wrap;
+    background: #f8f9fa;
 }
 
 .modal-footer .btn {

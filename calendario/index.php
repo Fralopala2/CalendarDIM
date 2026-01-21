@@ -203,7 +203,10 @@ $(document).ready(function() {
                 text: '+ Nuevo',
                 click: function(event) {
                     if (typeof window.openUnifiedModalForCreate === 'function') {
-                        window.openUnifiedModalForCreate();
+                        // Pass currently viewed month's 1st day or today
+                        var view = $('#calendar').fullCalendar('getView');
+                        var defaultDate = moment().format('YYYY-MM-DD');
+                        window.openUnifiedModalForCreate(defaultDate);
                     } else {
                         alert('Error: No se pudo abrir el modal. Intenta recargar la pagina.');
                     }
@@ -250,15 +253,74 @@ $(document).ready(function() {
             }
             
             if (typeof window.openUnifiedModalForCreate === 'function') {
-                window.openUnifiedModalForCreate();
+                var startDate = start.format('YYYY-MM-DD');
+                window.openUnifiedModalForCreate(startDate);
+                
                 setTimeout(function() {
-                    $("#fecha_inicio").val(start.format('YYYY-MM-DD'));
+                    $("#fecha_inicio").val(startDate);
                     var endDate = moment(end).subtract(1, 'days');
                     $('#fecha_fin').val(endDate.format('YYYY-MM-DD'));
                 }, 100);
             } else {
                 alert('Error: No se pudo abrir el modal. Intenta recargar la pagina.');
             }
+        },
+        
+        viewRender: function(view, element) {
+            // Cambiar color del encabezado según el mes
+            // Usamos view.intervalStart para obtener el inicio del rango mostrado (el mes)
+            var month = view.intervalStart.month(); // 0-11
+            
+            // Paleta de colores suaves para cada mes
+            var monthColors = [
+                '#5C6BC0', // Enero - Índigo
+                '#EC407A', // Febrero - Rosa
+                '#66BB6A', // Marzo - Verde
+                '#FFA726', // Abril - Naranja
+                '#26C6DA', // Mayo - Cian
+                '#AB47BC', // Junio - Púrpura
+                '#FFEE58', // Julio - Amarillo
+                '#FF7043', // Agosto - Naranja profundo
+                '#8D6E63', // Septiembre - Marrón
+                '#78909C', // Octubre - Gris azulado
+                '#546E7A', // Noviembre - Azul gris
+                '#42A5F5'  // Diciembre - Azul
+            ];
+            
+            var selectedColor = monthColors[month];
+            $('.fc-toolbar, #sidebar-header').css({
+                'background-color': selectedColor + ' !important',
+                'background-image': 'none !important', // Remove any gradient if exists
+                'color': 'white !important',
+                'padding': '15px !important',
+                'border-radius': '12px 12px 0 0 !important',
+                'margin-bottom': '0 !important',
+                'border': 'none !important',
+                'transition': 'background-color 0.5s ease'
+            });
+            $('.fc-toolbar h2, #sidebar-header h3').css('color', 'white !important');
+            $('.fc-button').css({
+                'background': 'rgba(255,255,255,0.2) !important',
+                'border': 'none !important',
+                'color': 'white !important',
+                'text-shadow': 'none !important',
+                'box-shadow': 'none !important'
+            });
+            
+            // Forzar actualización de estilos manual si jQuery .css() falla con !important
+            var styleTag = document.getElementById('dynamic-header-style');
+            if (!styleTag) {
+                styleTag = document.createElement('style');
+                styleTag.id = 'dynamic-header-style';
+                document.head.appendChild(styleTag);
+            }
+            styleTag.innerHTML = `
+                .fc-toolbar, #sidebar-header { background-color: ${selectedColor} !important; background-image: none !important; color: white !important; transition: background-color 0.5s ease; }
+                .fc-toolbar h2, #sidebar-header h3 { color: white !important; }
+                .fc-button { background: rgba(255,255,255,0.2) !important; color: white !important; border: none !important; }
+                .fc-button:hover { background: rgba(255,255,255,0.3) !important; }
+                .fc-state-active { background: rgba(255,255,255,0.4) !important; }
+            `;
         },
         
         events: [
@@ -574,7 +636,7 @@ $(document).ready(function() {
                 }
                 
                 if (typeof window.openUnifiedModalForCreate === 'function') {
-                    window.openUnifiedModalForCreate();
+                    window.openUnifiedModalForCreate(dateStr);
                     setTimeout(function() {
                         $("#fecha_inicio").val(dateStr);
                         $('#fecha_fin').val(dateStr);
@@ -609,7 +671,7 @@ $(document).ready(function() {
                     }
                     
                     if (typeof window.openUnifiedModalForCreate === 'function') {
-                        window.openUnifiedModalForCreate();
+                        window.openUnifiedModalForCreate(dateStr);
                         setTimeout(function() {
                             $("#fecha_inicio").val(dateStr);
                             $('#fecha_fin').val(dateStr);
