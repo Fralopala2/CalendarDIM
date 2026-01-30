@@ -761,7 +761,7 @@ input[type="radio"]:checked + .color-option {
         min-height: 40px;
     }
 }
-}
+
 
 @media (max-width: 480px) {
     .color-palette {
@@ -918,10 +918,6 @@ input[type="radio"]:checked + .color-option {
 
 .day-option input[type="checkbox"] {
     display: none;
-}
-
-.day-option input[type="checkbox"]:checked + * {
-    /* This won't work, need different approach */
 }
 
 /* When checkbox is checked, style the label */
