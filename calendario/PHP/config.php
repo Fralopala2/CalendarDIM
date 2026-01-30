@@ -35,7 +35,7 @@ if ($resulEventos) {
 
 // Load birthdays for current year to display in calendar
 $currentYear = date('Y');
-$SqlBirthdays = ("SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos FROM cumpleanoscalendar ORDER BY mes_nacimiento ASC, dia_nacimiento ASC");
+$SqlBirthdays = ("SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos FROM cumpleañoscalendar ORDER BY mes_nacimiento ASC, dia_nacimiento ASC");
 $resulBirthdays = mysqli_query($con, $SqlBirthdays);
 
 // Create a copy of the birthday result for multiple iterations

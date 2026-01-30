@@ -22,7 +22,7 @@ error_log("Deleting birthday ID: " . $id);
 
 try {
     // Delete birthday from database
-    $sqlDeleteBirthday = "DELETE FROM cumpleanoscalendar WHERE id = ?";
+    $sqlDeleteBirthday = "DELETE FROM cumpleañoscalendar WHERE id = ?";
     $stmt = mysqli_prepare($con, $sqlDeleteBirthday);
     
     if (!$stmt) {

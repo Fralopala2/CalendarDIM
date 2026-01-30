@@ -67,6 +67,36 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Recurring Event Options -->
+                        <div class="form-group">
+                            <label class="recurring-checkbox">
+                                <input type="checkbox" name="es_recurrente" id="es_recurrente" value="1">
+                                <span>🔄 Evento recurrente (se repite semanalmente)</span>
+                            </label>
+                        </div>
+                        
+                        <div id="recurrence-options" style="display: none;">
+                            <div class="form-group">
+                                <label class="control-label">Repetir los días:</label>
+                                <div class="days-selector">
+                                    <label class="day-option"><input type="checkbox" name="dias[]" value="1"> L</label>
+                                    <label class="day-option"><input type="checkbox" name="dias[]" value="2"> M</label>
+                                    <label class="day-option"><input type="checkbox" name="dias[]" value="3"> X</label>
+                                    <label class="day-option"><input type="checkbox" name="dias[]" value="4"> J</label>
+                                    <label class="day-option"><input type="checkbox" name="dias[]" value="5"> V</label>
+                                    <label class="day-option"><input type="checkbox" name="dias[]" value="6"> S</label>
+                                    <label class="day-option"><input type="checkbox" name="dias[]" value="0"> D</label>
+                                </div>
+                                <small class="form-text text-muted">Selecciona los días en los que se repetirá el evento</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="fecha_fin_recurrencia" class="control-label">Repetir hasta:</label>
+                                <input type="date" class="form-control" name="fecha_fin_recurrencia" id="fecha_fin_recurrencia">
+                                <small class="form-text text-muted">Fecha límite para generar las repeticiones</small>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Birthday Fields (hidden by default) -->
@@ -180,6 +210,12 @@ window.initializeUnifiedModal = function() {
         $('#descripcion').val('');
         $('#birthday_name').val('');
         
+        // Reset recurring event options
+        $('#es_recurrente').prop('checked', false);
+        $('#recurrence-options').hide();
+        $('input[name="dias[]"]').prop('checked', false);
+        $('#fecha_fin_recurrencia').val('');
+        
         var dateToUse = defaultDate;
         if (!dateToUse) {
             var today = new Date();
@@ -191,6 +227,9 @@ window.initializeUnifiedModal = function() {
         $('#fecha_inicio').val(dateToUse);
         $('#fecha_fin').val(dateToUse);
         $('#birthday_date').val(dateToUse);
+        
+        // Make sure fecha_fin is visible and enabled for normal events
+        $('#fecha_fin').prop('disabled', false).closest('.form-group').show();
         
         $('input[name="event_type"][value="event"]').prop('checked', true).trigger('change');
         
@@ -332,6 +371,41 @@ window.initializeUnifiedModal = function() {
             // Clear birthday field requirements
             $('#birthday_name').removeAttr('required');
             $('#birthday_date').removeAttr('required');
+        }
+    });
+    
+    // Toggle recurring event options
+    $('#es_recurrente').change(function() {
+        if ($(this).is(':checked')) {
+            $('#recurrence-options').slideDown(300);
+            $('#fecha_fin').prop('disabled', true).closest('.form-group').hide();
+            
+            // For recurring events, set fecha_fin to same as fecha_inicio
+            var startDate = $('#fecha_inicio').val();
+            if (startDate) {
+                // Set fecha_fin to the day after fecha_inicio (required by backend)
+                var nextDay = new Date(startDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+                $('#fecha_fin').val(nextDay.toISOString().split('T')[0]);
+                
+                // Set default recurrence end date to 3 months from start date
+                var endDate = new Date(startDate);
+                endDate.setMonth(endDate.getMonth() + 3);
+                $('#fecha_fin_recurrencia').val(endDate.toISOString().split('T')[0]);
+            }
+        } else {
+            $('#recurrence-options').slideUp(300);
+            $('#fecha_fin').prop('disabled', false).closest('.form-group').show();
+            
+            // Reset fecha_fin to same as fecha_inicio for normal events
+            var startDate = $('#fecha_inicio').val();
+            if (startDate) {
+                $('#fecha_fin').val(startDate);
+            }
+            
+            // Clear recurring options
+            $('input[name="dias[]"]').prop('checked', false);
+            $('#fecha_fin_recurrencia').val('');
         }
     });
     
@@ -786,4 +860,90 @@ input[type="radio"]:checked + .color-option {
     padding: 8px 12px;
     font-size: 14px;
 }
+/* Estilos para eventos recurrentes */
+.recurring-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.recurring-checkbox:hover {
+    background: #e9ecef;
+}
+
+.recurring-checkbox input[type="checkbox"] {
+    margin-right: 8px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.recurring-checkbox span {
+    font-weight: 500;
+    color: #495057;
+}
+
+.days-selector {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.day-option {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #dee2e6;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+    font-size: 14px;
+    background: white;
+    margin: 0;
+}
+
+.day-option:hover {
+    border-color: #667eea;
+    background: #f0f3ff;
+}
+
+.day-option input[type="checkbox"] {
+    display: none;
+}
+
+.day-option input[type="checkbox"]:checked + * {
+    /* This won't work, need different approach */
+}
+
+/* When checkbox is checked, style the label */
+.day-option:has(input:checked) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+    transform: scale(1.1);
+}
+
+#recurrence-options {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    border: 1px solid #dee2e6;
+}
+
+.form-text.text-muted {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
 </style>

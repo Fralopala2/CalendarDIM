@@ -340,24 +340,33 @@ $(document).ready(function() {
                     echo "  _id: 'event_" . $row['id'] . "',\n";
                     echo "  title: '" . addslashes($eventTitle) . "',\n";
                     echo "  start: '" . $row['fecha_inicio'] . "',\n";
-                    echo "  end: '" . $row['fecha_fin'] . "',\n";
+                    
+                    // Only add end date if it's different from start date
+                    if ($row['fecha_fin'] !== $row['fecha_inicio']) {
+                        echo "  end: '" . $row['fecha_fin'] . "',\n";
+                    }
+                    
                     echo "  color: '" . $row['color_evento'] . "',\n";
                     echo "  type: 'event'\n";
                     echo "},\n";
                 }
             }
             
-            $currentYear = date('Y');
-            $previousYear = $currentYear - 1;
-            $nextYear = $currentYear + 1;
-            $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos FROM cumpleanoscalendar";
+            // Load birthday configuration
+            require_once('PHP/birthday_config.php');
+            $yearRange = getBirthdayYearRange();
+            $startYear = $yearRange['start'];
+            $endYear = $yearRange['end'];
+            
+            $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos FROM cumpleañoscalendar";
             $result = mysqli_query($con, $sql);
             
             if ($result) {
                 while($row = mysqli_fetch_assoc($result)) {
                     $birthdayColor = isset($row['color_cumpleanos']) && !empty($row['color_cumpleanos']) ? $row['color_cumpleanos'] : '#FF69B4';
                     
-                    foreach ([$previousYear, $currentYear, $nextYear] as $year) {
+                    // Generate birthday for each year in the range
+                    for ($year = $startYear; $year <= $endYear; $year++) {
                         $birthdayDate = $year . '-' . sprintf('%02d', $row['mes_nacimiento']) . '-' . sprintf('%02d', $row['dia_nacimiento']);
                         
                         echo "{\n";

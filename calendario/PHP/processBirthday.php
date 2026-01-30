@@ -54,7 +54,7 @@ try {
     
     if ($birthday_id) {
         // Update existing birthday
-        $sql = "UPDATE cumpleanoscalendar SET nombre = ?, dia_nacimiento = ?, mes_nacimiento = ?, color_cumpleanos = ? WHERE id = ?";
+        $sql = "UPDATE cumpleañoscalendar SET nombre = ?, dia_nacimiento = ?, mes_nacimiento = ?, color_cumpleanos = ? WHERE id = ?";
         $stmt = mysqli_prepare($con, $sql);
         
         if (!$stmt) {
@@ -73,7 +73,7 @@ try {
         
     } else {
         // Create new birthday
-        $sql = "INSERT INTO cumpleanoscalendar (nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO cumpleañoscalendar (nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos) VALUES (?, ?, ?, ?)";
         $stmt = mysqli_prepare($con, $sql);
         
         if (!$stmt) {

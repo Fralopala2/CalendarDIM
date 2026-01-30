@@ -28,11 +28,13 @@ class EventManager {
             $color_evento = $data['color_evento'];
             $hora_inicio = isset($data['hora_inicio']) ? $data['hora_inicio'] : null;
             $descripcion = isset($data['descripcion']) ? trim($data['descripcion']) : null;
+            $es_recurrente = isset($data['es_recurrente']) ? $data['es_recurrente'] : 0;
+            $recurring_group_id = isset($data['recurring_group_id']) ? $data['recurring_group_id'] : null;
             
             if (isset($data['id']) && !empty($data['id'])) {
                 return $this->updateEvent($data['id'], $evento, $fecha_inicio, $fecha_fin, $color_evento, $hora_inicio, $descripcion);
             } else {
-                return $this->createEvent($evento, $fecha_inicio, $fecha_fin, $color_evento, $hora_inicio, $descripcion);
+                return $this->createEvent($evento, $fecha_inicio, $fecha_fin, $color_evento, $hora_inicio, $descripcion, $es_recurrente, $recurring_group_id);
             }
             
         } catch (Exception $e) {
@@ -45,7 +47,7 @@ class EventManager {
         }
     }
     
-    private function createEvent($evento, $fecha_inicio, $fecha_fin, $color_evento, $hora_inicio, $descripcion) {
+    private function createEvent($evento, $fecha_inicio, $fecha_fin, $color_evento, $hora_inicio, $descripcion, $es_recurrente = 0, $recurring_group_id = null) {
         $stmt = $this->connection->prepare("
             INSERT INTO eventoscalendar (
                 evento, 
@@ -53,8 +55,10 @@ class EventManager {
                 fecha_fin, 
                 color_evento, 
                 hora_inicio, 
-                descripcion
-            ) VALUES (?, ?, ?, ?, ?, ?)
+                descripcion,
+                es_recurrente,
+                recurring_group_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
         
         if (!$stmt) {
@@ -65,8 +69,8 @@ class EventManager {
             ];
         }
         
-        // Bind parameters with correct types: string, string, string, string, string, string
-        $stmt->bind_param("ssssss", $evento, $fecha_inicio, $fecha_fin, $color_evento, $hora_inicio, $descripcion);
+        // Bind parameters
+        $stmt->bind_param("ssssssis", $evento, $fecha_inicio, $fecha_fin, $color_evento, $hora_inicio, $descripcion, $es_recurrente, $recurring_group_id);
         
         if ($stmt->execute()) {
             $eventId = $this->connection->insert_id;
@@ -256,9 +260,80 @@ class EventManager {
         }
     }
     
+    /**
+     * Delete a recurring event and all future instances in the same group
+     * @param int $id Event ID to delete
+     * @return array Result with success status and message
+     */
+    public function deleteRecurringEvent($id) {
+        // First, get the event details to find its group and date
+        $event = $this->getEventById($id);
+        
+        if (!$event) {
+            return [
+                'success' => false,
+                'error' => 'Event not found',
+                'details' => []
+            ];
+        }
+        
+        // Check if it's a recurring event
+        if (empty($event['recurring_group_id'])) {
+            // Not a recurring event, just delete it normally
+            return $this->deleteEvent($id);
+        }
+        
+        // Delete this event and all future events in the same recurring group
+        $stmt = $this->connection->prepare("
+            DELETE FROM eventoscalendar 
+            WHERE recurring_group_id = ? 
+            AND fecha_inicio >= ?
+        ");
+        
+        if (!$stmt) {
+            return [
+                'success' => false,
+                'error' => 'Failed to prepare statement',
+                'details' => []
+            ];
+        }
+        
+        $recurring_group_id = $event['recurring_group_id'];
+        $fecha_inicio = $event['fecha_inicio'];
+        
+        $stmt->bind_param("ss", $recurring_group_id, $fecha_inicio);
+        
+        if ($stmt->execute()) {
+            $affected = $stmt->affected_rows;
+            $stmt->close();
+            
+            if ($affected > 0) {
+                return [
+                    'success' => true,
+                    'message' => "Se eliminaron $affected instancias del evento recurrente",
+                    'deleted_count' => $affected
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'error' => 'No events found to delete',
+                    'details' => []
+                ];
+            }
+        } else {
+            $error = $stmt->error;
+            $stmt->close();
+            return [
+                'success' => false,
+                'error' => 'Failed to delete recurring events: ' . $error,
+                'details' => []
+            ];
+        }
+    }
+    
     public function getEventById($id) {
         $stmt = $this->connection->prepare("
-            SELECT id, evento, fecha_inicio, fecha_fin, color_evento, hora_inicio, descripcion 
+            SELECT id, evento, fecha_inicio, fecha_fin, color_evento, hora_inicio, descripcion, es_recurrente, recurring_group_id 
             FROM eventoscalendar 
             WHERE id = ?
         ");

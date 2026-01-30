@@ -30,16 +30,21 @@ CREATE TABLE `eventoscalendar` (
   `fecha_inicio` varchar(20) DEFAULT NULL COMMENT 'Start date',
   `fecha_fin` varchar(20) DEFAULT NULL COMMENT 'End date',
   `hora_inicio` time DEFAULT NULL COMMENT 'Event start time',
-  `descripcion` text DEFAULT NULL COMMENT 'Event description'
+  `descripcion` text DEFAULT NULL COMMENT 'Event description',
+  `es_recurrente` tinyint(1) DEFAULT 0 COMMENT 'Si el evento es recurrente (0=no, 1=si)',
+  `dias_semana` varchar(20) DEFAULT NULL COMMENT 'Días de la semana separados por comas (0=Dom, 1=Lun, 2=Mar, 3=Mie, 4=Jue, 5=Vie, 6=Sab)',
+  `fecha_fin_recurrencia` date DEFAULT NULL COMMENT 'Fecha límite para generar instancias del evento recurrente',
+  `evento_padre_id` int(11) DEFAULT NULL COMMENT 'ID del evento padre si es una instancia de evento recurrente',
+  `recurring_group_id` varchar(50) DEFAULT NULL COMMENT 'ID de grupo para eventos recurrentes relacionados'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cumpleanoscalendar`
+-- Table structure for table `cumpleañoscalendar`
 --
 
-CREATE TABLE `cumpleanoscalendar` (
+CREATE TABLE `cumpleañoscalendar` (
   `id` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL COMMENT 'Name of the person',
   `dia_nacimiento` int(2) NOT NULL COMMENT 'Birth day (1-31)',
@@ -71,12 +76,15 @@ CREATE TABLE `migrations` (
 ALTER TABLE `eventoscalendar`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_fecha_inicio` (`fecha_inicio`),
-  ADD KEY `idx_fecha_fin` (`fecha_fin`);
+  ADD KEY `idx_fecha_fin` (`fecha_fin`),
+  ADD KEY `idx_recurrente` (`es_recurrente`),
+  ADD KEY `idx_evento_padre` (`evento_padre_id`),
+  ADD KEY `idx_recurring_group` (`recurring_group_id`);
 
 --
--- Indexes for table `cumpleanoscalendar`
+-- Indexes for table `cumpleañoscalendar`
 --
-ALTER TABLE `cumpleanoscalendar`
+ALTER TABLE `cumpleañoscalendar`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_birth_date` (`dia_nacimiento`,`mes_nacimiento`);
 
@@ -98,9 +106,9 @@ ALTER TABLE `eventoscalendar`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `cumpleanoscalendar`
+-- AUTO_INCREMENT for table `cumpleañoscalendar`
 --
-ALTER TABLE `cumpleanoscalendar`
+ALTER TABLE `cumpleañoscalendar`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

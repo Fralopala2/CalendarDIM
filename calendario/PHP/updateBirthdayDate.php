@@ -23,7 +23,7 @@ if ($id <= 0 || $day <= 0 || $day > 31 || $month <= 0 || $month > 12) {
 try {
     global $con;
     
-    $sql = "UPDATE cumpleanoscalendar SET dia_nacimiento = ?, mes_nacimiento = ? WHERE id = ?";
+    $sql = "UPDATE cumpleañoscalendar SET dia_nacimiento = ?, mes_nacimiento = ? WHERE id = ?";
     $stmt = mysqli_prepare($con, $sql);
     mysqli_stmt_bind_param($stmt, 'iii', $day, $month, $id);
     
