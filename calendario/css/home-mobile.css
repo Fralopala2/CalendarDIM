@@ -8,10 +8,10 @@
     display: flex;
     flex-direction: column !important;
     height: 100vh;
-    width: 100vw;
+    width: 100%;
     box-sizing: border-box;
-    padding: 15px;
-    gap: 15px;
+    padding: 8px; /* Reduced to maximize space */
+    gap: 8px;
     margin: 0;
     overflow: hidden;
   }
@@ -27,6 +27,7 @@
     flex-direction: column;
     border-radius: 8px;
     border: 1px solid #ddd;
+    min-height: 0; /* Critical for flex */
   }
 
   /* Toolbar Móvil: 3 botones Izq, 3 botones Der, Título debajo centrado */
@@ -172,8 +173,9 @@
   }
 
   .sidebar-content {
-    height: 200px;
+    height: 150px; /* Smaller for mobile */
     background: #fafbfc;
+    overflow-y: auto;
   }
 
   .timeline-container {

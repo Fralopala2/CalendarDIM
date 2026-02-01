@@ -33,7 +33,7 @@ try {
     $month = $dateObj->format('m');
     
     $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos, 'birthday' as type
-            FROM cumpleañoscalendar 
+            FROM cumpleanoscalendar 
             WHERE dia_nacimiento = ? AND mes_nacimiento = ?";
     
     $stmt = mysqli_prepare($con, $sql);

@@ -235,10 +235,12 @@ $(document).ready(function() {
         editable: true,
         fixedWeekCount: false,
         showNonCurrentDates: true,
+        eventLimit: true, // show "more" link when too many events
         
         dayClick: function(date, jsEvent, view) {
             if (jsEvent.target.classList.contains('fc-day-number') || 
-                jsEvent.target.classList.contains('fc-day-top')) {
+                jsEvent.target.classList.contains('fc-day-top') ||
+                jsEvent.target.classList.contains('fc-more')) {
                 window.loadEventsForSidebar(date);
                 return false;
             }
@@ -247,8 +249,11 @@ $(document).ready(function() {
         select: function(start, end, jsEvent, view){
             var target = jsEvent.target || jsEvent.srcElement;
             
+            // Si el clic es en el número del día o en el enlace "+ más", no abrir modal
             if (target && (target.classList.contains('fc-day-number') || 
-                target.classList.contains('fc-day-top'))) {
+                target.classList.contains('fc-day-top') ||
+                target.classList.contains('fc-more') ||
+                $(target).closest('.fc-more').length > 0)) {
                 return false;
             }
             
@@ -358,7 +363,7 @@ $(document).ready(function() {
             $startYear = $yearRange['start'];
             $endYear = $yearRange['end'];
             
-            $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos FROM cumpleañoscalendar";
+            $sql = "SELECT id, nombre, dia_nacimiento, mes_nacimiento, color_cumpleanos FROM cumpleanoscalendar";
             $result = mysqli_query($con, $sql);
             
             if ($result) {

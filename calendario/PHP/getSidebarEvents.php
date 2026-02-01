@@ -46,7 +46,7 @@ try {
     $month = (int)$dateObj->format('m');
     
     $sqlBirthdays = "SELECT id, nombre, color_cumpleanos 
-                     FROM cumpleañoscalendar 
+                     FROM cumpleanoscalendar 
                      WHERE dia_nacimiento = ? AND mes_nacimiento = ?";
     
     $stmtBirthdays = mysqli_prepare($con, $sqlBirthdays);

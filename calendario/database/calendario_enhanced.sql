@@ -41,10 +41,10 @@ CREATE TABLE `eventoscalendar` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cumpleañoscalendar`
+-- Table structure for table `cumpleanoscalendar`
 --
 
-CREATE TABLE `cumpleañoscalendar` (
+CREATE TABLE `cumpleanoscalendar` (
   `id` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL COMMENT 'Name of the person',
   `dia_nacimiento` int(2) NOT NULL COMMENT 'Birth day (1-31)',
@@ -82,9 +82,9 @@ ALTER TABLE `eventoscalendar`
   ADD KEY `idx_recurring_group` (`recurring_group_id`);
 
 --
--- Indexes for table `cumpleañoscalendar`
+-- Indexes for table `cumpleanoscalendar`
 --
-ALTER TABLE `cumpleañoscalendar`
+ALTER TABLE `cumpleanoscalendar`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_birth_date` (`dia_nacimiento`,`mes_nacimiento`);
 
@@ -106,9 +106,9 @@ ALTER TABLE `eventoscalendar`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `cumpleañoscalendar`
+-- AUTO_INCREMENT for table `cumpleanoscalendar`
 --
-ALTER TABLE `cumpleañoscalendar`
+ALTER TABLE `cumpleanoscalendar`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

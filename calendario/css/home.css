@@ -1,9 +1,10 @@
 /* Global Styles */
 html, body {
-  height: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   background-color: #f8f9fa;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -14,6 +15,25 @@ html, body {
 
 .fc-content {
   color: #fff !important;
+}
+
+.fc-popover {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  z-index: 1050 !important; /* Higher than toolbar but below modals */
+}
+
+.fc-popover .fc-header {
+  background: #f8faff !important;
+  padding: 10px !important;
+  border-bottom: 1px solid #eee !important;
+  font-weight: bold !important;
+}
+
+.fc-popover .fc-body {
+  padding: 10px !important;
 }
 
 /* Hard reset for all FullCalendar buttons to avoid unwanted borders/shadows */
@@ -33,12 +53,13 @@ html, body {
 @media (min-width: 1025px) {
   .main-container {
     display: flex;
-    height: 100vh;
-    width: 100vw;
+    min-height: 100vh;
+    height: auto;
+    width: 100%;
     box-sizing: border-box;
     padding: 15px;
     gap: 15px;
-    overflow: hidden;
+    overflow: visible;
     align-items: stretch;
   }
 
